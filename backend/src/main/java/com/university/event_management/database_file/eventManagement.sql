@@ -21,26 +21,16 @@ CREATE TABLE categories (
     PRIMARY KEY (id)
 );
 
--- 3. VENUES
-CREATE TABLE venues (
-    id INT(4) NOT NULL AUTO_INCREMENT,
-    name VARCHAR(20) NOT NULL,
-    address VARCHAR(50),
-    city VARCHAR(15),
-    PRIMARY KEY (id)
-);
-
 -- 4. EVENTS
 CREATE TABLE events (
     id INT(4) NOT NULL AUTO_INCREMENT,
     title VARCHAR(50) NOT NULL,
     description VARCHAR(256),
     date DATE NOT NULL,
-    venue_id INT(4) NOT NULL,
+    venue VARCHAR(255) NOT NULL,
     category_id INT(4) NOT NULL,
     organizer_id INT(4) NOT NULL,
     PRIMARY KEY (id),
-    FOREIGN KEY (venue_id) REFERENCES venues(id) ON DELETE CASCADE,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
     FOREIGN KEY (organizer_id) REFERENCES users(id) ON DELETE CASCADE
 );
