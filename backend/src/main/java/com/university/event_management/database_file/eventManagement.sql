@@ -17,7 +17,6 @@ CREATE TABLE users (
 CREATE TABLE categories (
     id INT(4) NOT NULL AUTO_INCREMENT,
     name VARCHAR(20) NOT NULL,
-    description VARCHAR(256),
     PRIMARY KEY (id)
 );
 
