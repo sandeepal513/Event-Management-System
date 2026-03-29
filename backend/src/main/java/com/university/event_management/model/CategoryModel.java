@@ -1,9 +1,8 @@
 package com.university.event_management.model;
 
+
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -11,16 +10,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @ToString
 @Entity
-@Table(name = "events")
-public class EventModel {
+@Table(name = "categories")
+public class CategoryModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String title;
+    private String name;
     private String description;
-    private LocalDateTime date;
-    private String venue;
-
-
 }
