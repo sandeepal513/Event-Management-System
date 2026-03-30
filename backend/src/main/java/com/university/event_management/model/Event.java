@@ -3,7 +3,7 @@ package com.university.event_management.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -19,7 +19,7 @@ public class Event {
     private int id;
     private String title;
     private String description;
-    private LocalDateTime date;
+    private LocalDate date;
     private String venue;
 
     @ManyToOne

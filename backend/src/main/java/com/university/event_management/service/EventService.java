@@ -38,7 +38,7 @@ public class EventService {
 
         event.setTitle(request.getTitle());
         event.setDescription(request.getDescription());
-        event.setDate(LocalDateTime.from(request.getDate()));
+        event.setDate(request.getDate());
         event.setCategory(category);
         event.setOrganizer(organizer);
         event.setVenue(request.getVenue());
