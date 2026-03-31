@@ -1,8 +1,15 @@
 package com.university.event_management.model;
 
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.LocalDateTime;
 
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "users")
 public class User {
@@ -11,51 +18,28 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false, length = 256)
+    @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Role role = Role.student;
 
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "create_at", updatable = false)
+    private LocalDateTime createAt = LocalDateTime.now();
 
-    @PrePersist  // ← FIXED: was missing before
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
+    @PrePersist
+    public void prePersist() {
+        if (role == null) {
+            role = Role.student ;
+        }
+        if (createAt == null) {
+            createAt = LocalDateTime.now();
+        }
     }
-
-    public User() {}
-
-    public User(String name, String email, String password, Role role) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
-
-    public Integer getId() { return id; }
-    public void setId(Integer id) { this.id = id; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-
-    public Role getRole() { return role; }
-    public void setRole(Role role) { this.role = role; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }
