@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @ToString
 @Entity
 @Table(name = "events")
-public class EventModel {
+public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,5 +22,12 @@ public class EventModel {
     private LocalDateTime date;
     private String venue;
 
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "organizer_id", nullable = false)
+    private User organizer;
 
 }
