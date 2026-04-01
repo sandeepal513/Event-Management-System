@@ -67,5 +67,43 @@ public class EventService {
                 .orElseThrow(() -> new RuntimeException("Event not found"));
     }
 
+    public Event updateEvent(Integer id, EventRequest request) {
 
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        User organizer = userRepository.findById(request.getOrganizerId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        Society society = societyRepository.findById(request.getSocietyId())
+                .orElseThrow(() -> new RuntimeException("Society not found"));
+
+        Venue venue = venueRepository.findById(request.getVenueId())
+                .orElseThrow(() -> new RuntimeException("Venue not found"));
+
+        if (organizer.getRole() != Role.organizer) {
+            throw new RuntimeException("User is not an organizer");
+        }
+
+        event.setTitle(request.getTitle());
+        event.setDescription(request.getDescription());
+        event.setDate(request.getDate());
+        event.setCategory(category);
+        event.setOrganizer(organizer);
+        event.setVenue(venue);
+        event.setSociety(society);
+
+        return eventRepository.save(event);
+    }
+
+    public Event deleteEvent(Integer id) {
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        eventRepository.delete(event);
+        return event;
+    }
 }
