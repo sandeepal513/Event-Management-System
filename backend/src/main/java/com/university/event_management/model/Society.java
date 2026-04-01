@@ -1,6 +1,5 @@
 package com.university.event_management.model;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,11 +9,12 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 @Entity
-@Table(name = "categories")
-public class Category {
+@Table(name = "societies")
+public class Society {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
+    private String description;
 }
