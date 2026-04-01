@@ -16,7 +16,7 @@ public class EventController {
     @Autowired
     private EventService eventService;
 
-    @PostMapping
+    @PostMapping("/add")
     public Event addEvent(@RequestBody EventRequest request) {
         return eventService.addEvent(request);
     }
