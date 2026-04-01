@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class EventService {
@@ -56,4 +57,15 @@ public class EventService {
 
         return eventRepository.save(event);
     }
+
+    public List<Event> getAllEvents() {
+        return eventRepository.findAll();
+    }
+
+    public Event getEventById(Integer id) {
+        return eventRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+    }
+
+
 }
