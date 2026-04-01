@@ -14,5 +14,7 @@ public class EventRequest {
 
     private Integer categoryId;
     private Integer organizerId;
+    private Integer venueId;
+    private Integer societyId;
 
 }
