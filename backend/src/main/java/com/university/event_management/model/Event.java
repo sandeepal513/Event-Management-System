@@ -3,7 +3,7 @@ package com.university.event_management.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -16,11 +16,10 @@ public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     private String title;
     private String description;
-    private LocalDateTime date;
-    private String venue;
+    private LocalDate date;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
@@ -30,4 +29,11 @@ public class Event {
     @JoinColumn(name = "organizer_id", nullable = false)
     private User organizer;
 
+    @ManyToOne
+    @JoinColumn(name = "venue_id", nullable = false)
+    private Venue venue;
+
+    @ManyToOne
+    @JoinColumn(name = "society_id", nullable = false)
+    private Society society;
 }

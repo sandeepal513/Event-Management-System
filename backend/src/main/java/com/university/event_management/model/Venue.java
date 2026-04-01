@@ -10,11 +10,12 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 @Entity
-@Table(name = "categories")
-public class Category {
+@Table(name = "venues")
+public class Venue {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
+    private Integer capacity;
 }
