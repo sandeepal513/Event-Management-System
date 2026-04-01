@@ -28,7 +28,15 @@ CREATE TABLE societies (
     PRIMARY KEY (id)
 );
 
--- 4. EVENTS
+-- 4. VENUES
+CREATE TABLE venues (
+    id INT(4) NOT NULL AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    capacity INT(4) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+-- 5. EVENTS
 CREATE TABLE events (
     id INT(4) NOT NULL AUTO_INCREMENT,
     title VARCHAR(50) NOT NULL,
@@ -44,13 +52,6 @@ CREATE TABLE events (
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
     FOREIGN KEY (organizer_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
--- 5. VENUES
-CREATE TABLE venues (
-    id INT(4) NOT NULL AUTO_INCREMENT,
-    name VARCHAR(50) NOT NULL,
-    capacity INT(4) NOT NULL,
-    PRIMARY KEY (id)
 
 -- 6. REGISTRATION
 CREATE TABLE registration (
