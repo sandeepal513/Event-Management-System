@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>FoT EventOra – Register | Faculty of Technology, University of Ruhuna</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        :root{
+            --bg:#080c14;--surface:#0d1320;--card:#111827;
+            --border:rgba(255,255,255,0.07);--border-h:rgba(59,130,246,0.5);
+            --blue:#3b82f6;--blue-d:#2563eb;
+            --sky:#7dd3fc;--text:#f1f5f9;--muted:#64748b;--subtle:#1e293b;
+            --success:#10b981;--error:#ef4444;
+        }
+        html,body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text)}
+        body{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:40px 20px 60px;overflow-x:hidden}
+
+        /* ─── LOADER ─── */
+        .loader{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;animation:fadeOut 0.4s 0.7s ease forwards}
+        .loader-ring{width:40px;height:40px;border:2px solid rgba(59,130,246,0.15);border-top-color:var(--blue);border-radius:50%;animation:spin 0.7s linear infinite}
+
+        /* ─── BG GRID ─── */
+        body::before{
+            content:'';position:fixed;inset:0;
+            background-image:linear-gradient(rgba(59,130,246,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,0.03) 1px,transparent 1px);
+            background-size:48px 48px;pointer-events:none;z-index:0;
+        }
+        body::after{
+            content:'';position:fixed;top:-150px;left:50%;transform:translateX(-50%);
+            width:600px;height:400px;
+            background:radial-gradient(ellipse,rgba(59,130,246,0.1) 0%,transparent 65%);
+            pointer-events:none;z-index:0;
+        }
+
+        /* ─── HEADER ─── */
+        .page-header{
+            width:100%;max-width:860px;
+            display:flex;align-items:center;justify-content:space-between;
+            margin-bottom:36px;position:relative;z-index:1;
+            animation:fadeUp 0.6s ease both;
+        }
+        .logo{display:flex;align-items:center;gap:12px}
+        .logo-icon{width:38px;height:38px;border:1px solid rgba(59,130,246,0.35);border-radius:9px;display:flex;align-items:center;justify-content:center}
+        .logo-icon svg{width:18px;height:18px;color:var(--blue)}
+        .logo-text{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text)}
+        .logo-text span{color:var(--blue)}
+        .back-link{font-size:13px;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color 0.2s}
+        .back-link:hover{color:var(--text)}
+        .back-link svg{width:15px;height:15px}
+
+        /* ─── CARD ─── */
+        .reg-card{
+            width:100%;max-width:860px;
+            background:var(--card);
+            border:1px solid var(--border);
+            border-radius:16px;
+            overflow:hidden;
+            position:relative;z-index:1;
+            animation:fadeUp 0.7s 0.1s ease both;
+            box-shadow:0 24px 64px rgba(0,0,0,0.4);
+        }
+
+        /* card header */
+        .card-header{
+            padding:32px 44px;
+            border-bottom:1px solid var(--border);
+            background:linear-gradient(135deg,rgba(59,130,246,0.06),transparent);
+            display:flex;align-items:center;justify-content:space-between;
+            flex-wrap:wrap;gap:16px;
+        }
+        .card-header-left h1{font-family:'Syne',sans-serif;font-size:24px;font-weight:700;color:var(--text);margin-bottom:4px}
+        .card-header-left p{font-size:13.5px;color:var(--muted)}
+        .step-indicator{display:flex;align-items:center;gap:0}
+        .step{
+            display:flex;align-items:center;gap:8px;
+            font-size:12px;font-weight:500;
+            padding:6px 14px;
+            color:var(--muted);
+        }
+        .step-num{
+            width:24px;height:24px;border-radius:50%;
+            display:flex;align-items:center;justify-content:center;
+            font-size:11px;font-weight:700;
+            border:1px solid var(--border);
+            background:var(--subtle);
+            transition:all 0.3s;
+        }
+        .step.active .step-num{background:var(--blue);border-color:var(--blue);color:#fff}
+        .step.active{color:var(--sky)}
+        .step.done .step-num{background:var(--success);border-color:var(--success);color:#fff}
+        .step.done{color:#6ee7b7}
+        .step-sep{width:28px;height:1px;background:var(--border)}
+
+        /* card body */
+        .card-body{padding:36px 44px}
+
+        /* section title */
+        .section-title{
+            font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
+            letter-spacing:0.12em;text-transform:uppercase;
+            color:var(--blue);
+            margin-bottom:20px;
+            padding-bottom:10px;
+            border-bottom:1px solid var(--border);
+            display:flex;align-items:center;gap:8px;
+        }
+        .section-title svg{width:14px;height:14px}
+
+        /* ─── ROLE SELECT ─── */
+        .role-grid{display:flex;justify-content: space-between;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px}
+        .role-card{
+            padding:18px 14px;
+            background:var(--subtle);
+            border:1.5px solid var(--border);
+            border-radius:10px;
+            cursor:pointer;
+            transition:all 0.2s;
+            display:flex;flex-direction:column;align-items:center;gap:10px;
+            text-align:center;
+        }
+        .role-card:hover{border-color:rgba(59,130,246,0.35);background:rgba(59,130,246,0.04)}
+        .role-card.selected{border-color:var(--blue);background:rgba(59,130,246,0.08)}
+        .role-card svg{width:28px;height:28px;color:var(--muted);transition:color 0.2s}
+        .role-card.selected svg{color:var(--blue)}
+        .role-card-name{font-size:13px;font-weight:600;color:var(--muted);transition:color 0.2s}
+        .role-card.selected .role-card-name{color:var(--sky)}
+        .role-card-desc{font-size:11px;color:var(--muted);line-height:1.5;margin-top:-2px}
+        .role-card input[type=radio]{display:none}
+
+        /* ─── FORM GRID ─── */
+        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 20px;margin-bottom:28px}
+        .form-grid .full{grid-column:1/-1}
+
+        .field{display:flex;flex-direction:column}
+        .field label{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:8px}
+        .input-wrap{position:relative}
+        .input-wrap .fi{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--muted);pointer-events:none}
+        input[type=email],input[type=password],input[type=text],select{
+            width:100%;padding:11px 13px 11px 42px;
+            background:var(--subtle);border:1px solid var(--border);border-radius:8px;
+            font-family:'Inter',sans-serif;font-size:13.5px;color:var(--text);outline:none;
+            transition:border-color 0.2s,box-shadow 0.2s;
+            -webkit-appearance:none;appearance:none;
+        }
+        select{padding-left:42px;cursor:pointer}
+        select option{background:var(--card)}
+        input::placeholder{color:var(--muted)}
+        input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,0.12)}
+
+        /* password strength */
+        .pw-strength{margin-top:8px}
+        .pw-bar{height:3px;border-radius:2px;background:var(--subtle);overflow:hidden;margin-bottom:5px}
+        .pw-fill{height:100%;width:0%;border-radius:2px;transition:width 0.3s,background 0.3s;background:var(--error)}
+        .pw-text{font-size:11px;color:var(--muted)}
+
+        /* toggle pw */
+        .toggle-pw{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);display:flex;align-items:center;transition:color 0.2s}
+        .toggle-pw:hover{color:var(--text)}
+        .toggle-pw svg{width:15px;height:15px}
+
+        /* select chevron */
+        .select-wrap{position:relative}
+        .select-wrap .fi{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--muted);pointer-events:none}
+        .select-chev{position:absolute;right:13px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--muted);pointer-events:none}
+
+        /* terms */
+        .terms-row{
+            display:flex;align-items:flex-start;gap:10px;
+            padding:16px;
+            background:rgba(59,130,246,0.04);
+            border:1px solid rgba(59,130,246,0.12);
+            border-radius:8px;
+            margin-bottom:28px;
+        }
+        .terms-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--blue);flex-shrink:0;margin-top:2px;cursor:pointer}
+        .terms-row label{font-size:13px;color:var(--muted);cursor:pointer;line-height:1.55}
+        .terms-row label a{color:var(--blue);text-decoration:none}
+        .terms-row label a:hover{text-decoration:underline}
+
+        /* actions */
+        .form-actions{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+        .btn-primary{
+            padding:13px 32px;
+            background:linear-gradient(135deg,var(--blue-d),var(--blue));
+            color:#fff;border:none;border-radius:8px;
+            font-family:'Syne',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.06em;
+            cursor:pointer;display:flex;align-items:center;gap:8px;
+            position:relative;overflow:hidden;transition:transform 0.15s,box-shadow 0.15s;
+        }
+        .btn-primary::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);transform:translateX(-100%);transition:transform 0.55s ease}
+        .btn-primary:hover::before{transform:translateX(100%)}
+        .btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(59,130,246,0.3)}
+        .btn-primary svg{width:15px;height:15px;flex-shrink:0;position:relative;z-index:1}
+        .btn-primary span{position:relative;z-index:1}
+        .signin-link{font-size:13px;color:var(--muted)}
+        .signin-link a{color:var(--blue);text-decoration:none;font-weight:500}
+        .signin-link a:hover{text-decoration:underline}
+
+        /* messages */
+        .msg{display:none;padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:20px}
+        .msg.show{display:flex;align-items:center;gap:10px}
+        .msg.success{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:#6ee7b7}
+        .msg.error{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#fca5a5}
+        .msg svg{width:16px;height:16px;flex-shrink:0}
+
+        /* field error */
+        input.err{border-color:var(--error)!important}
+        .field-err{font-size:11px;color:#fca5a5;margin-top:5px;display:none}
+        .field-err.show{display:block}
+
+        /* ─── KEYFRAMES ─── */
+        @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes fadeOut{to{opacity:0;pointer-events:none;visibility:hidden}}
+        @keyframes spin{to{transform:rotate(360deg)}}
+
+        /* ─── RESPONSIVE ─── */
+        @media(max-width:720px){
+            .card-header,.card-body{padding:24px 24px}
+            .form-grid{grid-template-columns:1fr}
+            .form-grid .full{grid-column:1}
+            .role-grid{grid-template-columns:1fr}
+            .step-indicator{display:none}
+        }
+    </style>
+</head>
+<body>
+
+<div class="loader"><div class="loader-ring"></div></div>
+
+<!-- HEADER -->
+<header class="page-header">
+    <div class="logo">
+        <div class="logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                <path d="M8 14h.01M12 14h.01M16 14h.01"/>
+            </svg>
+        </div>
+        <div class="logo-text">FoT <span>EventOra</span></div>
+    </div>
+    <a href="authLogin.html" class="back-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Back to Sign In
+    </a>
+</header>
+
+<!-- CARD -->
+<div class="reg-card">
+
+    <!-- card header -->
+    <div class="card-header">
+        <div class="card-header-left">
+            <h1>Create Your Account</h1>
+            <p>Faculty of Technology, University of Ruhuna</p>
+        </div>
+        <div class="step-indicator">
+            <div class="step active" id="step1">
+                <div class="step-num">1</div>
+                Role
+            </div>
+            <div class="step-sep"></div>
+            <div class="step" id="step2">
+                <div class="step-num">2</div>
+                Details
+            </div>
+            <div class="step-sep"></div>
+            <div class="step" id="step3">
+                <div class="step-num">3</div>
+                Confirm
+            </div>
+        </div>
+    </div>
+
+    <!-- card body -->
+    <div class="card-body">
+
+        <!-- feedback -->
+        <div class="msg success" id="successMsg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Account created successfully! Redirecting to login…
+        </div>
+        <div class="msg error" id="errorMsg">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span id="errorText">Please fill in all required fields.</span>
+        </div>
+
+        <!-- STEP 1: Role -->
+        <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Select Your Role
+        </div>
+
+        <div class="role-grid">
+            <label class="role-card selected" id="rc-student">
+                <input type="radio" name="role" value="student" checked/>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>
+                <div class="role-card-name">Student</div>
+                <div class="role-card-desc">Register & attend faculty events and workshops</div>
+            </label>
+            <label class="role-card" id="rc-organizer">
+                <input type="radio" name="role" value="organizer"/>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
+                <div class="role-card-name">Event Organizer</div>
+                <div class="role-card-desc">Create and manage events within the faculty</div>
+            </label>
+        </div>
+
+        <!-- STEP 2: Personal Details -->
+        <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Personal Information
+        </div>
+
+        <div class="form-grid">
+            <!-- First name -->
+            <div class="field">
+                <label for="fname">First Name <span style="color:var(--error)">*</span></label>
+                <div class="input-wrap">
+                    <svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <input type="text" id="fname" placeholder="Kamal"/>
+                </div>
+                <div class="field-err" id="fnameErr">First name is required</div>
+            </div>
+
+            <!-- Last name -->
+            <div class="field">
+                <label for="lname">Last Name <span style="color:var(--error)">*</span></label>
+                <div class="input-wrap">
+                    <svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <input type="text" id="lname" placeholder="Perera"/>
+                </div>
+                <div class="field-err" id="lnameErr">Last name is required</div>
+            </div>
+
+            <!-- University email -->
+            <div class="field full">
+                <label for="email">University Email <span style="color:var(--error)">*</span></label>
+                <div class="input-wrap">
+                    <svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
+                    <input type="email" id="email" placeholder="sc/2021/0001@tech.ruh.ac.lk"/>
+                </div>
+                <div class="field-err" id="emailErr">A valid university email is required</div>
+            </div>
+
+            <!-- Department -->
+            <div class="field">
+                <label for="dept">Department <span style="color:var(--error)">*</span></label>
+                <div class="select-wrap input-wrap">
+                    <svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                    <select id="dept">
+                        <option value="">Select department…</option>
+                        <option>Information Technology</option>
+                        <option>Engineering Technology</option>
+                        <option>Biosystems Technology</option>
+                    </select>
+                    <svg class="select-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="field-err" id="deptErr">Please select your department</div>
+            </div>
+
+            <!-- Phone -->
+            <div class="field">
+                <label for="phone">Phone Number</label>
+                <div class="input-wrap">
+                    <svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 2.11 4.18 2 2 0 0 1 4.09 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <input type="text" id="phone" placeholder="+94 77 123 4567"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 3: Account Security -->
+        <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Account Security
+        </div>
+
+        <div class="form-grid">
+            <!-- password -->
+            <div class="field">
+                <label for="password">Password <span style="color:var(--error)">*</span></label>
+                <div class="input-wrap">
+                    <svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    <input type="password" id="password" placeholder="Min. 8 characters" autocomplete="new-password"/>
+                    <button class="toggle-pw" id="togglePw1" type="button">
+                        <svg id="eyeIcon1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                </div>
+                <div class="pw-strength" id="pwStrength" style="display:none">
+                    <div class="pw-bar"><div class="pw-fill" id="pwFill"></div></div>
+                    <div class="pw-text" id="pwText"></div>
+                </div>
+                <div class="field-err" id="pwErr">Password must be at least 8 characters</div>
+            </div>
+
+            <!-- confirm password -->
+            <div class="field">
+                <label for="confirm">Confirm Password <span style="color:var(--error)">*</span></label>
+                <div class="input-wrap">
+                    <svg class="fi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <input type="password" id="confirm" placeholder="Re-enter password" autocomplete="new-password"/>
+                    <button class="toggle-pw" id="togglePw2" type="button">
+                        <svg id="eyeIcon2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </button>
+                </div>
+                <div class="field-err" id="confirmErr">Passwords do not match</div>
+            </div>
+        </div>
+
+        <!-- Terms -->
+        <div class="terms-row">
+            <input type="checkbox" id="terms"/>
+            <label for="terms">
+                I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a> of the FoT EventOra platform. I confirm that I am a registered member of the Faculty of Technology, University of Ruhuna.
+            </label>
+        </div>
+
+        <!-- Actions -->
+        <div class="form-actions">
+            <button class="btn-primary" id="registerBtn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                <span id="regBtnText">Create Account</span>
+            </button>
+            <p class="signin-link">Already have an account? <a href="authLogin.html">Sign in</a></p>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Role card selection
+    const roleCards={student:'rc-student',organizer:'rc-organizer',admin:'rc-admin'};
+    document.querySelectorAll('.role-card').forEach(card=>{
+        card.addEventListener('click',()=>{
+            document.querySelectorAll('.role-card').forEach(c=>c.classList.remove('selected'));
+            card.classList.add('selected');
+            card.querySelector('input').checked=true;
+            // show/hide year field
+            const role=card.querySelector('input').value;
+            document.getElementById('yearField').style.display=role==='student'?'':'none';
+            // update step indicators
+            document.getElementById('step1').classList.add('done');
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step2').classList.add('active');
+        });
+    });
+
+    // password toggle helper
+    function makePwToggle(btnId,inputId,iconId){
+        const btn=document.getElementById(btnId),inp=document.getElementById(inputId),icon=document.getElementById(iconId);
+        const open=`<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+        const closed=`<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>`;
+        btn.addEventListener('click',()=>{const s=inp.type==='password';inp.type=s?'text':'password';icon.innerHTML=s?closed:open;});
+    }
+    makePwToggle('togglePw1','password','eyeIcon1');
+    makePwToggle('togglePw2','confirm','eyeIcon2');
+
+    // password strength
+    document.getElementById('password').addEventListener('input',function(){
+        const v=this.value,bar=document.getElementById('pwFill'),txt=document.getElementById('pwText'),wrap=document.getElementById('pwStrength');
+        if(!v){wrap.style.display='none';return;}
+        wrap.style.display='block';
+        let score=0;
+        if(v.length>=8)score++;if(v.length>=12)score++;
+        if(/[A-Z]/.test(v))score++;if(/[0-9]/.test(v))score++;if(/[^A-Za-z0-9]/.test(v))score++;
+        const map=[
+            {w:'20%',c:'#ef4444',t:'Weak'},
+            {w:'40%',c:'#f97316',t:'Fair'},
+            {w:'60%',c:'#eab308',t:'Good'},
+            {w:'80%',c:'#22c55e',t:'Strong'},
+            {w:'100%',c:'#10b981',t:'Very Strong'},
+        ];
+        const m=map[Math.min(score,4)];
+        bar.style.width=m.w;bar.style.background=m.c;txt.textContent=m.t;txt.style.color=m.c;
+    });
+
+    // form validation & submit
+    document.getElementById('registerBtn').addEventListener('click',()=>{
+        let valid=true;
+        const successMsg=document.getElementById('successMsg'),errorMsg=document.getElementById('errorMsg');
+        successMsg.classList.remove('show');errorMsg.classList.remove('show');
+
+        function check(id,errId,condition){
+            const el=document.getElementById(id),err=document.getElementById(errId);
+            if(condition){el.classList.add('err');err.classList.add('show');valid=false;}
+            else{el.classList.remove('err');if(err)err.classList.remove('show');}
+        }
+
+        check('fname','fnameErr',!document.getElementById('fname').value.trim());
+        check('lname','lnameErr',!document.getElementById('lname').value.trim());
+        check('email','emailErr',!document.getElementById('email').value.includes('@'));
+        check('sid','sidErr',!document.getElementById('sid').value.trim());
+        check('dept','deptErr',!document.getElementById('dept').value);
+
+        const pw=document.getElementById('password').value;
+        const cf=document.getElementById('confirm').value;
+        check('password','pwErr',pw.length<8);
+        if(pw.length>=8){check('confirm','confirmErr',pw!==cf);}
+
+        if(!document.getElementById('terms').checked){
+            document.getElementById('errorText').textContent='Please accept the terms and conditions.';
+            errorMsg.classList.add('show');valid=false;
+        }
+
+        if(!valid){
+            if(!document.getElementById('errorMsg').classList.contains('show')){
+                document.getElementById('errorText').textContent='Please fill in all required fields.';
+                errorMsg.classList.add('show');
+            }
+            return;
+        }
+
+        const btn=document.getElementById('registerBtn'),t=document.getElementById('regBtnText');
+        btn.disabled=true;t.textContent='Creating account…';
+        btn.querySelector('svg').style.cssText='animation:spin 0.8s linear infinite;width:15px;height:15px;';
+        document.getElementById('step2').classList.add('done');document.getElementById('step2').classList.remove('active');
+        document.getElementById('step3').classList.add('active');
+        setTimeout(()=>{btn.style.display='none';successMsg.classList.add('show');window.scrollTo({top:0,behavior:'smooth'});},1600);
+    });
+</script>
+</body>
+</html>
