@@ -5,95 +5,64 @@ import com.university.event_management.model.User;
 import com.university.event_management.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@CrossOrigin(origins = "http://localhost:5173")
+@RestController
+@RequestMapping("/api/v1")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-    // ─── VIEW ENDPOINTS ───────────────────────────────────────────────
-
-    /** Serves the Thymeleaf login page at GET /login */
-    @GetMapping("/login")
-    public String loginPage(@RequestParam(value = "error", required = false) String error,
-                            @RequestParam(value = "logout", required = false) String logout,
-                            @RequestParam(value = "success", required = false) String success,
-                            Model model) {
-        if (error != null) {
-            model.addAttribute("errorMsg", "Invalid email or password.");
-        }
-        if (logout != null) {
-            model.addAttribute("successMsg", "You have been logged out.");
-        }
-        if (success != null) {
-            model.addAttribute("successMsg", "You have been Login.");
-            try {
-                Thread.sleep(5000); // Simulate processing delay
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return "auth/authLogin";
-    }
-
-
-    @GetMapping("/register")
-    public String registerPage() {
-        return "auth/authRegister";
-    }
-
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/auth/login")
-    public String loginUser(@RequestParam("username") String email,
-                            @RequestParam("password") String password,
-                            @RequestParam(value = "remember", required = false) String remember,
-                            Model model) {
+    public ResponseEntity<ApiResponse<User>> loginUser(@RequestBody User user) {
 
-        User user = userService.getUserByEmail(email);
+        User loggedInUser = userService.getUserByEmail(user.getEmail());
 
-        if (user == null || !user.getPassword().equals(password)) {
-            return "redirect:/login?error";
+        if (loggedInUser == null || !passwordEncoder.matches(user.getPassword(), loggedInUser.getPassword())) {
+            ApiResponse<User> response = new ApiResponse<>(false, "Invalid email or password", null);
+            return ResponseEntity.status(401).body(response);
         }
 
-        // TODO: create a session / JWT token here as needed
-        return "redirect:/login?success";
+        loggedInUser.setPassword(null);
+        ApiResponse<User> response = new ApiResponse<>(true, "Login successful", loggedInUser);
+        return ResponseEntity.ok(response);
     }
 
-
-    @PostMapping("/api/v1/auth/register")
-    @ResponseBody
+    @PostMapping("/auth/register")
     public ResponseEntity<ApiResponse<User>> createUser(@RequestBody User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (userService.getUserByEmail(user.getEmail()) != null) {
+            ApiResponse<User> response = new ApiResponse<>(false, "Email already exists", null);
+            return ResponseEntity.status(400).body(response);
+        }
         User createdUser = userService.createUser(user);
         ApiResponse<User> response = new ApiResponse<>(true, "User created successfully", createdUser);
         return ResponseEntity.ok(response);
     }
 
-    // ─── USER CRUD API ────────────────────────────────────────────────
-
-    @GetMapping("/api/v1/users")
-    @ResponseBody
+    @GetMapping("/users")
     public ResponseEntity<ApiResponse<List<User>>> getUsers() {
         List<User> users = userService.getUsers();
         ApiResponse<List<User>> response = new ApiResponse<>(true, "Users retrieved successfully", users);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/api/v1/users/{id}")
-    @ResponseBody
+    @GetMapping("/users/{id}")
     public ResponseEntity<ApiResponse<User>> getUser(@PathVariable Integer id) {
         User user = userService.getUser(id);
         ApiResponse<User> response = new ApiResponse<>(true, "User retrieved successfully", user);
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/api/v1/users/{id}")
-    @ResponseBody
+    @PutMapping("/users/{id}")
     public ResponseEntity<ApiResponse<User>> updateUser(@PathVariable Integer id,
                                                         @RequestBody User updateUser) {
         User user = userService.updateUser(id, updateUser);
@@ -101,8 +70,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/api/v1/users/{id}")
-    @ResponseBody
+    @DeleteMapping("/users/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Integer id) {
         userService.deleteUser(id);
         ApiResponse<Void> response = new ApiResponse<>(true, "User deleted successfully", null);
