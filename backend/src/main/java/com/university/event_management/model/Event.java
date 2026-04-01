@@ -16,11 +16,10 @@ public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     private String title;
     private String description;
     private LocalDate date;
-    private String venue;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
@@ -30,4 +29,11 @@ public class Event {
     @JoinColumn(name = "organizer_id", nullable = false)
     private User organizer;
 
+    @ManyToOne
+    @JoinColumn(name = "venue_id", nullable = false)
+    private Venue venue;
+
+    @ManyToOne
+    @JoinColumn(name = "society_id", nullable = false)
+    private Society society;
 }
