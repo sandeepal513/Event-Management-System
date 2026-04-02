@@ -1,8 +1,13 @@
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 
 const ForgotPassword = () => {
+
+    const navigate = useNavigate();
+
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
         email: '',
@@ -10,6 +15,8 @@ const ForgotPassword = () => {
         password: '',
         confirmPassword: ''
     });
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const handleInputChange = (e) => {
@@ -25,11 +32,10 @@ const ForgotPassword = () => {
         return emailRegex.test(email);
     };
 
-
-
-    const handleBackToEmail = () => {
-        setStep(1);
-    };
+    const validPassword = (password) => {
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+        return passwordRegex.test(password);
+    }
 
     const verifyEmailandSendOTP = async (e) => {
         e.preventDefault();
@@ -92,6 +98,7 @@ const ForgotPassword = () => {
 
             if (!response.data.success) {
                 toast.error(response.data.message);
+                setLoading(false);
                 return;
             }
 
@@ -107,6 +114,59 @@ const ForgotPassword = () => {
                     ? 'Verification timed out. Please try again.'
                     : error?.response?.data?.message || 'Server error. Try again.';
             toast.error(message);
+            setLoading(false);
+        }
+    };
+
+    // change password
+    const changePassword = async (e) => {
+        e.preventDefault();
+
+        const newPassword = formData.password.trim();
+        const confirmPassword = formData.confirmPassword.trim();
+        const email = formData.email.trim();
+
+        if (!newPassword) {
+            toast.error("Password is required");
+            return;
+        }
+
+        if (!validPassword(newPassword)) {
+            toast.error("Password must be at least 8 characters and include uppercase, lowercase, symbol and a number");
+            return;
+        }
+
+        if (newPassword !== confirmPassword) {
+            toast.error("Passwords do not match");
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const response = await axios.post(
+                `http://localhost:3000/api/v1/auth/change-password`,
+                {
+                    email: email,
+                    password: newPassword
+                }
+            );
+
+            if (!response.data.success) {
+                toast.error(response.data.message);
+                return;
+            }
+
+            toast.success(response.data.message);
+            setTimeout(() => {
+                navigate("/auth/login");
+            }, 2000);
+        } catch (error) {
+            const message =
+                    error?.response?.data?.message || 'Server error. Try again.';
+            toast.error(message);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -174,7 +234,7 @@ const ForgotPassword = () => {
                         <div className="flex gap-3">
                             <button
                                 type="button"
-                                onClick={handleBackToEmail}
+                                onClick={() => setStep(1)}
                                 className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-200"
                             >
                                 Back
@@ -192,41 +252,59 @@ const ForgotPassword = () => {
 
                 {/* Step 3: Reset Password */}
                 {step === 3 && (
-                    <form onSubmit={() => {}} className="space-y-4">
+                    <form onSubmit={changePassword} className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 New Password
                             </label>
-                            <input
-                                type="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleInputChange}
-                                placeholder="Enter new password"
-                                className="w-full px-4 py-2 border rounded-lg 
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleInputChange}
+                                    placeholder="Enter new password"
+                                    className="w-full px-4 py-2 pr-16 border rounded-lg 
                                     focus:outline-none focus:ring-2 border-gray-300 focus:ring-indigo-500"
-                            />
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword((prev) => !prev)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-indigo-600 hover:text-indigo-700"
+                                >
+                                    {showPassword ? 'Hide' : 'Show'}
+                                </button>
+                            </div>
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Confirm Password
                             </label>
-                            <input
-                                type="password"
-                                name="confirmPassword"
-                                value={formData.confirmPassword}
-                                onChange={handleInputChange}
-                                placeholder="Confirm your password"
-                                className="w-full px-4 py-2 border rounded-lg 
+                            <div className="relative">
+                                <input
+                                    type={showConfirmPassword ? "text" : "password"}
+                                    name="confirmPassword"
+                                    value={formData.confirmPassword}
+                                    onChange={handleInputChange}
+                                    placeholder="Confirm your password"
+                                    className="w-full px-4 py-2 pr-16 border rounded-lg 
                                     focus:outline-none focus:ring-2 border-gray-300 focus:ring-indigo-500"
-                            />
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword((prev) => !prev)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-indigo-600 hover:text-indigo-700"
+                                >
+                                    {showConfirmPassword ? 'Hide' : 'Show'}
+                                </button>
+                            </div>
                         </div>
 
                         <div className="flex gap-3">
                             <button
                                 type="button"
-                                onClick={handleBackToEmail}
+                                onClick={() => setStep(1)}
                                 className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition duration-200"
                             >
                                 Back
@@ -246,7 +324,7 @@ const ForgotPassword = () => {
                 <div className="mt-8 text-center">
                     <p className="text-gray-600 text-sm">
                         Remember your password?{' '}
-                        <a href="/login" className="text-indigo-600 hover:text-indigo-700 font-semibold">
+                        <a href="/auth/login" className="text-indigo-600 hover:text-indigo-700 font-semibold">
                             Login
                         </a>
                     </p>
