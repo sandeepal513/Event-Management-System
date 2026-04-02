@@ -70,6 +70,7 @@ public class UserController {
         }
     }
 
+    // verify Otp endpoint
     @PostMapping("/auth/verify-otp/{otp}")
     public ResponseEntity<ApiResponse<Boolean>> verifyOTP(@PathVariable String otp) {
         try {
@@ -90,6 +91,25 @@ public class UserController {
         }
     }
 
+
+    // password change endpoint
+    @PostMapping("/auth/change-password")
+    public ResponseEntity<ApiResponse<String>> changePassword(@RequestBody User user) {
+        try {
+            User passwordChangeUser = userService.getUserByEmail(user.getEmail());
+            if (passwordChangeUser == null) {
+                ApiResponse<String> response = new ApiResponse<>(false, "User not found", null);
+                return ResponseEntity.status(404).body(response);
+            }
+            passwordChangeUser.setPassword(passwordEncoder.encode(user.getPassword()));
+            userService.updateUser(passwordChangeUser.getId(), passwordChangeUser);
+            ApiResponse<String> response = new ApiResponse<>(true, "Password change successfully", null);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ApiResponse<String> response = new ApiResponse<>(false, "OTP verification failed due to server error", null);
+            return ResponseEntity.status(500).body(response);
+        }
+    }
 
     // User management endpoints
     @GetMapping("/users")
