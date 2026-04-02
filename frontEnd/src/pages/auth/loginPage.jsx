@@ -37,7 +37,6 @@ const LoginPage = () => {
             toast.success(response.data.message);
             navigate("/");
         } catch (error) {
-            // axios throws on 4xx/5xx, so read the error response if available
             const message =
                 error.response?.data?.message || 'Server error. Please try again.';
             toast.error(message);
@@ -76,7 +75,7 @@ const LoginPage = () => {
                             Don't have an account yet?
                         </p>
                         <button
-                            onClick={() => navigate('/register')}
+                            onClick={() => navigate('/auth/register')}
                             className="rounded-xl bg-amber-300/20 border border-amber-300/50 px-6 py-3 text-sm font-semibold text-amber-200 hover:bg-amber-300/30 transition"
                         >
                             Create new account
@@ -157,7 +156,7 @@ const LoginPage = () => {
                             <button 
                                 type="button" 
                                 className="font-semibold text-teal-700 hover:text-teal-800 cursor-pointer"
-                                onClick={() => navigate("/forgotPassword")}
+                                onClick={() => navigate("/auth/forgotPassword")}
                             >
                                 Forgot password?
                             </button>
