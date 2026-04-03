@@ -4,6 +4,8 @@ package com.university.event_management.model;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.Time;
+
 @Getter
 @Setter
 public class EventRequest {
@@ -11,6 +13,7 @@ public class EventRequest {
     private String description;
     private String venue;
     private java.time.LocalDate date;
+    private Time time;
 
     private Integer categoryId;
     private Integer organizerId;
