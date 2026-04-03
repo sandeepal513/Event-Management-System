@@ -3,6 +3,7 @@ package com.university.event_management.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Time;
 import java.time.LocalDate;
 
 @Getter
@@ -20,6 +21,7 @@ public class Event {
     private String title;
     private String description;
     private LocalDate date;
+    private Time time;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)

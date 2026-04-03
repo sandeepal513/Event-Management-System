@@ -50,6 +50,7 @@ public class EventService {
         event.setTitle(request.getTitle());
         event.setDescription(request.getDescription());
         event.setDate(request.getDate());
+        event.setTime(request.getTime());
         event.setCategory(category);
         event.setOrganizer(organizer);
         event.setVenue(venue);
@@ -91,6 +92,7 @@ public class EventService {
         event.setTitle(request.getTitle());
         event.setDescription(request.getDescription());
         event.setDate(request.getDate());
+        event.setTime(request.getTime());
         event.setCategory(category);
         event.setOrganizer(organizer);
         event.setVenue(venue);
