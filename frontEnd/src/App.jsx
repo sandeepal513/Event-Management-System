@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import LoginPage from './pages/auth/loginPage';
 import RegisterPage from './pages/auth/registerPage';
 import { ToastContainer, toast } from 'react-toastify';
+import OrganizerPage from './pages/organizer/OrganizerPage';
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
         <Routes>
           <Route element={<LoginPage />} path="/login" />
           <Route element={<RegisterPage />} path="/register" />
+          <Route element={<OrganizerPage />} path="/organizer/*" />
         </Routes>
         <ToastContainer position="top-right" autoClose={3000} />
       </div>
