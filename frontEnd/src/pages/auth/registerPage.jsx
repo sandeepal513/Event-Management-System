@@ -97,7 +97,7 @@ const RegisterPage = () => {
       }
 
       toast.success(response.data.message);
-      navigate('/login');
+      navigate('/auth/login');
     } catch (error) {
       const message = error.response?.data?.message || 'Server error. Please try again.';
       toast.error(message);
@@ -136,7 +136,7 @@ const RegisterPage = () => {
               Already have an account?
             </p>
             <button
-              onClick={() => navigate('/login')}
+              onClick={() => navigate('/auth/login')}
               className="rounded-xl bg-amber-300/20 border border-amber-300/50 px-6 py-3 text-sm font-semibold text-amber-200 hover:bg-amber-300/30 transition"
             >
               Sign in to your account

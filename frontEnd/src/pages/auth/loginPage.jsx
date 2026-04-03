@@ -1,4 +1,4 @@
-import { use, useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -37,7 +37,6 @@ const LoginPage = () => {
             toast.success(response.data.message);
             navigate("/");
         } catch (error) {
-            // axios throws on 4xx/5xx, so read the error response if available
             const message =
                 error.response?.data?.message || 'Server error. Please try again.';
             toast.error(message);
@@ -57,7 +56,7 @@ const LoginPage = () => {
             <div className="relative mx-auto grid min-h-screen w-full max-w-6xl items-center gap-8 px-4 py-10 md:grid-cols-2 md:px-8">
 
                 {/* Left Panel */}
-                <div className="hidden rounded-3xl bg-gradient-to-br from-slate-900 via-teal-900 to-cyan-900 p-8 text-white shadow-2xl md:block lg:p-10">
+                <div className="hidden rounded-3xl bg-linear-to-br from-slate-900 via-teal-900 to-cyan-900 p-8 text-white shadow-2xl md:block lg:p-10">
                     <p className="mb-3 inline-block rounded-full border border-white/30 px-3 py-1 text-xs uppercase tracking-[0.2em] text-amber-200">
                         EventOra
                     </p>
@@ -76,7 +75,7 @@ const LoginPage = () => {
                             Don't have an account yet?
                         </p>
                         <button
-                            onClick={() => navigate('/register')}
+                            onClick={() => navigate('/auth/register')}
                             className="rounded-xl bg-amber-300/20 border border-amber-300/50 px-6 py-3 text-sm font-semibold text-amber-200 hover:bg-amber-300/30 transition"
                         >
                             Create new account
@@ -154,7 +153,11 @@ const LoginPage = () => {
                                 />
                                 Remember me
                             </label>
-                            <button type="button" className="font-semibold text-teal-700 hover:text-teal-800">
+                            <button 
+                                type="button" 
+                                className="font-semibold text-teal-700 hover:text-teal-800 cursor-pointer"
+                                onClick={() => navigate("/auth/forgotPassword")}
+                            >
                                 Forgot password?
                             </button>
                         </div>
@@ -163,7 +166,7 @@ const LoginPage = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full rounded-xl bg-gradient-to-r from-teal-700 to-cyan-700 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:from-teal-800 hover:to-cyan-800 focus:outline-none focus:ring-2 focus:ring-cyan-300 disabled:opacity-60 disabled:cursor-not-allowed"
+                            className="w-full rounded-xl bg-linear-to-r from-teal-700 to-cyan-700 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:from-teal-800 hover:to-cyan-800 focus:outline-none focus:ring-2 focus:ring-cyan-300 disabled:opacity-60 disabled:cursor-not-allowed"
                         >
                             {loading ? 'Signing in…' : 'Sign In'}
                         </button>
