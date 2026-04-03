@@ -21,6 +21,8 @@ public class UserController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+
+    // Login endpoint
     @PostMapping("/auth/login")
     public ResponseEntity<ApiResponse<User>> loginUser(@RequestBody User user) {
 
@@ -36,18 +38,80 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+
+    // Registration endpoint
     @PostMapping("/auth/register")
     public ResponseEntity<ApiResponse<User>> createUser(@RequestBody User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (userService.getUserByEmail(user.getEmail()) != null) {
-            ApiResponse<User> response = new ApiResponse<>(false, "Email already exists", null);
-            return ResponseEntity.status(400).body(response);
+            return ResponseEntity.status(400)
+                    .body(new ApiResponse<>(false, "Email already exists", null));
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         User createdUser = userService.createUser(user);
-        ApiResponse<User> response = new ApiResponse<>(true, "User created successfully", createdUser);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new ApiResponse<>(true, "User created successfully", createdUser));
     }
 
+
+    // Send Otp endpoint
+    @PostMapping("/auth/send-otp/{email}")
+    public ResponseEntity<ApiResponse<String>> sendOtp(@PathVariable String email) {
+        User existingUser = userService.getUserByEmail(email);
+        if (existingUser == null) {
+            ApiResponse<String> response = new ApiResponse<>(false, "Email not found", null);
+            return ResponseEntity.status(404).body(response);
+        }
+        try {
+            userService.generateAndSendOtp(email);
+            ApiResponse<String> response = new ApiResponse<>(true, "OTP sent successfully", null);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ApiResponse<String> response = new ApiResponse<>(false, e.getMessage(), null);
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
+    // verify Otp endpoint
+    @PostMapping("/auth/verify-otp/{otp}")
+    public ResponseEntity<ApiResponse<Boolean>> verifyOTP(@PathVariable String otp) {
+        try {
+            boolean verified = userService.verifyOtp(otp);
+
+            if (verified) {
+                ApiResponse<Boolean> response = new ApiResponse<>(true, "OTP verify success", true);
+                return ResponseEntity.ok(response);
+            } else {
+                ApiResponse<Boolean> response = new ApiResponse<>(false, "Invalid OTP", false);
+                return ResponseEntity.status(400).body(response);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace(); // log the exception
+            ApiResponse<Boolean> response = new ApiResponse<>(false, "OTP verification failed due to server error", false);
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
+
+    // password change endpoint
+    @PostMapping("/auth/change-password")
+    public ResponseEntity<ApiResponse<String>> changePassword(@RequestBody User user) {
+        try {
+            User passwordChangeUser = userService.getUserByEmail(user.getEmail());
+            if (passwordChangeUser == null) {
+                ApiResponse<String> response = new ApiResponse<>(false, "User not found", null);
+                return ResponseEntity.status(404).body(response);
+            }
+            passwordChangeUser.setPassword(passwordEncoder.encode(user.getPassword()));
+            userService.updateUser(passwordChangeUser.getId(), passwordChangeUser);
+            ApiResponse<String> response = new ApiResponse<>(true, "Password change successfully", null);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ApiResponse<String> response = new ApiResponse<>(false, "OTP verification failed due to server error", null);
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
+    // User management endpoints
     @GetMapping("/users")
     public ResponseEntity<ApiResponse<List<User>>> getUsers() {
         List<User> users = userService.getUsers();
