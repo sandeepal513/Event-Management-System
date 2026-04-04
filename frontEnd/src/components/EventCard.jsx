@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { FiCalendar, FiClock, FiEdit2, FiEye, FiMapPin, FiTrash2, FiUsers } from "react-icons/fi";
 
-export default function EventCard({ event }) {
+export default function EventCard({ event, onDelete, isDeleting = false }) {
     return (
         <div className="w-full h-[250px] max-w-[280px] rounded-xl border border-white/10 bg-[#1f1f1d] px-4 py-3 shadow-[0_8px_24px_rgba(0,0,0,0.25)] relative">
             <div className="h-[3px] w-full rounded-full bg-gradient-to-r from-sky-500 via-cyan-400 to-emerald-400" />
@@ -28,12 +28,13 @@ export default function EventCard({ event }) {
             </div>
 
             <div className="mt-4 border-t border-white/10 pt-3 flex items-center gap-2 absolute bottom-3">
-                <button
-                    type="button"
+                <Link
+                    to="/organizer/events/view"
+                    state={event}
                     className="inline-flex items-center gap-1 rounded-lg border border-white/20 bg-[#232320] px-3 py-1.5 text-sm text-white/85 hover:border-sky-400/50 hover:text-white"
                 >
                     <FiEye className="text-xs" /> View
-                </button>
+                </Link>
                 <Link
                     to="/organizer/events/edit"
                     state={ event }
@@ -43,9 +44,11 @@ export default function EventCard({ event }) {
                 </Link>
                 <button
                     type="button"
-                    className="inline-flex items-center gap-1 rounded-lg border border-white/20 bg-[#232320] px-3 py-1.5 text-sm text-white/85 hover:border-red-400/50 hover:text-white"
+                    onClick={() => onDelete(event.id, event.title)}
+                    disabled={isDeleting}
+                    className="inline-flex items-center gap-1 rounded-lg border border-white/20 bg-[#232320] px-3 py-1.5 text-sm text-white/85 hover:border-red-400/50 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                    <FiTrash2 className="text-xs" /> Delete
+                    <FiTrash2 className="text-xs" /> {isDeleting ? "Deleting..." : "Delete"}
                 </button>
             </div>
         </div>
