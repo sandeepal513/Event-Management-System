@@ -40,7 +40,7 @@ export default function OrganizerPage() {
             <div className="flex-1 h-full bg-gray-100 overflow-y-scroll pt-14 md:pt-0">
                 <Routes>
                     <Route path="events" element={<Events />} />
-                    <Route path="events/:eventId/edit" element={<EditEventPage />} />
+                    <Route path="events/edit" element={<EditEventPage />} />
                 </Routes>
             </div>
         </div>
