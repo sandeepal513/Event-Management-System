@@ -1,6 +1,7 @@
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import EventCard from "../../components/EventCard";
 
 export default function Events() {
 
@@ -9,7 +10,15 @@ export default function Events() {
 
     useEffect(() => {
         if(!loaded){
-            axios.get()
+            axios.get("http://localhost:3000/api/events/all")
+                .then((response) => {
+                    console.log("Fetched events:", response.data);
+                    setEvents(response.data);
+                    setLoaded(true);
+                })
+                .catch((error) => {
+                    console.error("Error fetching events:", error);
+                });
         }
     }, []);
 
@@ -72,6 +81,22 @@ export default function Events() {
 
             <div className="mt-10">
                 <h1 className="text-white/80 font-semibold">All Events</h1>
+            </div>
+            <div>
+                {loaded ? (
+                    <div className="w-full flex flex-wrap gap-4 p-4">
+                        {
+                            events.map( (event) => {
+                                return (
+                                    <EventCard key={event.id} event={event} />
+                                )
+                            })
+                        }
+                    </div>
+                ) : (
+                    <p>Loading events...</p>
+                    
+                )}
             </div>
         </div>
     );
