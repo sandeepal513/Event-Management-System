@@ -7,6 +7,8 @@ export default function Events() {
 
     const [events, setEvents] = useState([]);
     const [loaded, setLoaded] = useState(false);
+    const [deletingId, setDeletingId] = useState(null);
+    const [pendingDeleteEvent, setPendingDeleteEvent] = useState(null);
 
     useEffect(() => {
         if(!loaded){
@@ -21,6 +23,28 @@ export default function Events() {
                 });
         }
     }, []);
+
+    function handleDeleteEvent(eventId, eventTitle) {
+        setPendingDeleteEvent({ id: eventId, title: eventTitle });
+    }
+
+    async function confirmDeleteEvent() {
+        if (!pendingDeleteEvent) {
+            return;
+        }
+
+        try {
+            setDeletingId(pendingDeleteEvent.id);
+            await axios.delete(`http://localhost:3000/api/events/delete/${pendingDeleteEvent.id}`);
+            setEvents((prevEvents) => prevEvents.filter((event) => event.id !== pendingDeleteEvent.id));
+            setPendingDeleteEvent(null);
+        } catch (error) {
+            console.error("Error deleting event:", error);
+            alert("Failed to delete event");
+        } finally {
+            setDeletingId(null);
+        }
+    }
 
     const stats = [
         {
@@ -88,7 +112,12 @@ export default function Events() {
                         {
                             events.map( (event) => {
                                 return (
-                                    <EventCard key={event.id} event={event} />
+                                    <EventCard
+                                        key={event.id}
+                                        event={event}
+                                        onDelete={handleDeleteEvent}
+                                        isDeleting={deletingId === event.id}
+                                    />
                                 )
                             })
                         }
@@ -98,6 +127,35 @@ export default function Events() {
                     
                 )}
             </div>
+
+            {pendingDeleteEvent && (
+                <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 px-4">
+                    <div className="w-full max-w-md rounded-xl border border-white/10 bg-[#1e1e1c] p-5 shadow-[0_12px_28px_rgba(0,0,0,0.45)]">
+                        <h2 className="text-lg font-semibold text-white">Delete Event</h2>
+                        <p className="mt-2 text-sm text-white/75">
+                            Are you sure you want to delete "{pendingDeleteEvent.title}"?
+                        </p>
+                        <div className="mt-5 flex justify-end gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setPendingDeleteEvent(null)}
+                                disabled={deletingId === pendingDeleteEvent.id}
+                                className="rounded-lg border border-white/15 px-4 py-2 text-sm text-white/80 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={confirmDeleteEvent}
+                                disabled={deletingId === pendingDeleteEvent.id}
+                                className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                                {deletingId === pendingDeleteEvent.id ? "Deleting..." : "Delete"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
