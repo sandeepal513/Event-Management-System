@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { FiCalendar, FiEdit2, FiEye, FiMapPin, FiTrash2, FiUsers } from "react-icons/fi";
+import { FiCalendar, FiClock, FiEdit2, FiEye, FiMapPin, FiTrash2, FiUsers } from "react-icons/fi";
 
 export default function EventCard({ event }) {
     return (
@@ -12,6 +12,10 @@ export default function EventCard({ event }) {
                 <p className="flex items-center gap-2">
                     <FiCalendar className="text-sky-400" />
                     {event.date}
+                </p>
+                <p className="flex items-center gap-2">
+                    <FiClock className="text-amber-400" />
+                    {event.time || "N/A"}
                 </p>
                 <p className="flex items-center gap-2">
                     <FiMapPin className="text-pink-400" />
@@ -31,8 +35,8 @@ export default function EventCard({ event }) {
                     <FiEye className="text-xs" /> View
                 </button>
                 <Link
-                    to={`/organizer/events/${event.id}/edit`}
-                    state={{ event }}
+                    to="/organizer/events/edit"
+                    state={ event }
                     className="inline-flex items-center gap-1 rounded-lg border border-white/20 bg-[#232320] px-3 py-1.5 text-sm text-white/85 hover:border-amber-400/50 hover:text-white"
                 >
                     <FiEdit2 className="text-xs" /> Edit
