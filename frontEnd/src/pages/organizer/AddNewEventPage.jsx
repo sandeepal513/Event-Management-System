@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
 
 export default function AddNewEventPage() {
 
@@ -44,13 +43,11 @@ export default function AddNewEventPage() {
         const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser") || "null");
 
         if (!loggedInUser?.id) {
-            toast.error("Please login again");
             navigate("/auth/login");
             return;
         }
 
         if (!title || !description || !date || !time || !category || !venue || !society) {
-            toast.error("Please fill in all fields");
             return;
         }
         try {
@@ -65,11 +62,9 @@ export default function AddNewEventPage() {
                 venueId: venue,
                 societyId: society,
             });
-            toast.success("Event added successfully");
             navigate("/organizer/events");
         } catch (error) {
             console.error("Error adding event:", error);
-            toast.error("Failed to add event");
             return;
         } finally {
             setAdding(false);

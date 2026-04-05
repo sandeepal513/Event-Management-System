@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { MdAdminPanelSettings } from "react-icons/md";
-import { MdDashboard, MdBedroomParent, MdBookOnline, MdPeople, MdSettings, MdLogout, MdMenu, MdClose } from "react-icons/md";
-import { Link, Navigate, Route, Routes } from "react-router-dom";
+import { MdDashboard, MdMenu, MdClose } from "react-icons/md";
+import { Link, Route, Routes } from "react-router-dom";
 import Events from "./Events";
 import EditEventPage from "./EditEventPage";
 import EventDetailsPage from "./EventDetailsPage";

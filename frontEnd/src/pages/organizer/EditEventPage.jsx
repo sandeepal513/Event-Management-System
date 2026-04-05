@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import toast from "react-hot-toast";
 
 export default function EditEventPage() {
 
@@ -53,7 +52,6 @@ export default function EditEventPage() {
     async function updateEvent() {
 
         if (!title || !description || !date || !time || !venue || !society) {
-            toast.error("Please fill in all fields");
             return;
         }
         try {
@@ -66,11 +64,9 @@ export default function EditEventPage() {
                 venueId: venue,
                 societyId: society,
             });
-            toast.success("Event updated successfully");
             navigate("/organizer/events");
         } catch (error) {
             console.error("Error updating event:", error);
-            toast.error("Failed to update event");
             return;
         } finally {
             setSaving(false);
