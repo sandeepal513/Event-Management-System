@@ -79,7 +79,7 @@ export default function Events() {
                 <h1 className="text-2xl ml-5 font-bold text-white/75">Events</h1>
                 <div className="flex">
                     <input type="text" placeholder="Search events..." className="w-[250px] h-[35px] mr-3 bg-[#272725] text-amber-50 p-2 border border-gray-700 rounded-lg" />
-                    <Link to="/organizer/events/new" className="bg-blue-400 text-white text-sm mr-5 p-2 rounded-lg"> + Add Event</Link>
+                    <Link to="/organizer/events/add" className="bg-blue-400 text-white text-sm mr-5 p-2 rounded-lg"> + Add Event</Link>
                 </div>
             </div>
         

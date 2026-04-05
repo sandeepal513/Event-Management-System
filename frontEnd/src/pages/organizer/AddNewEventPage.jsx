@@ -1,21 +1,19 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-export default function EditEventPage() {
+export default function AddNewEventPage() {
 
-    const location = useLocation();
-    console.log("Location state:", location.state);
-
-    const [id, setId] = useState("");
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
+    const [category, setCategory] = useState("");
     const [venue, setVenue] = useState("");
     const [society, setSociety] = useState("");
     const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
+    const [adding, setAdding] = useState(false);
+    const [categories, setCategories] = useState([]);
     const [venues, setVenues] = useState([]);
     const [societies, setSocieties] = useState([]);
     const navigate = useNavigate();
@@ -23,53 +21,53 @@ export default function EditEventPage() {
     useEffect(() => {
         async function fetchOptions() {
             try {
+                const categoriesRes = await axios.get("http://localhost:3000/api/categories/all");
                 const venuesRes = await axios.get("http://localhost:3000/api/venues/all");
                 const societiesRes = await axios.get("http://localhost:3000/api/v1/societies");
+                setCategories(categoriesRes.data);
+                console.log("Venues:", venuesRes.data);
+                console.log("Societies:", societiesRes.data);
                 setVenues(venuesRes.data);
                 setSocieties(societiesRes.data.data);
             } catch (err) {
-                console.error("Failed to fetch venues or societies", err);
+                console.error("Failed to fetch options", err);
+            } finally {
+                setLoading(false);
             }
         }
         fetchOptions();
     }, []);
 
-    useEffect(() => {
-        if (!location.state) {
-            navigate("/organizer/events");
-        } else {
-            setId(location.state.id || "");
-            setTitle(location.state.title || "");
-            setDescription(location.state.description || "");
-            setDate(location.state.date || "");
-            setTime((location.state.time || "").toString().slice(0, 5));
-            setVenue(location.state.venue?.id || "");
-            setSociety(location.state.society?.id || "");
-            setLoading(false);
+    async function addEvent() {
+
+        const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser") || "null");
+
+        if (!loggedInUser?.id) {
+            navigate("/auth/login");
+            return;
         }
-    }, [location.state, navigate]);
 
-    async function updateEvent() {
-
-        if (!title || !description || !date || !time || !venue || !society) {
+        if (!title || !description || !date || !time || !category || !venue || !society) {
             return;
         }
         try {
-            setSaving(true);
-            await axios.put("http://localhost:3000/api/events/update/" + id, {
+            setAdding(true);
+            await axios.post("http://localhost:3000/api/events/add", {
                 title: title,
                 description: description,
                 date: date,
                 time: `${time}:00`,
+                categoryId: category,
+                organizerId: loggedInUser.id,
                 venueId: venue,
                 societyId: society,
             });
             navigate("/organizer/events");
         } catch (error) {
-            console.error("Error updating event:", error);
+            console.error("Error adding event:", error);
             return;
         } finally {
-            setSaving(false);
+            setAdding(false);
         }
 
 
@@ -83,8 +81,8 @@ export default function EditEventPage() {
         <div className="min-h-full w-full bg-[#2e2e2c] p-4 text-white">
             <div className="mb-6 flex items-center justify-between rounded-xl border border-white/10 bg-[#1e1e1c] px-4 py-3">
                 <div>
-                    <p className="text-sm text-white/50">Organizer / Events / Edit</p>
-                    <h1 className="text-2xl font-semibold">Edit Event</h1>
+                    <p className="text-sm text-white/50">Organizer / Events / Add New</p>
+                    <h1 className="text-2xl font-semibold">Add New Event</h1>
                 </div>
                 <Link to="/organizer/events" className="rounded-lg border border-white/15 px-4 py-2 text-sm text-white/80 hover:text-white">
                     Back
@@ -129,6 +127,22 @@ export default function EditEventPage() {
                         }}
                         className="rounded-lg border border-white/10 bg-[#2a2a27] px-3 py-2 text-white outline-none focus:border-sky-400"
                     />
+                </label>
+
+                <label className="flex flex-col gap-2">
+                    <span className="text-sm text-white/70">Category</span>
+                    <select
+                        value={category}
+                        onChange={(e) => setCategory(parseInt(e.target.value))}
+                        className="rounded-lg border border-white/10 bg-[#2a2a27] px-3 py-2 text-white outline-none focus:border-sky-400"
+                    >
+                        <option value="">Select Category</option>
+                        {categories.map((c) => (
+                            <option key={c.id} value={c.id}>
+                                {c.name}
+                            </option>
+                        ))}
+                    </select>
                 </label>
 
                 <label className="flex flex-col gap-2 md:col-span-2">
@@ -180,11 +194,11 @@ export default function EditEventPage() {
 
             <div className="mt-6 flex gap-3">
                 <button
-                    onClick={updateEvent}
-                    disabled={saving}
+                    onClick={addEvent}
+                    disabled={adding}
                     className="rounded-lg bg-sky-500 px-5 py-2 font-medium text-white hover:bg-sky-600 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                    {saving ? "Saving..." : "Save Changes"}
+                    {adding ? "Adding..." : "Add Event"}
                 </button>
                 <Link
                     to="/organizer/events"
