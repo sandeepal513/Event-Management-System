@@ -73,20 +73,32 @@ public class EventService {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
 
-        User organizer = userRepository.findById(request.getOrganizerId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User organizer = event.getOrganizer();
+        if (request.getOrganizerId() != null) {
+            organizer = userRepository.findById(request.getOrganizerId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+            if (organizer.getRole() != Role.organizer) {
+                throw new RuntimeException("User is not an organizer");
+            }
+        }
 
-        Society society = societyRepository.findById(request.getSocietyId())
-                .orElseThrow(() -> new RuntimeException("Society not found"));
+        Category category = event.getCategory();
+        if (request.getCategoryId() != null) {
+            category = categoryRepository.findById(request.getCategoryId())
+                    .orElseThrow(() -> new RuntimeException("Category not found"));
+        }
 
-        Venue venue = venueRepository.findById(request.getVenueId())
-                .orElseThrow(() -> new RuntimeException("Venue not found"));
+        Society society = event.getSociety();
+        if (request.getSocietyId() != null) {
+            society = societyRepository.findById(request.getSocietyId())
+                    .orElseThrow(() -> new RuntimeException("Society not found"));
+        }
 
-        if (organizer.getRole() != Role.organizer) {
-            throw new RuntimeException("User is not an organizer");
+        Venue venue = event.getVenue();
+        if (request.getVenueId() != null) {
+            venue = venueRepository.findById(request.getVenueId())
+                    .orElseThrow(() -> new RuntimeException("Venue not found"));
         }
 
         event.setTitle(request.getTitle());
