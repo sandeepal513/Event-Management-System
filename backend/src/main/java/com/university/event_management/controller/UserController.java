@@ -129,6 +129,13 @@ public class UserController {
     @PutMapping("/users/{id}")
     public ResponseEntity<ApiResponse<User>> updateUser(@PathVariable Integer id,
                                                         @RequestBody User updateUser) {
+        User currentUser = userService.getUser(id);
+
+        if (!currentUser.getEmail().equals(updateUser.getEmail()) && userService.getUserByEmail(updateUser.getEmail()) != null) {
+            ApiResponse<User> response = new ApiResponse<>(false, "Email Already Exists", null);
+            return ResponseEntity.ok(response);
+        }
+        updateUser.setPassword(passwordEncoder.encode(updateUser.getPassword()));
         User user = userService.updateUser(id, updateUser);
         ApiResponse<User> response = new ApiResponse<>(true, "User updated successfully", user);
         return ResponseEntity.ok(response);

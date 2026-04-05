@@ -22,7 +22,7 @@ public class PublicService {
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setFrom(String.valueOf(new InternetAddress(dotenv.get("SYSTEM_EMAIL"), "EventOra Team")));
         msg.setTo(to);
-        msg.setSubject(to);
+        msg.setSubject(subject);
         msg.setText(body);
 
         mailSender.send(msg);
