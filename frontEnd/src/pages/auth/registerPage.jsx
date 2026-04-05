@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 const RegisterPage = () => {
@@ -85,7 +85,7 @@ const RegisterPage = () => {
     setLoading(true);
     try {
       const response = await axios.post('http://localhost:3000/api/v1/auth/register', {
-        name: formData.firstName + formData.lastName,
+        name: formData.firstName + " " + formData.lastName,
         email: formData.email,
         password: formData.password,
         role: formData.role,
