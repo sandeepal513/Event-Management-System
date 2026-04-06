@@ -120,4 +120,11 @@ public class EventService {
         eventRepository.delete(event);
         return event;
     }
+
+    public List<Event> searchEvents(String keyword) {
+        if (keyword == null || keyword.isEmpty()) {
+            return eventRepository.findAll();
+        }
+        return eventRepository.findByTitleContainingIgnoreCase(keyword);
+    }
 }
