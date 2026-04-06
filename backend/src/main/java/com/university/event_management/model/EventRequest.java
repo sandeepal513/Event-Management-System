@@ -14,6 +14,8 @@ public class EventRequest {
     private String venue;
     private java.time.LocalDate date;
     private Time time;
+    private Boolean ticketRequired;
+    private Integer ticketsCount;
 
     private Integer categoryId;
     private Integer organizerId;
