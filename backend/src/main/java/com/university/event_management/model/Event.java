@@ -22,6 +22,8 @@ public class Event {
     private String description;
     private LocalDate date;
     private Time time;
+    private Boolean ticketRequired;
+    private Integer ticketsCount;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
