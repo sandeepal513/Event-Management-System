@@ -17,6 +17,8 @@ export default function AddNewEventPage() {
     const [categories, setCategories] = useState([]);
     const [venues, setVenues] = useState([]);
     const [societies, setSocieties] = useState([]);
+    const [ticketsRequired, setTicketsRequired] = useState(false);
+    const [ticketsCount, setTicketsCount] = useState(0);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -65,6 +67,8 @@ export default function AddNewEventPage() {
                 organizerId: loggedInUser.id,
                 venueId: venue,
                 societyId: society,
+                ticketRequired: ticketsRequired,
+                ticketsCount: ticketsRequired ? Number(ticketsCount) : 0,
             });
             toast.success("Event added successfully");
             navigate("/organizer/events");
@@ -75,8 +79,6 @@ export default function AddNewEventPage() {
         } finally {
             setAdding(false);
         }
-
-
     }
 
     if (loading) {
@@ -195,6 +197,44 @@ export default function AddNewEventPage() {
                             </option>
                         ))}
                     </select>
+                </label>
+
+                <label className="flex flex-col gap-2">
+                    <span className="text-sm text-white/70">Ticket Required</span>
+                    <select
+                        value={ticketsRequired ? "true" : "false"}
+                        onChange={(e) => {
+                            const requiresTickets = e.target.value === "true";
+                            setTicketsRequired(requiresTickets);
+                            if (!requiresTickets) {
+                                setTicketsCount(0);
+                            }
+                        }}
+                        className="rounded-lg border border-white/10 bg-[#2a2a27] px-3 py-2 text-white outline-none focus:border-sky-400"
+                    >
+                        <option value="false">false</option>
+                        <option value="true">true</option>
+                    </select>
+                </label>
+
+                <label className="flex flex-col gap-2">
+                    <span className="text-sm text-white/70">Tickets Count</span>
+                    {ticketsRequired ? (
+                        <input
+                            type="number"
+                            min="0"
+                            value={ticketsCount}
+                            onChange={(e) => setTicketsCount(e.target.value)}
+                            className="rounded-lg border border-white/10 bg-[#2a2a27] px-3 py-2 text-white outline-none focus:border-sky-400"
+                            placeholder="Enter ticket count"
+                        />
+                    ) : (
+                        <input
+                            value="No Tickets Required"
+                            disabled
+                            className="rounded-lg border border-white/10 bg-[#232320] px-3 py-2 text-white/70 outline-none"
+                        />
+                    )}
                 </label>
             </div>
 
