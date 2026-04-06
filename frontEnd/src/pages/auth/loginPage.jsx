@@ -12,6 +12,7 @@ const LoginPage = () => {
     const [userRememberMe, setUserRememberMe] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [isLogin, setLogin] = useState(false);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -34,7 +35,9 @@ const LoginPage = () => {
                 return;
             }
 
-            localStorage.setItem('loggedInUser', JSON.stringify(response.data.data));
+            localStorage.setItem("user", response.data.data);
+            localStorage.setItem("token", response.data.token);
+            localStorage.setItem("username", response.data.data.email);
             toast.success(response.data.message);
             navigate('/');
         } catch (error) {

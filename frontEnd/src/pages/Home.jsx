@@ -6,8 +6,20 @@ export default function Home() {
 	const [upcomingEvents, setUpcomingEvents] = useState([]);
 	const [featuredEvents, setFeaturedEvents] = useState([]);
 
+	const [isLogin, setLogin] = useState(false);
+	const [profile, setProfile] = useState('');
+
 	useEffect(() => {
-		// Mock data for demo purposes
+
+		const token = localStorage.getItem("token");
+		setLogin(!!token);
+
+		const profileText = localStorage.getItem("username");
+
+		if (profileText) {
+			setProfile(profileText.toUpperCase());
+		}
+		
 		setFeaturedEvents([
 			{
 				id: 1,
@@ -79,6 +91,7 @@ export default function Home() {
 		]);
 	}, []);
 
+
 	const categories = [
 		{
 			name: "Technology",
@@ -113,25 +126,37 @@ export default function Home() {
 	];
 
 	return (
-		<div className="min-h-screen bg-gradient-to-b from-[#0f0f0e] to-[#1a1a18]">
+		<div className="min-h-screen bg-linear-to-b from-[#0f0f0e] to-[#1a1a18]">
 			<nav className="sticky top-0 z-30 border-b border-white/10 bg-[#0f0f0e]/90 backdrop-blur">
 				<div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 md:px-8">
 					<Link to="/" className="text-lg font-semibold tracking-wide text-white">
 						EventOra
 					</Link>
 					<div className="flex items-center gap-3">
-						<Link
-							to="/auth/register"
-							className="inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-sky-500 to-cyan-500 px-5 py-2 text-sm font-semibold text-white hover:shadow-lg hover:shadow-sky-500/30 transition-all"
-						>
-							Get Started
-						</Link>
-						<Link
-							to="/auth/login"
-							className="inline-flex items-center justify-center rounded-lg border border-white/30 px-5 py-2 text-sm font-semibold text-white hover:border-sky-400/50 hover:bg-sky-500/10 transition-all"
-						>
-							Sign In
-						</Link>
+						{ !isLogin &&
+							<Link
+								to="/auth/register"
+								className="inline-flex items-center justify-center rounded-lg bg-linear-to-r from-sky-500 to-cyan-500 px-5 py-2 text-sm font-semibold text-white hover:shadow-lg hover:shadow-sky-500/30 transition-all"
+							>
+								Get Started
+							</Link>
+						}
+
+						{isLogin ? 
+							<Link
+								to="/"
+								className="inline-flex items-center bg-red-600 justify-center rounded-full border border-white/30 px-5 py-2 text-sm font-semibold text-white hover:border-sky-400/50 hover:bg-sky-500/10 transition-all"
+							>
+								{profile[0]}
+							</Link>
+							:
+							<Link
+								to="/auth/login"
+								className="inline-flex items-center justify-center rounded-lg border border-white/30 px-5 py-2 text-sm font-semibold text-white hover:border-sky-400/50 hover:bg-sky-500/10 transition-all"
+							>
+								Sign In
+							</Link>
+						}
 					</div>
 				</div>
 			</nav>
@@ -144,13 +169,13 @@ export default function Home() {
 						alt="Hero Banner"
 						className="w-full h-full object-cover"
 					/>
-					<div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
+					<div className="absolute inset-0 bg-linear-to-r from-black/70 via-black/50 to-transparent" />
 				</div>
 
 				<div className="relative h-full flex items-center justify-start px-8 md:px-16">
 					<div className="max-w-2xl">
 						<h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
-							Discover Amazing <span className="bg-gradient-to-r from-sky-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Events</span>
+							Discover Amazing <span className="bg-linear-to-r from-sky-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">Events</span>
 						</h1>
 						<p className="text-xl text-white/80 mb-8">
 							Find and attend the best events happening around you. Connect with your community.
@@ -162,15 +187,15 @@ export default function Home() {
 			{/* Stats Section */}
 			<section className="py-12 px-4 md:px-8">
 				<div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-					<div className="bg-gradient-to-br from-sky-500/10 to-sky-500/5 border border-sky-500/20 rounded-xl p-6">
+					<div className="bg-linear-to-brrom-sky-500/10 to-sky-500/5 border border-sky-500/20 rounded-xl p-6">
 						<div className="text-4xl font-bold text-sky-400 mb-2">1.2K+</div>
 						<p className="text-white/70">Active Events</p>
 					</div>
-					<div className="bg-gradient-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-500/20 rounded-xl p-6">
+					<div className="bg-linear-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-500/20 rounded-xl p-6">
 						<div className="text-4xl font-bold text-cyan-400 mb-2">50K+</div>
 						<p className="text-white/70">Active Members</p>
 					</div>
-					<div className="bg-gradient-to-br from-violet-500/10 to-violet-500/5 border border-violet-500/20 rounded-xl p-6">
+					<div className="bg-linear-to-br from-violet-500/10 to-violet-500/5 border border-violet-500/20 rounded-xl p-6">
 						<div className="text-4xl font-bold text-violet-400 mb-2">4.8★</div>
 						<p className="text-white/70">Average Rating</p>
 					</div>
@@ -195,7 +220,7 @@ export default function Home() {
 									alt={category.name}
 									className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
 								/>
-								<div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+								<div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent" />
 								<div className="absolute bottom-0 left-0 right-0 p-6">
 									<p className="text-3xl mb-2">{category.icon}</p>
 									<h3 className="text-2xl font-bold text-white">{category.name}</h3>
@@ -224,10 +249,10 @@ export default function Home() {
 									alt={event.title}
 									className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
 								/>
-								<div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+								<div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/30 to-transparent" />
 
 								{/* Badge */}
-								<div className="absolute top-4 right-4 bg-gradient-to-r from-sky-500 to-cyan-500 px-3 py-1 rounded-full text-white text-sm font-semibold">
+								<div className="absolute top-4 right-4 bg-linear-to-r from-sky-500 to-cyan-500 px-3 py-1 rounded-full text-white text-sm font-semibold">
 									{event.category}
 								</div>
 
@@ -237,15 +262,15 @@ export default function Home() {
 
 									<div className="space-y-2 text-sm text-white/80">
 										<p className="flex items-center gap-2">
-											<FiCalendar className="text-sky-400 flex-shrink-0" />
+											<FiCalendar className="text-sky-400 shrink-0" />
 											{event.date}
 										</p>
 										<p className="flex items-center gap-2">
-											<FiMapPin className="text-pink-400 flex-shrink-0" />
+											<FiMapPin className="text-pink-400 shrink-0" />
 											{event.venue?.name}
 										</p>
 										<p className="flex items-center gap-2">
-											<FiUsers className="text-emerald-400 flex-shrink-0" />
+											<FiUsers className="text-emerald-400 shrink-0" />
 											{event.attendees} attending
 										</p>
 									</div>
@@ -267,7 +292,7 @@ export default function Home() {
 							<Link
 								key={event.id}
 								to={`/event/${event.id}`}
-								className="group flex bg-gradient-to-r from-[#1f1f1d] to-[#2a2a27] border border-white/10 rounded-xl overflow-hidden hover:border-sky-500/50 hover:shadow-lg hover:shadow-sky-500/10 transition-all duration-300"
+								className="group flex bg-linear-to-r from-[#1f1f1d] to-[#2a2a27] border border-white/10 rounded-xl overflow-hidden hover:border-sky-500/50 hover:shadow-lg hover:shadow-sky-500/10 transition-all duration-300"
 							>
 								<img
 									src={event.image}
@@ -300,13 +325,13 @@ export default function Home() {
 
 			{/* CTA Section */}
 			<section className="py-16 px-4 md:px-8">
-				<div className="max-w-7xl mx-auto bg-gradient-to-r from-sky-500/10 via-cyan-500/10 to-emerald-500/10 border border-sky-500/20 rounded-2xl p-12 text-center">
+				<div className="max-w-7xl mx-auto bg-linear-to-r from-sky-500/10 via-cyan-500/10 to-emerald-500/10 border border-sky-500/20 rounded-2xl p-12 text-center">
 					<h2 className="text-4xl font-bold text-white mb-4">Organize Your Own Event</h2>
 					<p className="text-white/70 text-lg mb-8">Join thousands of organizers and create unforgettable experiences</p>
 					<div className="flex flex-col sm:flex-row gap-4 justify-center">
 						<Link
 							to="/organizer/create"
-							className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-gradient-to-r from-sky-500 to-cyan-500 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-sky-500/50 transition-all"
+							className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-linear-to-r from-sky-500 to-cyan-500 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-sky-500/50 transition-all"
 						>
 							Create Event <FiArrowRight />
 						</Link>
