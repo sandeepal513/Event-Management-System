@@ -40,4 +40,9 @@ public class EventController {
     public void deleteEvent(@PathVariable Integer id) {
         eventService.deleteEvent(id);
     }
+
+    @GetMapping("/search")
+    public List<Event> searchEvents(@RequestParam String keyword) {
+        return eventService.searchEvents(keyword);
+    }
 }
