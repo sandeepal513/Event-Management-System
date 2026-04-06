@@ -1,6 +1,9 @@
 server:
   port: 3000
 
+jwt:
+  secret:
+    key: ${JWT_SECRET_KEY}
 
 spring:
   datasource:
