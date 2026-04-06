@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 export default function EditEventPage() {
@@ -19,6 +19,8 @@ export default function EditEventPage() {
     const [saving, setSaving] = useState(false);
     const [venues, setVenues] = useState([]);
     const [societies, setSocieties] = useState([]);
+    const [ticketsRequired, setTicketsRequired] = useState(false);
+    const [ticketsCount, setTicketsCount] = useState(0);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -47,6 +49,8 @@ export default function EditEventPage() {
             setTime((location.state.time || "").toString().slice(0, 5));
             setVenue(location.state.venue?.id || "");
             setSociety(location.state.society?.id || "");
+            setTicketsRequired(Boolean(location.state.ticketRequired));
+            setTicketsCount(location.state.ticketsCount ?? 0);
             setLoading(false);
         }
     }, [location.state, navigate]);
@@ -57,6 +61,12 @@ export default function EditEventPage() {
             toast.error("Please fill in all fields");
             return;
         }
+
+        if (ticketsRequired && (!ticketsCount || Number(ticketsCount) <= 0)) {
+            toast.error("Please enter a valid tickets count");
+            return;
+        }
+
         try {
             setSaving(true);
             await axios.put("http://localhost:3000/api/events/update/" + id, {
@@ -66,6 +76,8 @@ export default function EditEventPage() {
                 time: `${time}:00`,
                 venueId: venue,
                 societyId: society,
+                ticketRequired: ticketsRequired,
+                ticketsCount: ticketsRequired ? Number(ticketsCount) : 0,
             });
             toast.success("Event updated successfully");
             navigate("/organizer/events");
@@ -76,8 +88,6 @@ export default function EditEventPage() {
         } finally {
             setSaving(false);
         }
-
-
     }
 
     if (loading) {
@@ -180,6 +190,44 @@ export default function EditEventPage() {
                             </option>
                         ))}
                     </select>
+                </label>
+
+                <label className="flex flex-col gap-2">
+                    <span className="text-sm text-white/70">Ticket Required</span>
+                    <select
+                        value={ticketsRequired ? "true" : "false"}
+                        onChange={(e) => {
+                            const requiresTickets = e.target.value === "true";
+                            setTicketsRequired(requiresTickets);
+                            if (!requiresTickets) {
+                                setTicketsCount(0);
+                            }
+                        }}
+                        className="rounded-lg border border-white/10 bg-[#2a2a27] px-3 py-2 text-white outline-none focus:border-sky-400"
+                    >
+                        <option value="false">false</option>
+                        <option value="true">true</option>
+                    </select>
+                </label>
+
+                <label className="flex flex-col gap-2">
+                    <span className="text-sm text-white/70">Tickets Count</span>
+                    {ticketsRequired ? (
+                        <input
+                            type="number"
+                            min="0"
+                            value={ticketsCount}
+                            onChange={(e) => setTicketsCount(e.target.value)}
+                            className="rounded-lg border border-white/10 bg-[#2a2a27] px-3 py-2 text-white outline-none focus:border-sky-400"
+                            placeholder="Enter ticket count"
+                        />
+                    ) : (
+                        <input
+                            value="No Tickets Required"
+                            disabled
+                            className="rounded-lg border border-white/10 bg-[#232320] px-3 py-2 text-white/70 outline-none"
+                        />
+                    )}
                 </label>
             </div>
 
