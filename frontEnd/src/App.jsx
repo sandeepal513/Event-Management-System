@@ -4,6 +4,8 @@ import LoginPage from './pages/auth/loginPage';
 import RegisterPage from './pages/auth/registerPage';
 import ForgotPassword from './pages/auth/forgotPassword';
 import OrganizerPage from './pages/organizer/OrganizerPage';
+import AdminPage from './pages/admin/AdminPage';
+
 
 function App() {
   return (
@@ -15,6 +17,7 @@ function App() {
           <Route element={<RegisterPage />} path="auth/register" />
           <Route element={<ForgotPassword />} path="auth/forgotPassword" />
           <Route element={<OrganizerPage />} path="organizer/*" />
+          <Route element={<AdminPage />} path="admin/*" />
         </Routes>
       </div>
     </BrowserRouter>
