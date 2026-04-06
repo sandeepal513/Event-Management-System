@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import EventCard from "../../components/EventCard";
+import toast from "react-hot-toast";
 
 export default function Events() {
 
@@ -38,9 +39,10 @@ export default function Events() {
             await axios.delete(`http://localhost:3000/api/events/delete/${pendingDeleteEvent.id}`);
             setEvents((prevEvents) => prevEvents.filter((event) => event.id !== pendingDeleteEvent.id));
             setPendingDeleteEvent(null);
+            toast.success("Event deleted successfully");
         } catch (error) {
             console.error("Error deleting event:", error);
-            alert("Failed to delete event");
+            toast.error("Failed to delete event");
         } finally {
             setDeletingId(null);
         }
