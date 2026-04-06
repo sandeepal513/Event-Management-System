@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { FiCalendar, FiClock, FiMapPin, FiUsers, FiFileText } from "react-icons/fi";
+import { MdConfirmationNumber } from "react-icons/md";
 
 export default function EventDetailsPage() {
     const location = useLocation();
@@ -49,6 +50,10 @@ export default function EventDetailsPage() {
                     <p className="flex items-center gap-2 text-white/85">
                         <FiUsers className="text-violet-400" />
                         <span className="text-white/65">Society:</span> {event.society?.name || "N/A"}
+                    </p>
+                    <p className="flex items-center gap-2 text-white/85">
+                        <MdConfirmationNumber className="text-emerald-400" />
+                        <span className="text-white/65">Ticket Count:</span> {event.ticketRequired ? event.ticketsCount ?? 0 : "No Tickets Required"}
                     </p>
                 </div>
 

@@ -6,6 +6,7 @@ import ForgotPassword from './pages/auth/forgotPassword';
 import OrganizerPage from './pages/organizer/OrganizerPage';
 import AdminPage from './pages/admin/AdminPage';
 
+import Home from './pages/home';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <div className="w-full h-screen">
         <Toaster position="top-right" reverseOrder={false} />
         <Routes>
+          <Route element={<Home />} path="/" />
           <Route element={<LoginPage />} path="auth/login" />
           <Route element={<RegisterPage />} path="auth/register" />
           <Route element={<ForgotPassword />} path="auth/forgotPassword" />
