@@ -36,7 +36,7 @@ const LoginPage = () => {
 
             localStorage.setItem('loggedInUser', JSON.stringify(response.data.data));
             toast.success(response.data.message);
-            navigate('/organizer/events');
+            navigate('/');
         } catch (error) {
             const message =
                 error.response?.data?.message || 'Server error. Please try again.';
