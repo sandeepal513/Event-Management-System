@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import EventCard from "../../components/EventCard";
 import toast from "react-hot-toast";
@@ -10,6 +10,7 @@ export default function Events() {
     const [loaded, setLoaded] = useState(false);
     const [deletingId, setDeletingId] = useState(null);
     const [pendingDeleteEvent, setPendingDeleteEvent] = useState(null);
+    const [keyword, setKeyword] = useState("");
 
     useEffect(() => {
         if(!loaded){
@@ -48,6 +49,29 @@ export default function Events() {
         }
     }
 
+    async function searchEvents() {
+        try{
+
+            if(keyword.trim() === ""){
+                const res = await axios.get("http://localhost:3000/api/events/all");
+                setEvents(res.data);
+            }else{
+                const res = await axios.get(`http://localhost:3000/api/events/search?keyword=${keyword}`);
+                setEvents(res.data);
+            }
+
+        }catch(error){
+            console.error("Error searching events:", error);
+        }
+    }
+
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+            searchEvents();
+        }, 500);
+        return () => clearTimeout(delayDebounceFn);
+    }, [keyword]);
+
     const stats = [
         {
             label: "TOTAL EVENTS",
@@ -80,7 +104,11 @@ export default function Events() {
             <div className="flex items-center h-[50px] border border-white/25 justify-between mb-4 bg-[#1e1e1c]">
                 <h1 className="text-2xl ml-5 font-bold text-white/75">Events</h1>
                 <div className="flex">
-                    <input type="text" placeholder="Search events..." className="w-[250px] h-[35px] mr-3 bg-[#272725] text-amber-50 p-2 border border-gray-700 rounded-lg" />
+                    <input type="text" 
+                    placeholder="Search events..."
+                    value={keyword}
+                    onChange={(e) => setKeyword(e.target.value)}
+                    className="w-[250px] h-[35px] mr-3 bg-[#272725] text-amber-50 p-2 border border-gray-700 rounded-lg" />
                     <Link to="/organizer/events/add" className="bg-blue-400 text-white text-sm mr-5 p-2 rounded-lg"> + Add Event</Link>
                 </div>
             </div>
@@ -127,6 +155,10 @@ export default function Events() {
                 ) : (
                     <p>Loading events...</p>
                     
+                )}
+
+                {events.length === 0 && loaded && (
+                    <p className="text-white/60 mt-4">No events found</p>
                 )}
             </div>
 
