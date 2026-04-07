@@ -5,6 +5,8 @@ import LoginPage from './pages/auth/loginPage';
 import RegisterPage from './pages/auth/registerPage';
 import ForgotPassword from './pages/auth/forgotPassword';
 import OrganizerPage from './pages/organizer/OrganizerPage';
+import AdminPage from './pages/admin/AdminPage';
+
 import Home from './pages/home';
 import ProtectedRoute from './components/ProtectedRoute';
 
