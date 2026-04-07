@@ -84,4 +84,34 @@ public class UserService {
         }
         return false;
     }
+
+    public void sendWelcomeEmail(String to) throws UnsupportedEncodingException {
+        String username = to.split("@")[0];
+        String subject = "Welcome to EventOra \uD83C\uDF89 Let’s Get Started!";
+        String body = "Hi " + username + ",\n" +
+                "\n" +
+                "Welcome to EventOra! \uD83C\uDF89\n" +
+                "\n" +
+                "We’re excited to have you join our community where discovering, attending, and organizing amazing events is just a few clicks away.\n" +
+                "\n" +
+                "With EventOra, you can:\n" +
+                "\n" +
+                "\uD83C\uDF9F\uFE0F Explore trending and upcoming events\n" +
+                "\uD83D\uDCCD Find events near you\n" +
+                "\uD83D\uDC65 Connect with communities and organizers\n" +
+                "\uD83D\uDEE0\uFE0F Create and manage your own events\n" +
+                "\n" +
+                "Get started now and make the most of your experience:\n" +
+                "\uD83D\uDC49 Browse Events\n" +
+                "\uD83D\uDC49 Create Your First Event\n" +
+                "\n" +
+                "If you have any questions or need help, feel free to reach out to us anytime.\n" +
+                "\n" +
+                "Let’s make every moment unforgettable!\n" +
+                "\n" +
+                "Best regards,\n" +
+                "Team EventOra \uD83D\uDE80";
+
+        publicService.sendMail(to, subject, body);
+    }
 }
