@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -12,7 +12,17 @@ const LoginPage = () => {
     const [userRememberMe, setUserRememberMe] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [isLogin, setLogin] = useState(false);
+
+    useEffect(() => {
+        const username = localStorage.getItem("rememberUsername");
+        const password = localStorage.getItem("rememberPassword");
+
+        if (username != null && password != null) {
+            setUserEmail(username);
+            setUserPassword(password);
+            setUserRememberMe(true);
+        }
+    }, []);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -35,9 +45,19 @@ const LoginPage = () => {
                 return;
             }
 
-            localStorage.setItem("user", response.data.data);
+            if (userRememberMe) {
+                localStorage.setItem("rememberUsername", userEmail);
+                localStorage.setItem("rememberPassword", userPassword);
+                localStorage.setItem("rememberCheck", userRememberMe);
+            } else {
+                localStorage.removeItem("rememberUsername");
+                localStorage.removeItem("rememberPassword");
+                localStorage.removeItem("rememberCheck");
+            }
+
             localStorage.setItem("token", response.data.token);
             localStorage.setItem("username", response.data.data.email);
+            // localStorage.setItem("userId", response.data.data.id);
             toast.success(response.data.message);
             navigate('/');
         } catch (error) {

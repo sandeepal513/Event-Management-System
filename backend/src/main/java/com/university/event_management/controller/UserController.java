@@ -61,4 +61,24 @@ public class UserController {
         ApiResponse<Void> response = new ApiResponse<>(true, "User deleted successfully", null);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/users/username/{username}")
+    public ResponseEntity<ApiResponse<User>> getUserByUsername(@PathVariable String username) {
+        try {
+            User user = userService.getUserByEmail(username);
+            if (user == null) {
+                return ResponseEntity.status(404)
+                        .body(new ApiResponse<>(false, "User not found", null));
+            }
+
+            user.setPassword(null);
+            return ResponseEntity.ok(
+                    new ApiResponse<>(true, "User retrieved successfully", user)
+            );
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                    .body(new ApiResponse<>(false, "Server error: " + e.getMessage(), null));
+        }
+    }
 }
