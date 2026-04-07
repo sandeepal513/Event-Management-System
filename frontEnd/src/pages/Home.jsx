@@ -1,24 +1,43 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FiArrowRight, FiCalendar, FiMapPin, FiUsers } from "react-icons/fi";
+import { isOrganizer, isTokenValid } from "../utils/auth";
 
 export default function Home() {
+	const navigate = useNavigate();
 	const [upcomingEvents, setUpcomingEvents] = useState([]);
 	const [featuredEvents, setFeaturedEvents] = useState([]);
 
 	const [isLogin, setLogin] = useState(false);
+	const [isOrganizerUser, setIsOrganizerUser] = useState(false);
 	const [profile, setProfile] = useState('');
 
 	useEffect(() => {
+		let isMounted = true;
 
 		const token = localStorage.getItem("token");
-		setLogin(!!token);
+		const valid = isTokenValid(token);
 
-		const profileText = localStorage.getItem("username");
-
-		if (profileText) {
-			setProfile(profileText.toUpperCase());
+		if (!valid) {
+			setLogin(false);
+			setProfile('');
+		} else {
+			setLogin(true);
+			const profileText = localStorage.getItem("username");
+			if (profileText) setProfile(profileText.toUpperCase());
 		}
+
+		const checkOrganizer = async () => {
+			if (!token) {
+				if (isMounted) setIsOrganizerUser(false);
+				return;
+			}
+
+			const organizer = await isOrganizer();
+			if (isMounted) setIsOrganizerUser(organizer);
+		};
+
+		checkOrganizer();
 		
 		setFeaturedEvents([
 			{
@@ -89,6 +108,9 @@ export default function Home() {
 				attendees: 400,
 			},
 		]);
+		return () => {
+			isMounted = false;
+		};
 	}, []);
 
 
@@ -125,6 +147,16 @@ export default function Home() {
 		},
 	];
 
+	const handleLogout = () => {
+		localStorage.removeItem("token");
+		localStorage.removeItem("username");
+		localStorage.removeItem("user");
+		setLogin(false);
+		setIsOrganizerUser(false);
+		setProfile("");
+		navigate("/auth/login");
+	};
+
 	return (
 		<div className="min-h-screen bg-linear-to-b from-[#0f0f0e] to-[#1a1a18]">
 			<nav className="sticky top-0 z-30 border-b border-white/10 bg-[#0f0f0e]/90 backdrop-blur">
@@ -143,12 +175,30 @@ export default function Home() {
 						}
 
 						{isLogin ? 
-							<Link
-								to="/"
-								className="inline-flex items-center bg-red-600 justify-center rounded-full border border-white/30 px-5 py-2 text-sm font-semibold text-white hover:border-sky-400/50 hover:bg-sky-500/10 transition-all"
-							>
-								{profile[0]}
-							</Link>
+							<div className="group relative">
+								<button
+									type="button"
+									className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-red-600 text-sm font-semibold text-white border border-white/30 hover:border-sky-400/50 hover:bg-red-500 transition-all"
+								>
+									{profile[0] || "U"}
+								</button>
+
+								<div className="invisible absolute right-0 top-12 z-40 min-w-36 rounded-lg border border-white/15 bg-[#1f1f1d] p-1 opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:opacity-100">
+									<Link
+										to="/"
+										className="block rounded-md px-3 py-2 text-sm text-white/90 hover:bg-white/10"
+									>
+										Profile
+									</Link>
+									<button
+										type="button"
+										onClick={handleLogout}
+										className="block w-full rounded-md px-3 py-2 text-left text-sm text-red-300 hover:bg-red-500/10"
+									>
+										Logout
+									</button>
+								</div>
+							</div>
 							:
 							<Link
 								to="/auth/login"
@@ -324,26 +374,30 @@ export default function Home() {
 			</section>
 
 			{/* CTA Section */}
-			<section className="py-16 px-4 md:px-8">
-				<div className="max-w-7xl mx-auto bg-linear-to-r from-sky-500/10 via-cyan-500/10 to-emerald-500/10 border border-sky-500/20 rounded-2xl p-12 text-center">
-					<h2 className="text-4xl font-bold text-white mb-4">Organize Your Own Event</h2>
-					<p className="text-white/70 text-lg mb-8">Join thousands of organizers and create unforgettable experiences</p>
-					<div className="flex flex-col sm:flex-row gap-4 justify-center">
-						<Link
-							to="/organizer/create"
-							className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-linear-to-r from-sky-500 to-cyan-500 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-sky-500/50 transition-all"
-						>
-							Create Event <FiArrowRight />
-						</Link>
-						<Link
-							to="/auth/register"
-							className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-transparent border-2 border-sky-400 text-sky-400 font-semibold rounded-lg hover:bg-sky-500/10 transition-all"
-						>
-							Sign Up Now
-						</Link>
+			{(!isLogin || isOrganizerUser) &&
+				<section className="py-16 px-4 md:px-8">
+					<div className="max-w-7xl mx-auto bg-linear-to-r from-sky-500/10 via-cyan-500/10 to-emerald-500/10 border border-sky-500/20 rounded-2xl p-12 text-center">
+						<h2 className="text-4xl font-bold text-white mb-4">Organize Your Own Event</h2>
+						<p className="text-white/70 text-lg mb-8">Join thousands of organizers and create unforgettable experiences</p>
+						<div className="flex flex-col sm:flex-row gap-4 justify-center">
+							<Link
+								to="/organizer/create"
+								className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-linear-to-r from-sky-500 to-cyan-500 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-sky-500/50 transition-all"
+							>
+								Create Event <FiArrowRight />
+							</Link>
+							{!isLogin &&
+								<Link
+									to="/auth/register"
+									className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-transparent border-2 border-sky-400 text-sky-400 font-semibold rounded-lg hover:bg-sky-500/10 transition-all"
+								>
+									Sign Up Now
+								</Link>
+							}
+						</div>
 					</div>
-				</div>
-			</section>
+				</section>
+			}
 		</div>
 	);
 }
