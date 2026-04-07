@@ -43,29 +43,33 @@ public class AuthController {
 
         loggedInUser.setPassword(null);
         final String jwtToken = jwtUtil.generateToken(loggedInUser);
-        ResponseCookie Cookie = ResponseCookie.from("jwt", jwtToken)
-                .httpOnly(true)
-                .path("/")
-                .maxAge(Duration.ofDays(1))
-                .sameSite("Strict")
-                .build();
 
         ApiResponse<User> response = new ApiResponse<>(true, "Login successful", loggedInUser, jwtToken);
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, Cookie.toString())
-                .body(response);
+        return ResponseEntity.ok(response);
     }
 
 
     // Registration endpoint
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<User>> createUser(@RequestBody User user) {
+
         if (userService.getUserByEmail(user.getEmail()) != null) {
             return ResponseEntity.status(400)
                     .body(new ApiResponse<>(false, "Email already exists", null));
         }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User createdUser = userService.createUser(user);
-        return ResponseEntity.ok(new ApiResponse<>(true, "User created successfully", createdUser));
+
+        try {
+            userService.sendWelcomeEmail(user.getEmail());
+        } catch (Exception e) {
+            System.out.println("Email sending failed: " + e.getMessage());
+        }
+
+        return ResponseEntity.ok(
+                new ApiResponse<>(true, "User created successfully", createdUser)
+        );
     }
 
 
