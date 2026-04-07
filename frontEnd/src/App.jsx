@@ -22,6 +22,10 @@ function App() {
           <Route path="/auth/login" element={<LoginPage />} />
           <Route path="/auth/register" element={<RegisterPage />} />
           <Route path="/auth/forgotPassword" element={<ForgotPassword />} />
+          <Route path="/admin/*" element={
+              <ProtectedRoute> <AdminPage /> </ProtectedRoute>} 
+          />
+
 
           {/* 🔒 Protected Route */}
           <Route path="/organizer/*" element={
