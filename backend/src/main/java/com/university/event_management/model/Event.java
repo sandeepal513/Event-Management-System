@@ -24,6 +24,7 @@ public class Event {
     private Time time;
     private Boolean ticketRequired;
     private Integer ticketsCount;
+    private String imageUrl;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
