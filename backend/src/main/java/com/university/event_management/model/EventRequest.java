@@ -16,6 +16,7 @@ public class EventRequest {
     private Time time;
     private Boolean ticketRequired;
     private Integer ticketsCount;
+    private String imageUrl;
 
     private Integer categoryId;
     private Integer organizerId;
