@@ -152,14 +152,13 @@ export default function EventRegistration() {
 	}
 
 	return (
-		<div className="min-h-full bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.18),_transparent_35%),radial-gradient(circle_at_top_right,_rgba(16,185,129,0.14),_transparent_30%),linear-gradient(180deg,_#171716_0%,_#101010_100%)] p-4 text-white md:p-6">
+		<div className="min-h-full bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.18),_transparent_35%),radial-gradient(circle_at_top_right,_rgba(16,185,129,0.14),_transparent_30%),linear-gradient(180deg,_#171716_0%,_#101010_100%)] p-4 text-white md:px-8">
 			<div className="mx-auto max-w-7xl space-y-6">
 				<div className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#1c1c1a] shadow-[0_20px_60px_rgba(0,0,0,0.38)]">
 					<div className="relative border-b border-white/10 px-6 py-6 md:px-8">
 						<div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.04),transparent_35%,rgba(59,130,246,0.06))]" />
 						<div className="relative flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
 							<div className="max-w-2xl">
-								<p className="text-[11px] uppercase tracking-[0.32em] text-white/45">Admin dashboard</p>
 								<h2 className="mt-2 text-3xl font-semibold md:text-4xl">Student Registrations</h2>
 								<p className="mt-3 text-sm leading-6 text-white/60 md:text-base">
 									Review every registration in one place, confirm eligible students, and reject submissions that do not meet the criteria.
