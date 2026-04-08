@@ -6,6 +6,7 @@ import RegisterPage from './pages/auth/registerPage';
 import ForgotPassword from './pages/auth/forgotPassword';
 import OrganizerPage from './pages/organizer/OrganizerPage';
 import AdminPage from './pages/admin/AdminPage';
+import StudentPage from './pages/students/StudentPage';
 
 import Home from './pages/home';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -25,6 +26,11 @@ function App() {
           <Route path="/admin/*" element={
               <ProtectedRoute> <AdminPage /> </ProtectedRoute>} 
           />
+          <Route path="/student/*" element={
+              <ProtectedRoute> <StudentPage /> </ProtectedRoute>}
+            />
+
+           
 
 
           {/* 🔒 Protected Route */}
