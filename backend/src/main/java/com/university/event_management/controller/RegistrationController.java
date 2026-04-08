@@ -1,5 +1,6 @@
 package com.university.event_management.controller;
 
+import com.university.event_management.model.Event;
 import com.university.event_management.model.Registration;
 import com.university.event_management.service.RegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,12 @@ public class RegistrationController {
     private RegistrationService registrationService;
 
     //---------student-------------
+
+    //student sees all event
+    @GetMapping("/all")
+    public List<Event> getAllEvents() {
+        return registrationService.getAllEvents();
+    }
 
     //Student register for event
     @PostMapping

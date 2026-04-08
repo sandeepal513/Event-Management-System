@@ -24,6 +24,11 @@ public class  RegistrationService {
 
     //-----student-------
 
+    //sees all events
+    public List<Event> getAllEvents() {
+        return eventRepo.findAll();
+    }
+
     //Student register fot event
     public Registration register(Integer userId, Integer eventId) {
         User user = userRepo.findById(userId)
