@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { MdAdminPanelSettings, MdClose, MdDashboard, MdMenu } from "react-icons/md";
-
 
 import ProfilePage from "../../components/ProfilePage";
 import ChangePassword from "../../components/ChangePassword";
@@ -11,10 +11,38 @@ import TicketPage from "./TicketPage";
 import EventDetailsPage from './EventDetailsPage';
 import EventView from './EventView';
 
+const defaultAvatar = "/defaultAvatart.svg";
 
 const StudentPage = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [userProfile, setUserProfile] = useState({
+        name: "",
+        image: defaultAvatar,
+        role: "Student",
+    });
     const location = useLocation();
+
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+            try {
+                const username = localStorage.getItem("username");
+                if (username) {
+                    const response = await axios.get(`http://localhost:3000/api/v1/users/username/${username}`);
+                    const user = response?.data?.data;
+                    if (user) {
+                        setUserProfile({
+                            name: user.name || "Student",
+                            image: user.image || defaultAvatar,
+                            role: localStorage.getItem("userRole") || "Student",
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch user profile", error);
+            }
+        };
+        fetchUserProfile();
+    }, []);
 
     const isActiveItem = (path) => {
         if (path === "/student/events") {
@@ -50,9 +78,14 @@ const StudentPage = () => {
             </button>
 
             <div className={`fixed md:static z-30 w-75 h-full bg-[#1e1e1c] transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
-                <div className="w-full h-25 flex flex-col items-center justify-center">
-                    <MdAdminPanelSettings className="w-16 h-16 text-white" />
-                    <h1 className="text-xl font-bold text-white">Student</h1>
+                <div className="w-full px-5 py-6 flex flex-col items-center justify-center border-b border-white/10">
+                    <img
+                        src={userProfile.image}
+                        alt={userProfile.name}
+                        className="w-16 h-16 rounded-full object-cover border-2 border-white/10 mb-3"
+                    />
+                    <h2 className="text-lg font-semibold text-white text-center truncate">{userProfile.name}</h2>
+                    <p className="text-xs text-white/60 mt-1">{userProfile.role}</p>
                 </div>
 
                 <div className="w-full flex flex-col pl-5 pt-5">
