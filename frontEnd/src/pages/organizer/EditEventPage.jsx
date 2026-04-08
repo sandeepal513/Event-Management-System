@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { uploadImage } from "../../utils/storageService";
 
 export default function EditEventPage() {
 
@@ -21,6 +22,9 @@ export default function EditEventPage() {
     const [societies, setSocieties] = useState([]);
     const [ticketsRequired, setTicketsRequired] = useState(false);
     const [ticketsCount, setTicketsCount] = useState(0);
+    const [currentImageUrl, setCurrentImageUrl] = useState("");
+    const [imageFile, setImageFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -51,9 +55,40 @@ export default function EditEventPage() {
             setSociety(location.state.society?.id || "");
             setTicketsRequired(Boolean(location.state.ticketRequired));
             setTicketsCount(location.state.ticketsCount ?? 0);
+            setCurrentImageUrl(location.state.imageUrl || "");
             setLoading(false);
         }
     }, [location.state, navigate]);
+
+    useEffect(() => {
+        if (!imageFile) {
+            setImagePreview("");
+            return;
+        }
+
+        const previewUrl = URL.createObjectURL(imageFile);
+        setImagePreview(previewUrl);
+
+        return () => URL.revokeObjectURL(previewUrl);
+    }, [imageFile]);
+
+    function handleImageChange(e) {
+        const selectedImage = e.target.files?.[0] || null;
+
+        if (!selectedImage) {
+            setImageFile(null);
+            return;
+        }
+
+        if (!selectedImage.type.startsWith("image/")) {
+            toast.error("Please select a valid image file");
+            e.target.value = "";
+            setImageFile(null);
+            return;
+        }
+
+        setImageFile(selectedImage);
+    }
 
     async function updateEvent() {
 
@@ -69,6 +104,16 @@ export default function EditEventPage() {
 
         try {
             setSaving(true);
+
+            let imageUrl = currentImageUrl || null;
+            if (imageFile) {
+                imageUrl = await uploadImage(imageFile);
+                if (!imageUrl) {
+                    toast.error("Image upload failed");
+                    return;
+                }
+            }
+
             await axios.put("http://localhost:3000/api/events/update/" + id, {
                 title: title,
                 description: description,
@@ -78,6 +123,7 @@ export default function EditEventPage() {
                 societyId: society,
                 ticketRequired: ticketsRequired,
                 ticketsCount: ticketsRequired ? Number(ticketsCount) : 0,
+                imageUrl: imageUrl,
             });
             toast.success("Event updated successfully");
             navigate("/organizer/events");
@@ -158,6 +204,23 @@ export default function EditEventPage() {
                         className="rounded-lg border border-white/10 bg-[#2a2a27] px-3 py-2 text-white outline-none focus:border-sky-400"
                         placeholder="Event description"
                     />
+                </label>
+
+                <label className="flex flex-col gap-2 md:col-span-2">
+                    <span className="text-sm text-white/70">Event Image (Optional)</span>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="rounded-lg border border-white/10 bg-[#2a2a27] px-3 py-2 text-white file:mr-4 file:rounded-md file:border-0 file:bg-sky-600 file:px-3 file:py-1 file:text-sm file:font-medium file:text-white hover:file:bg-sky-700"
+                    />
+                    {(imagePreview || currentImageUrl) && (
+                        <img
+                            src={imagePreview || currentImageUrl}
+                            alt="Event preview"
+                            className="mt-2 h-40 w-full max-w-md rounded-lg border border-white/10 object-cover"
+                        />
+                    )}
                 </label>
 
                 <label className="flex flex-col gap-2">

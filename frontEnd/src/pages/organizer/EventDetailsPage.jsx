@@ -34,6 +34,20 @@ export default function EventDetailsPage() {
             </div>
 
             <div className="rounded-xl border border-white/10 bg-[#1e1e1c] p-5">
+                <div className="mb-5">
+                    {event.imageUrl ? (
+                        <img
+                            src={event.imageUrl}
+                            alt={event.title || "Event image"}
+                            className="h-56 w-full rounded-xl border border-white/10 object-cover md:h-72"
+                        />
+                    ) : (
+                        <div className="flex h-56 w-full items-center justify-center rounded-xl border border-dashed border-white/15 bg-[#232320] text-white/55 md:h-72">
+                            No event image available
+                        </div>
+                    )}
+                </div>
+
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <p className="flex items-center gap-2 text-white/85">
                         <FiCalendar className="text-sky-400" />

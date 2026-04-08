@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { uploadImage } from "../../utils/storageService";
 
 export default function AddNewEventPage() {
 
@@ -19,6 +20,8 @@ export default function AddNewEventPage() {
     const [societies, setSocieties] = useState([]);
     const [ticketsRequired, setTicketsRequired] = useState(false);
     const [ticketsCount, setTicketsCount] = useState(0);
+    const [imageFile, setImageFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -42,6 +45,36 @@ export default function AddNewEventPage() {
         fetchOptions();
     }, []);
 
+    useEffect(() => {
+        if (!imageFile) {
+            setImagePreview("");
+            return;
+        }
+
+        const previewUrl = URL.createObjectURL(imageFile);
+        setImagePreview(previewUrl);
+
+        return () => URL.revokeObjectURL(previewUrl);
+    }, [imageFile]);
+
+    function handleImageChange(e) {
+        const selectedImage = e.target.files?.[0] || null;
+
+        if (!selectedImage) {
+            setImageFile(null);
+            return;
+        }
+
+        if (!selectedImage.type.startsWith("image/")) {
+            toast.error("Please select a valid image file");
+            e.target.value = "";
+            setImageFile(null);
+            return;
+        }
+
+        setImageFile(selectedImage);
+    }
+
     async function addEvent() {
 
         const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser") || "null");
@@ -58,6 +91,16 @@ export default function AddNewEventPage() {
         }
         try {
             setAdding(true);
+            let imageUrl = null;
+
+            if (imageFile) {
+                imageUrl = await uploadImage(imageFile);
+                if (!imageUrl) {
+                    toast.error("Image upload failed");
+                    return;
+                }
+            }
+
             await axios.post("http://localhost:3000/api/events/add", {
                 title: title,
                 description: description,
@@ -69,6 +112,7 @@ export default function AddNewEventPage() {
                 societyId: society,
                 ticketRequired: ticketsRequired,
                 ticketsCount: ticketsRequired ? Number(ticketsCount) : 0,
+                imageUrl: imageUrl,
             });
             toast.success("Event added successfully");
             navigate("/organizer/events");
@@ -165,6 +209,23 @@ export default function AddNewEventPage() {
                         className="rounded-lg border border-white/10 bg-[#2a2a27] px-3 py-2 text-white outline-none focus:border-sky-400"
                         placeholder="Event description"
                     />
+                </label>
+
+                <label className="flex flex-col gap-2 md:col-span-2">
+                    <span className="text-sm text-white/70">Event Image (Optional)</span>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="rounded-lg border border-white/10 bg-[#2a2a27] px-3 py-2 text-white file:mr-4 file:rounded-md file:border-0 file:bg-sky-600 file:px-3 file:py-1 file:text-sm file:font-medium file:text-white hover:file:bg-sky-700"
+                    />
+                    {imagePreview && (
+                        <img
+                            src={imagePreview}
+                            alt="Selected event"
+                            className="mt-2 h-40 w-full max-w-md rounded-lg border border-white/10 object-cover"
+                        />
+                    )}
                 </label>
 
                 <label className="flex flex-col gap-2">
