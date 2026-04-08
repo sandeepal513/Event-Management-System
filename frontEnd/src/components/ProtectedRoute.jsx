@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
-import { isAdmin, isOrganizer, isTokenValid } from "../utils/auth";
+import { isAdmin, isOrganizer, isStudent, isTokenValid } from "../utils/auth";
 
 export default function ProtectedRoute({ children, requiredRole }) {
 	const location = useLocation();
@@ -28,6 +28,8 @@ export default function ProtectedRoute({ children, requiredRole }) {
 				allowed = await isAdmin();
 			} else if (requiredRole === "organizer") {
 				allowed = await isOrganizer();
+			} else if (requiredRole === "student") {
+				allowed = await isStudent();
 			}
 
 			if (isMounted) {

@@ -57,7 +57,7 @@ const LoginPage = () => {
 
             localStorage.setItem("token", response.data.token);
             localStorage.setItem("username", response.data.data.email);
-            // localStorage.setItem("userId", response.data.data.id);
+            localStorage.setItem("userRole", response.data.data.role);
             toast.success(response.data.message);
             navigate('/');
         } catch (error) {

@@ -145,7 +145,7 @@ const ForgotPassword = () => {
 
         try {
             const response = await axios.post(
-                `http://localhost:3000/api/v1/auth/change-password`,
+                `http://localhost:3000/api/v1/auth/change-forget-password`,
                 {
                     email: email,
                     password: newPassword
