@@ -3,6 +3,7 @@ import { MdAdminPanelSettings, MdDashboard, MdMenu, MdClose } from "react-icons/
 import { Link, Navigate, Route, Routes } from "react-router-dom";
 import EventApprovals from "./EventApproval";
 import EventRegistration from "./EventRegistration";
+import TicketCreate from "./TicketCreate";
 
 export default function AdminPage() {
 	const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -35,6 +36,9 @@ export default function AdminPage() {
 					<Link to="/admin/registrations" onClick={() => setSidebarOpen(false)} className="flex items-center gap-2 p-3 text-lg text-white/70">
 						<MdDashboard className="text-2xl" /> Registrations
 					</Link>
+					<Link to="/admin/tickets" onClick={() => setSidebarOpen(false)} className="flex items-center gap-2 p-3 text-lg text-white/70">
+						<MdDashboard className="text-2xl" /> Tickets
+					</Link>
 				</div>
 			</div>
 
@@ -43,6 +47,7 @@ export default function AdminPage() {
 					<Route path="approvals" element={<EventApprovals />} />
 					<Route path="*" element={<Navigate to="approvals" replace />} />
 					<Route path="registrations" element={<EventRegistration />} />
+					<Route path="tickets" element={<TicketCreate />} />
 
 				</Routes>
 			</div>

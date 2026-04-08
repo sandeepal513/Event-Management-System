@@ -31,6 +31,16 @@ public class  RegistrationService {
         Event event = eventRepo.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
 
+        // ← Block if event does not require ticket
+        if (event.getTicketRequired() == null || !event.getTicketRequired()) {
+            throw new RuntimeException("This event does not require registration!");
+        }
+
+        // ← Block if no tickets available
+        if (event.getTicketsCount() == null || event.getTicketsCount() <= 0) {
+            throw new RuntimeException("No tickets available!");
+        }
+
         Registration reg =  new Registration();
         reg.setUser(user);
         reg.setEvent(event);
