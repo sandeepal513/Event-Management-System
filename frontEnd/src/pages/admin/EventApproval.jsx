@@ -171,7 +171,6 @@ export default function EventApprovals() {
 					<div className="border-b border-white/10 px-6 py-6 md:px-8">
 						<div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
 							<div className="max-w-2xl">
-								<p className="text-[11px] uppercase tracking-[0.32em] text-white/45">Admin approvals</p>
 								<h2 className="mt-2 text-3xl font-semibold md:text-4xl">Event Approval Queue</h2>
 								<p className="mt-3 text-sm leading-6 text-white/60 md:text-base">
 									Review submitted events, confirm the ones that are ready, and reject those that need revision.

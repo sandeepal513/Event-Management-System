@@ -1,5 +1,5 @@
 import axios from "axios";
-import { use, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import EventCard from "../../components/EventCard";
 import toast from "react-hot-toast";
@@ -72,101 +72,122 @@ export default function Events() {
         return () => clearTimeout(delayDebounceFn);
     }, [keyword]);
 
-    const stats = [
-        {
-            label: "TOTAL EVENTS",
-            value: "24",
-            trend: "↑ 4 this month",
-            trendColor: "text-lime-400",
-        },
-        {
-            label: "UPCOMING",
-            value: "9",
-            trend: "↑ 2 new",
-            trendColor: "text-lime-400",
-        },
-        {
-            label: "ONGOING",
-            value: "3",
-            trend: "Live now",
-            trendColor: "text-slate-400",
-        },
-        {
-            label: "TOTAL ATTENDEES",
-            value: "1,482",
-            trend: "↑ 12% vs last month",
-            trendColor: "text-lime-400",
-        },
-    ];
+    const stats = useMemo(() => {
+        const now = new Date();
+
+        const upcomingCount = events.filter((event) => {
+            if (!event?.date) return false;
+            const eventDate = new Date(event.date);
+            return !Number.isNaN(eventDate.getTime()) && eventDate >= now;
+        }).length;
+
+        const ongoingCount = events.filter((event) => {
+            if (!event?.date) return false;
+            const eventDate = new Date(event.date);
+            return !Number.isNaN(eventDate.getTime()) && eventDate.toDateString() === now.toDateString();
+        }).length;
+
+        return [
+            {
+                label: "TOTAL EVENTS",
+                value: String(events.length),
+                trend: loaded ? "Across all statuses" : "Loading...",
+                trendColor: "text-white/55",
+            },
+            {
+                label: "UPCOMING",
+                value: String(upcomingCount),
+                trend: "Scheduled ahead",
+                trendColor: "text-emerald-300",
+            },
+            {
+                label: "TODAY",
+                value: String(ongoingCount),
+                trend: "Happening now",
+                trendColor: "text-sky-300",
+            },
+            {
+                label: "SEARCH RESULTS",
+                value: String(events.length),
+                trend: keyword.trim() ? `Filtered by \"${keyword.trim()}\"` : "Showing full list",
+                trendColor: "text-white/55",
+            },
+        ];
+    }, [events, keyword, loaded]);
 
     return (
-        <div className="w-full p-4 bg-[#2e2e2c]">
-            <div className="flex items-center h-[50px] border border-white/25 justify-between mb-4 bg-[#1e1e1c]">
-                <h1 className="text-2xl ml-5 font-bold text-white/75">Events</h1>
-                <div className="flex">
-                    <input type="text" 
-                    placeholder="Search events..."
-                    value={keyword}
-                    onChange={(e) => setKeyword(e.target.value)}
-                    className="w-[250px] h-[35px] mr-3 bg-[#272725] text-amber-50 p-2 border border-gray-700 rounded-lg" />
-                    <Link to="/organizer/events/add" className="bg-blue-400 text-white text-sm mr-5 p-2 rounded-lg"> + Add Event</Link>
-                </div>
-            </div>
-        
-        
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-                {stats.map((stat) => (
-                    <div
-                        key={stat.label}
-                        className="rounded-xl bg-[#232320] border border-white/5 px-5 py-4 shadow-[0_8px_24px_rgba(0,0,0,0.25)]"
-                    >
-                        <p className="text-[11px] tracking-[0.18em] text-white/55 mb-2">
-                            {stat.label}
-                        </p>
-                        <p className="text-3xl font-semibold text-white leading-none">
-                            {stat.value}
-                        </p>
-                        <p className={`mt-2 text-sm ${stat.trendColor}`}>
-                            {stat.trend}
-                        </p>
-                    </div>
-                ))}
-            </div>
+        <div className="space-y-6 text-white">
+            <div className="overflow-hidden rounded-4xl border border-white/10 bg-[#1c1c1a] shadow-[0_20px_60px_rgba(0,0,0,0.38)]">
+                <div className="border-b border-white/10 px-6 py-6 md:px-8">
+                    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                        <div className="max-w-2xl">
+                            <p className="text-[11px] uppercase tracking-[0.32em] text-white/45">Organizer workspace</p>
+                            <h2 className="mt-2 text-3xl font-semibold md:text-4xl">Events</h2>
+                            <p className="mt-3 text-sm leading-6 text-white/60 md:text-base">
+                                Manage your event catalog, search by keyword, and quickly update or remove event records.
+                            </p>
+                        </div>
 
-            <div className="mt-10">
-                <h1 className="text-white/80 font-semibold">All Events</h1>
-            </div>
-            <div>
-                {loaded ? (
-                    <div className="w-full flex flex-wrap gap-4 p-4">
-                        {
-                            events.map( (event) => {
-                                return (
+                        <div className="flex w-full flex-col gap-3 md:w-auto md:min-w-[350px]">
+                            <input
+                                type="text"
+                                placeholder="Search by title, venue, or society"
+                                value={keyword}
+                                onChange={(e) => setKeyword(e.target.value)}
+                                className="w-full rounded-xl border border-white/10 bg-[#111110] px-3 py-2.5 text-sm text-white outline-none placeholder:text-white/35 focus:border-sky-400/45"
+                            />
+                            <Link
+                                to="/organizer/events/add"
+                                className="inline-flex items-center justify-center rounded-xl bg-sky-500 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-sky-400"
+                            >
+                                + Add Event
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="px-6 py-6 md:px-8">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                        {stats.map((stat) => (
+                            <div
+                                key={stat.label}
+                                className="rounded-2xl border border-white/10 bg-[#111110] px-5 py-4 shadow-[0_8px_24px_rgba(0,0,0,0.25)]"
+                            >
+                                <p className="text-[11px] tracking-[0.22em] text-white/45">{stat.label}</p>
+                                <p className="mt-2 text-3xl font-semibold leading-none text-white">{stat.value}</p>
+                                <p className={`mt-2 text-sm ${stat.trendColor}`}>{stat.trend}</p>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="mt-8 rounded-3xl border border-white/10 bg-[#111110] p-4 md:p-5">
+                        <h3 className="text-lg font-semibold text-white/90">All Events</h3>
+
+                        {!loaded ? (
+                            <p className="mt-4 text-white/60">Loading events...</p>
+                        ) : events.length === 0 ? (
+                            <p className="mt-4 text-white/60">No events found.</p>
+                        ) : (
+                            <div className="mt-4 flex w-full flex-wrap gap-4">
+                                {events.map((event) => (
                                     <EventCard
                                         key={event.id}
                                         event={event}
                                         onDelete={handleDeleteEvent}
                                         isDeleting={deletingId === event.id}
                                     />
-                                )
-                            })
-                        }
+                                ))}
+                            </div>
+                        )}
                     </div>
-                ) : (
-                    <p>Loading events...</p>
-                    
-                )}
-
-                {events.length === 0 && loaded && (
-                    <p className="text-white/60 mt-4">No events found</p>
-                )}
+                </div>
             </div>
 
             {pendingDeleteEvent && (
                 <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 px-4">
-                    <div className="w-full max-w-md rounded-xl border border-white/10 bg-[#1e1e1c] p-5 shadow-[0_12px_28px_rgba(0,0,0,0.45)]">
+                    <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#1c1c1a] p-5 shadow-[0_12px_28px_rgba(0,0,0,0.45)]">
                         <h2 className="text-lg font-semibold text-white">Delete Event</h2>
-                        <p className="mt-2 text-sm text-white/75">
+                        <p className="mt-2 text-sm leading-6 text-white/70">
                             Are you sure you want to delete "{pendingDeleteEvent.title}"?
                         </p>
                         <div className="mt-5 flex justify-end gap-3">
@@ -174,7 +195,7 @@ export default function Events() {
                                 type="button"
                                 onClick={() => setPendingDeleteEvent(null)}
                                 disabled={deletingId === pendingDeleteEvent.id}
-                                className="rounded-lg border border-white/15 px-4 py-2 text-sm text-white/80 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+                                className="rounded-xl border border-white/15 px-4 py-2 text-sm text-white/80 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
                             >
                                 Cancel
                             </button>
@@ -182,7 +203,7 @@ export default function Events() {
                                 type="button"
                                 onClick={confirmDeleteEvent}
                                 disabled={deletingId === pendingDeleteEvent.id}
-                                className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60"
+                                className="rounded-xl bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60"
                             >
                                 {deletingId === pendingDeleteEvent.id ? "Deleting..." : "Delete"}
                             </button>

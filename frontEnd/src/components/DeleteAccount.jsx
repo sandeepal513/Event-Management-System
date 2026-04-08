@@ -76,7 +76,6 @@ const DeleteAccount = () => {
         <div className="space-y-6 text-white">
             <div className="overflow-hidden rounded-4xl border border-rose-400/30 bg-[#1c1c1a] shadow-[0_20px_60px_rgba(0,0,0,0.38)]">
                 <div className="border-b border-rose-400/25 px-6 py-6 md:px-8">
-                    <p className="text-[11px] uppercase tracking-[0.32em] text-rose-200/65">{userRole} danger zone</p>
                     <h2 className="mt-2 text-3xl font-semibold text-rose-300 md:text-4xl">Delete Account</h2>
                     <p className="mt-3 text-sm leading-6 text-white/60 md:text-base">
                         This action is permanent. Type a confirmation phrase before deleting your account.
