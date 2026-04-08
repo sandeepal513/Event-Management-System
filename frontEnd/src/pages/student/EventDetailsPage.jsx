@@ -32,7 +32,7 @@ export default function EventDetailsPage() {
 				}
 
 				const [eventsResponse, registrationsResponse] = await Promise.all([
-					axios.get("http://localhost:3000/api/events/all"),
+					axios.get("http://localhost:3000/api/registration/all"),
 					axios.get(`http://localhost:3000/api/registration/user/${userId}`),
 				]);
 
