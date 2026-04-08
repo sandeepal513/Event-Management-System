@@ -53,6 +53,7 @@ public class EventService {
         event.setTime(request.getTime());
         event.setTicketRequired(request.getTicketRequired());
         event.setTicketsCount(request.getTicketsCount());
+        event.setImageUrl(request.getImageUrl());
         event.setCategory(category);
         event.setOrganizer(organizer);
         event.setVenue(venue);
@@ -109,6 +110,7 @@ public class EventService {
         event.setTime(request.getTime());
         event.setTicketRequired(request.getTicketRequired());
         event.setTicketsCount(request.getTicketsCount());
+        event.setImageUrl(request.getImageUrl());
         event.setCategory(category);
         event.setOrganizer(organizer);
         event.setVenue(venue);

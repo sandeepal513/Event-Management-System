@@ -10,6 +10,7 @@ const RegisterPage = () => {
     firstName: '',
     lastName: '',
     email: '',
+    phoneNo: '',
     password: '',
     confirmPassword: '',
     role: '',
@@ -55,7 +56,7 @@ const RegisterPage = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password || !formData.confirmPassword || !formData.role) {
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.phoneNo || !formData.password || !formData.confirmPassword || !formData.role) {
       toast.error('All fields are required');
       return;
     }
@@ -87,6 +88,7 @@ const RegisterPage = () => {
       const response = await axios.post('http://localhost:3000/api/v1/auth/register', {
         name: formData.firstName + " " + formData.lastName,
         email: formData.email,
+        phoneNo: formData.phoneNo,
         password: formData.password,
         role: formData.role,
       });
@@ -210,6 +212,24 @@ const RegisterPage = () => {
                 onChange={handleChange}
               />
             </div>
+            
+            {/* Phone */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor="phone">
+                Phone No
+              </label>
+              <input
+                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-200"
+                id="phone"
+                name="phoneNo"
+                placeholder="+94 766845685"
+                type="text"
+                required
+                value={formData.phoneNo}
+                onChange={handleChange}
+              />
+            </div>
+
             {/* Role */}
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor="role">
@@ -244,7 +264,7 @@ const RegisterPage = () => {
                   id="password"
                   name="password"
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="At least 6 characters"
+                  placeholder="At least 8 characters"
                   required
                   value={formData.password}
                   onChange={handleChange}

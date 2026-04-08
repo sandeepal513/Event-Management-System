@@ -4,7 +4,7 @@ import { jwtDecode } from "jwt-decode";
 function clearAuthStorage() {
 	localStorage.removeItem("token");
 	localStorage.removeItem("username");
-	localStorage.removeItem("user");
+	localStorage.removeItem("userRole");
 }
 
 export function isTokenValid(token) {
@@ -19,6 +19,30 @@ export function isTokenValid(token) {
 		return true;
 	} catch {
 		clearAuthStorage();
+		return false;
+	}
+}
+
+export async function isAdmin() {
+	const username = localStorage.getItem("username");
+	if (!username) return false;
+
+	try {
+		const response = await axios.get(`http://localhost:3000/api/v1/users/username/${username}`);
+
+		// Check if data exists and role
+		if (!response || !response.data || !response.data.data) {
+			return false;
+		}
+
+		if (response.data.data.role !== "admin") {
+			return false;
+		}
+
+		return true;
+
+	} catch (error) {
+		console.error(error);
 		return false;
 	}
 }
@@ -39,7 +63,31 @@ export async function isOrganizer() {
 			return false;
 		}
 
-		console.log(username);
+		return true;
+
+	} catch (error) {
+		console.error(error);
+		return false;
+	}
+}
+
+
+export async function isStudent() {
+	const username = localStorage.getItem("username");
+	if (!username) return false;
+
+	try {
+		const response = await axios.get(`http://localhost:3000/api/v1/users/username/${username}`);
+
+		// Check if data exists and role
+		if (!response || !response.data || !response.data.data) {
+			return false;
+		}
+
+		if (response.data.data.role !== "student") {
+			return false;
+		}
+
 		return true;
 
 	} catch (error) {

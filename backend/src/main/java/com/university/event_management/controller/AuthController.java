@@ -5,14 +5,12 @@ import com.university.event_management.model.User;
 import com.university.event_management.service.UserService;
 import com.university.event_management.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.server.Cookie;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Duration;
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("api/v1/auth")
@@ -114,8 +112,8 @@ public class AuthController {
 
 
     // password change endpoint
-    @PostMapping("/change-password")
-    public ResponseEntity<ApiResponse<String>> changePassword(@RequestBody User user) {
+    @PostMapping("/change-forget-password")
+    public ResponseEntity<ApiResponse<String>> changeForgetPassword(@RequestBody User user) {
         try {
             User passwordChangeUser = userService.getUserByEmail(user.getEmail());
             if (passwordChangeUser == null) {
@@ -123,6 +121,36 @@ public class AuthController {
                 return ResponseEntity.status(404).body(response);
             }
             passwordChangeUser.setPassword(passwordEncoder.encode(user.getPassword()));
+            userService.updateUser(passwordChangeUser.getId(), passwordChangeUser);
+            ApiResponse<String> response = new ApiResponse<>(true, "Password change successfully", null);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ApiResponse<String> response = new ApiResponse<>(false, "OTP verification failed due to server error", null);
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
+
+    // password change endpoint
+    @PostMapping("/change-password")
+    public ResponseEntity<ApiResponse<String>> changePassword(@RequestBody Map<String, Object> body) {
+        try {
+            String email = (String) body.get("email");
+            String password = (String) body.get("password");
+            String currentPassword = (String) body.get("currentPassword");
+
+            User passwordChangeUser = userService.getUserByEmail(email);
+            if (passwordChangeUser == null) {
+                ApiResponse<String> response = new ApiResponse<>(false, "User not found", null);
+                return ResponseEntity.status(404).body(response);
+            }
+
+            if (!passwordEncoder.matches(currentPassword, passwordChangeUser.getPassword())) {
+                ApiResponse<String> response = new ApiResponse<>(false, "current Password does not match", null);
+                return ResponseEntity.status(400).body(response);
+            }
+
+            passwordChangeUser.setPassword(passwordEncoder.encode(password));
             userService.updateUser(passwordChangeUser.getId(), passwordChangeUser);
             ApiResponse<String> response = new ApiResponse<>(true, "Password change successfully", null);
             return ResponseEntity.ok(response);

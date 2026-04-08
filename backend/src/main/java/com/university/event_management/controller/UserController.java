@@ -49,8 +49,12 @@ public class UserController {
             ApiResponse<User> response = new ApiResponse<>(false, "Email Already Exists", null);
             return ResponseEntity.ok(response);
         }
-        updateUser.setPassword(passwordEncoder.encode(updateUser.getPassword()));
-        User user = userService.updateUser(id, updateUser);
+        currentUser.setName(updateUser.getName());
+        currentUser.setEmail(updateUser.getEmail());
+        currentUser.setPhoneNo(updateUser.getPhoneNo());
+        currentUser.setImage(updateUser.getImage());
+        User user = userService.updateUser(id, currentUser);
+
         ApiResponse<User> response = new ApiResponse<>(true, "User updated successfully", user);
         return ResponseEntity.ok(response);
     }
