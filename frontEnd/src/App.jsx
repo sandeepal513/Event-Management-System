@@ -24,8 +24,22 @@ function App() {
           <Route path="/auth/forgotPassword" element={<ForgotPassword />} />
 
           {/* 🔒 Protected Route */}
-          <Route path="/organizer/*" element={
-              <ProtectedRoute> <OrganizerPage /> </ProtectedRoute>} 
+          <Route
+            path="/organizer/*"
+            element={
+              <ProtectedRoute requiredRole="organizer">
+                <OrganizerPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/*"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <AdminPage />
+              </ProtectedRoute>
+            }
           />
         </Routes>
       </div>
