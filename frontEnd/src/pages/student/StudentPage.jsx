@@ -2,11 +2,14 @@ import { useState } from "react";
 import { Link, Navigate, Route, Routes } from "react-router-dom";
 import { MdAdminPanelSettings, MdClose, MdDashboard, MdMenu } from "react-icons/md";
 
-import RegisterEvent from "./RegisterEvent";
-import Tickets from "./Tickets";
+
 import ProfilePage from "../../components/ProfilePage";
 import ChangePassword from "../../components/ChangePassword";
 import DeleteAccount from "../../components/DeleteAccount";
+import StudentRegitered from "./StudentRegitered";
+import TicketPage from "./TicketPage";
+import EventDetailsPage from "../organizer/EventDetailsPage";
+import EventView from './EventView'
 
 
 const StudentPage = () => {
@@ -14,8 +17,8 @@ const StudentPage = () => {
 
     const sidebarItems = [
         { label: "Profile", path: "/student/profile" },
+        { label: "Events", path: "/student/events" },
         { label: "Registered Events", path: "/student/registered-events" },
-        { label: "Tickets", path: "/student/tickets" },
         { label: "Change Password", path: "/student/change-password" },
         { label: "Delete Account", path: "/student/delete-account" },
         { label: "Logout", path: "/logout" },
@@ -61,8 +64,10 @@ const StudentPage = () => {
                 <div className="w-full">
                     <Routes>
                         <Route path="profile" element={<ProfilePage />} />
-                        <Route path="registered-events" element={<RegisterEvent />} />
-                        <Route path="tickets" element={<Tickets />} />
+                        <Route path="registered-events" element={<StudentRegitered />} />
+                        <Route path="events" element={<EventView />} />
+                        <Route path="events/:eventId" element={<EventDetailsPage />} />
+                        <Route path="tickets/:registrationId" element={<TicketPage />} />
                         <Route path="change-password" element={<ChangePassword />} />
                         <Route path="delete-account" element={<DeleteAccount />} />
                         <Route path="*" element={<Navigate to="profile" replace />} />

@@ -172,7 +172,7 @@ const ProfilePage = () => {
                                     className="inline-flex items-center gap-2 rounded-xl bg-sky-500 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-sky-400 disabled:cursor-not-allowed disabled:opacity-60"
                                 >
                                     <FiSave />
-                                    {isSaving ? "Saving..." : "Save Changes"}
+                                    {isLoading ? "Saving..." : "Save Changes"}
                                 </button>
                             )}
                         </div>

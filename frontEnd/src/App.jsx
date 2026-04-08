@@ -1,15 +1,14 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Toaster } from "react-hot-toast";
 
+import Home from './pages/Home';
 import LoginPage from './pages/auth/loginPage';
 import RegisterPage from './pages/auth/registerPage';
 import ForgotPassword from './pages/auth/forgotPassword';
+
+import ProtectedRoute from './components/ProtectedRoute';
 import OrganizerPage from './pages/organizer/OrganizerPage';
 import AdminPage from './pages/admin/AdminPage';
-import StudentPage from './pages/students/StudentPage';
-
-import Home from './pages/Home';
-import ProtectedRoute from './components/ProtectedRoute';
 import StudentPage from './pages/student/StudentPage';
 
 function App() {
@@ -24,15 +23,7 @@ function App() {
 
           <Route path="/auth/login" element={<LoginPage />} />
           <Route path="/auth/register" element={<RegisterPage />} />
-          <Route path="/auth/forgotPassword" element={<ForgotPassword />} />
-          <Route path="/admin/*" element={
-              <ProtectedRoute> <AdminPage /> </ProtectedRoute>} 
-          />
-          <Route path="/student/*" element={
-              <ProtectedRoute> <StudentPage /> </ProtectedRoute>}
-            />
-
-           
+          <Route path="/auth/forgotPassword" element={<ForgotPassword />} />           
 
 
           {/* 🔒 Protected Route */}
