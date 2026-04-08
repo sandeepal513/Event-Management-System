@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, Navigate, Route, Routes } from "react-router-dom";
+import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { MdAdminPanelSettings, MdClose, MdDashboard, MdMenu } from "react-icons/md";
 
 
@@ -8,12 +8,21 @@ import ChangePassword from "../../components/ChangePassword";
 import DeleteAccount from "../../components/DeleteAccount";
 import StudentRegitered from "./StudentRegitered";
 import TicketPage from "./TicketPage";
-import EventDetailsPage from "../organizer/EventDetailsPage";
-import EventView from './EventView'
+import EventDetailsPage from './EventDetailsPage';
+import EventView from './EventView';
 
 
 const StudentPage = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const location = useLocation();
+
+    const isActiveItem = (path) => {
+        if (path === "/student/events") {
+            return location.pathname.startsWith("/student/events");
+        }
+
+        return location.pathname === path;
+    };
 
     const sidebarItems = [
         { label: "Profile", path: "/student/profile" },
@@ -51,8 +60,9 @@ const StudentPage = () => {
                         <Link
                             key={item.label}
                             to={item.path}
+                            state={item.path === "/logout" ? { backgroundLocation: location } : undefined}
                             onClick={() => setSidebarOpen(false)}
-                            className="flex items-center gap-2 p-3 text-lg text-white/70"
+                            className={`flex items-center gap-2 border-r-4 px-3 py-3 text-lg transition ${isActiveItem(item.path) ? "border-sky-400 bg-sky-400/10 text-white" : "border-transparent text-white/70 hover:border-white/15 hover:bg-white/5 hover:text-white"}`}
                         >
                             <MdDashboard className="text-2xl" /> {item.label}
                         </Link>

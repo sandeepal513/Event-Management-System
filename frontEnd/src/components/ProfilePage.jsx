@@ -147,7 +147,6 @@ const ProfilePage = () => {
                 <div className="border-b border-white/10 px-6 py-6 md:px-8">
                     <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                         <div className="max-w-2xl">
-                            <p className="text-[11px] uppercase tracking-[0.32em] text-white/45">{profile.role} account</p>
                             <h2 className="mt-2 text-3xl font-semibold md:text-4xl">Profile</h2>
                             <p className="mt-3 text-sm leading-6 text-white/60 md:text-base">
                                 View your profile details and switch to edit mode when you want to update them.

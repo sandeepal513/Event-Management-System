@@ -101,8 +101,10 @@ export default function StudentRegitered() {
 	return (
 		<div className="space-y-5">
 			<div className="rounded-2xl border border-white/10 bg-[#1c1c1a] p-5">
-				<h2 className="text-2xl font-semibold text-white">Registered Events</h2>
-				<p className="mt-1 text-sm text-white/60">All events you have registered for.</p>
+				<h2 className="mt-2 text-3xl font-semibold md:text-4xl text-white">Registered Events</h2>
+				<p className="mt-3 text-sm leading-6 text-white/60 md:text-base">
+                    All events you have registered for.
+                </p>
 				<input
 					type="text"
 					value={keyword}

@@ -1,10 +1,11 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { Toaster } from "react-hot-toast";
 
 import Home from './pages/Home';
 import LoginPage from './pages/auth/loginPage';
 import RegisterPage from './pages/auth/registerPage';
 import ForgotPassword from './pages/auth/forgotPassword';
+import Logout from './pages/auth/logout';
 
 import ProtectedRoute from './components/ProtectedRoute';
 import OrganizerPage from './pages/organizer/OrganizerPage';
@@ -12,50 +13,56 @@ import AdminPage from './pages/admin/AdminPage';
 import StudentPage from './pages/student/StudentPage';
 
 function App() {
+  const location = useLocation();
+  const backgroundLocation = location.state?.backgroundLocation;
 
   return (
-    <BrowserRouter>
-      <div className="w-full h-screen">
-        <Toaster position="top-right" />
+    <div className="w-full h-screen">
+      <Toaster position="top-right" />
 
+      <Routes location={backgroundLocation || location}>
+        <Route path="/" element={<Home />} />
+        <Route path="/auth/login" element={<LoginPage />} />
+        <Route path="/auth/register" element={<RegisterPage />} />
+        <Route path="/auth/forgotPassword" element={<ForgotPassword />} />
+        <Route path="/logout" element={<Logout />} />
+
+
+        {/* 🔒 Protected Route */}
+        <Route
+          path="/organizer/*"
+          element={
+            <ProtectedRoute requiredRole="organizer">
+              <OrganizerPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/*"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <AdminPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/student/*"
+          element={
+            <ProtectedRoute requiredRole="student">
+              <StudentPage />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+
+      {backgroundLocation && (
         <Routes>
-          <Route path="/" element={<Home />} />
-
-          <Route path="/auth/login" element={<LoginPage />} />
-          <Route path="/auth/register" element={<RegisterPage />} />
-          <Route path="/auth/forgotPassword" element={<ForgotPassword />} />           
-
-
-          {/* 🔒 Protected Route */}
-          <Route
-            path="/organizer/*"
-            element={
-              <ProtectedRoute requiredRole="organizer">
-                <OrganizerPage />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/admin/*"
-            element={
-              <ProtectedRoute requiredRole="admin">
-                <AdminPage />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/student/*"
-            element={
-              <ProtectedRoute requiredRole="student">
-                <StudentPage />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/logout" element={<Logout />} />
         </Routes>
-      </div>
-    </BrowserRouter>
+      )}
+    </div>
   );
 }
 
