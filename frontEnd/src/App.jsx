@@ -7,10 +7,12 @@ import ForgotPassword from './pages/auth/forgotPassword';
 import OrganizerPage from './pages/organizer/OrganizerPage';
 import AdminPage from './pages/admin/AdminPage';
 
-import Home from './pages/home';
+import Home from './pages/Home';
 import ProtectedRoute from './components/ProtectedRoute';
+import StudentPage from './pages/student/StudentPage';
 
 function App() {
+
   return (
     <BrowserRouter>
       <div className="w-full h-screen">
@@ -22,9 +24,8 @@ function App() {
           <Route path="/auth/login" element={<LoginPage />} />
           <Route path="/auth/register" element={<RegisterPage />} />
           <Route path="/auth/forgotPassword" element={<ForgotPassword />} />
-          <Route path="/admin/*" element={
-              <ProtectedRoute> <AdminPage /> </ProtectedRoute>} 
-          />
+          <Route path="/admin/*" element={<AdminPage />} />
+
 
 
           {/* 🔒 Protected Route */}
@@ -42,6 +43,15 @@ function App() {
             element={
               <ProtectedRoute requiredRole="admin">
                 <AdminPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/student/*"
+            element={
+              <ProtectedRoute requiredRole="student">
+                <StudentPage />
               </ProtectedRoute>
             }
           />
