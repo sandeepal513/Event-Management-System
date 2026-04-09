@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
+import { FiArrowRight, FiCalendar, FiClock, FiMapPin, FiUsers } from "react-icons/fi";
 
 export default function EventView() {
 	const [events, setEvents] = useState([]);
@@ -29,13 +30,16 @@ export default function EventView() {
 				}
 
 				const [eventsResponse, registrationsResponse] = await Promise.all([
-					axios.get("http://localhost:3000/api/events/all"),
+					axios.get("http://localhost:3000/api/event-approvals/approve"),
 					axios.get(`http://localhost:3000/api/registration/user/${userId}`),
 				]);
 
 				if (!mounted) return;
 
-				const fetchedEvents = Array.isArray(eventsResponse.data) ? eventsResponse.data : [];
+				const approvals = Array.isArray(eventsResponse.data) ? eventsResponse.data : [];
+				const fetchedEvents = approvals
+					.map((approval) => approval?.event)
+					.filter((event, index, allEvents) => event?.id && allEvents.findIndex((item) => item?.id === event.id) === index);
 				const registrations = Array.isArray(registrationsResponse.data) ? registrationsResponse.data : [];
 				setEvents(fetchedEvents);
 				setRegisteredEventIds(new Set(registrations.map((registration) => registration.event?.id).filter(Boolean)));
@@ -91,7 +95,7 @@ export default function EventView() {
 			{filteredEvents.length === 0 ? (
 				<div className="rounded-2xl border border-white/10 bg-[#1c1c1a] p-6 text-white/70">No events found.</div>
 			) : (
-				<div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+				<div className="flex flex-wrap gap-4">
 					{filteredEvents.map((event) => {
 						const isRegistered = registeredEventIds.has(event.id);
 
@@ -100,12 +104,17 @@ export default function EventView() {
 								key={event.id}
 								to={`/student/events/${event.id}`}
 								state={{ event, isRegistered }}
-								className="rounded-2xl border border-white/10 bg-[#1c1c1a] p-5 text-left shadow-[0_12px_28px_rgba(0,0,0,0.25)] transition hover:border-white/20"
+								className="group relative w-full max-w-[280px] overflow-hidden rounded-xl border border-white/10 bg-[#1f1f1d] px-4 py-3 text-left shadow-[0_8px_24px_rgba(0,0,0,0.25)] transition hover:-translate-y-0.5 hover:border-sky-400/50"
 							>
-								<div className="flex items-start justify-between gap-3">
+								<div className="h-[3px] w-full rounded-full bg-gradient-to-r from-sky-500 via-cyan-400 to-emerald-400" />
+
+								<div className="mt-3 flex items-start justify-between gap-3">
 									<div>
-										<h3 className="text-lg font-semibold text-white">{event.title}</h3>
-										<p className="mt-1 text-sm text-white/65">{event.date || "N/A"} {event.time ? `at ${event.time}` : ""}</p>
+										<h3 className="text-xl font-semibold leading-tight text-white">{event.title}</h3>
+										<p className="mt-1 text-xs uppercase tracking-[0.18em] text-white/45">Student view</p>
+										<p className="mt-2 inline-flex rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-white/70">
+											{event.ticketRequired ? `${event.ticketsCount ?? 0} tickets left` : "No ticket needed"}
+										</p>
 									</div>
 									{isRegistered && (
 										<span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-1 text-xs font-medium text-emerald-200">
@@ -113,8 +122,30 @@ export default function EventView() {
 										</span>
 									)}
 								</div>
-								<p className="mt-2 text-sm text-white/70">Venue: {event.venue?.name || "N/A"}</p>
-								<p className="text-sm text-white/70">Society: {event.society?.name || "N/A"}</p>
+
+								<div className="mt-3 space-y-1.5 text-sm text-white/75">
+									<p className="flex items-center gap-2">
+										<FiCalendar className="text-sky-400" />
+										{event.date || "N/A"}
+									</p>
+									<p className="flex items-center gap-2">
+										<FiClock className="text-amber-400" />
+										{event.time || "N/A"}
+									</p>
+									<p className="flex items-center gap-2">
+										<FiMapPin className="text-pink-400" />
+										{event.venue?.name || "N/A"}
+									</p>
+									<p className="flex items-center gap-2">
+										<FiUsers className="text-violet-400" />
+										{event.society?.name || "N/A"}
+									</p>
+								</div>
+
+								<div className="mt-4 border-t border-white/10 pt-3 flex items-center justify-between text-xs text-white/45">
+									<span>Open details</span>
+									<FiArrowRight className="text-base text-sky-300 transition group-hover:translate-x-0.5" />
+								</div>
 							</Link>
 						);
 					})}
