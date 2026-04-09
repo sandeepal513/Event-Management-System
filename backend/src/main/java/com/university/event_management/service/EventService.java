@@ -127,10 +127,10 @@ public class EventService {
         return event;
     }
 
-    public List<Event> searchEvents(String keyword) {
-        if (keyword == null || keyword.isEmpty()) {
-            return eventRepository.findAll();
+    public List<Event> searchEventsByOrganizer(Integer organizerId, String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return eventRepository.findByOrganizerId(organizerId);
         }
-        return eventRepository.findByTitleContainingIgnoreCase(keyword);
+        return eventRepository.findByOrganizerIdAndTitleContainingIgnoreCase(organizerId, keyword);
     }
 }
