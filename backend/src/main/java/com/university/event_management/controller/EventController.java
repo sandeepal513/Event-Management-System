@@ -41,8 +41,13 @@ public class EventController {
         eventService.deleteEvent(id);
     }
 
-    @GetMapping("/search")
-    public List<Event> searchEvents(@RequestParam String keyword) {
-        return eventService.searchEvents(keyword);
+    @GetMapping("/organizer/{organizerId}")
+    public List<Event> getEventsByOrganizer(@PathVariable Integer organizerId) {
+        return eventService.searchEventsByOrganizer(organizerId, null);
+    }
+
+    @GetMapping("/organizer/{organizerId}/search")
+    public List<Event> searchEventsByOrganizer(@PathVariable Integer organizerId, @RequestParam String keyword) {
+        return eventService.searchEventsByOrganizer(organizerId, keyword);
     }
 }
