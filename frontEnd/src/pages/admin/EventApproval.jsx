@@ -156,8 +156,8 @@ export default function EventApprovals() {
 
 	if (loading) {
 		return (
-			<div className="min-h-full bg-[#151514] p-4 text-white md:p-6">
-				<div className="rounded-3xl border border-white/10 bg-[#1b1b19] p-8 shadow-[0_18px_48px_rgba(0,0,0,0.35)]">
+			<div className="min-h-full bg-[#151514] p-4 text-white md:p-5">
+				<div className="rounded-2xl border border-white/10 bg-[#1b1b19] p-6 shadow-[0_18px_48px_rgba(0,0,0,0.35)]">
 					<p className="text-sm text-white/60">Loading event approvals...</p>
 				</div>
 			</div>
@@ -165,41 +165,41 @@ export default function EventApprovals() {
 	}
 
 	return (
-		<div className="min-h-full bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.18),_transparent_35%),radial-gradient(circle_at_top_right,_rgba(244,114,182,0.12),_transparent_30%),linear-gradient(180deg,_#171716_0%,_#101010_100%)] p-4 text-white md:p-6">
-			<div className="mx-auto max-w-7xl space-y-6">
-				<div className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#1c1c1a] shadow-[0_20px_60px_rgba(0,0,0,0.38)]">
-					<div className="border-b border-white/10 px-6 py-6 md:px-8">
-						<div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+			<div className="min-h-full bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.14),_transparent_32%),radial-gradient(circle_at_top_right,_rgba(244,114,182,0.08),_transparent_28%),linear-gradient(180deg,_#171716_0%,_#101010_100%)] p-4 text-white md:p-5">
+			<div className="mx-auto max-w-7xl space-y-4">
+				<div className="overflow-hidden rounded-2xl border border-white/10 bg-[#1c1c1a] shadow-[0_16px_40px_rgba(0,0,0,0.32)]">
+					<div className="border-b border-white/10 px-5 py-5 md:px-6">
+						<div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
 							<div className="max-w-2xl">
-								<h2 className="mt-2 text-3xl font-semibold md:text-4xl">Event Approval Queue</h2>
-								<p className="mt-3 text-sm leading-6 text-white/60 md:text-base">
+								<h2 className="text-2xl font-semibold md:text-3xl">Event Approval Queue</h2>
+								<p className="mt-2 text-sm leading-6 text-white/60">
 									Review submitted events, confirm the ones that are ready, and reject those that need revision.
 								</p>
 							</div>
 
-							<div className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:min-w-[520px]">
-								<div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+							<div className="grid grid-cols-2 gap-2 sm:grid-cols-4 xl:min-w-[460px]">
+								<div className="rounded-xl border border-white/10 bg-white/5 px-3 py-3">
 									<p className="text-[11px] tracking-[0.2em] text-white/45">TOTAL</p>
-									<p className="mt-1 text-2xl font-semibold">{summary.total}</p>
+									<p className="mt-1 text-xl font-semibold">{summary.total}</p>
 								</div>
-								<div className="rounded-2xl border border-amber-400/20 bg-amber-400/10 px-4 py-3">
+								<div className="rounded-xl border border-amber-400/20 bg-amber-400/10 px-3 py-3">
 									<p className="text-[11px] tracking-[0.2em] text-amber-200/70">PENDING</p>
-									<p className="mt-1 text-2xl font-semibold text-amber-200">{summary.pending}</p>
+									<p className="mt-1 text-xl font-semibold text-amber-200">{summary.pending}</p>
 								</div>
-								<div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-3">
+								<div className="rounded-xl border border-emerald-400/20 bg-emerald-400/10 px-3 py-3">
 									<p className="text-[11px] tracking-[0.2em] text-emerald-200/70">APPROVED</p>
-									<p className="mt-1 text-2xl font-semibold text-emerald-200">{summary.approved}</p>
+									<p className="mt-1 text-xl font-semibold text-emerald-200">{summary.approved}</p>
 								</div>
-								<div className="rounded-2xl border border-rose-400/20 bg-rose-400/10 px-4 py-3">
+								<div className="rounded-xl border border-rose-400/20 bg-rose-400/10 px-3 py-3">
 									<p className="text-[11px] tracking-[0.2em] text-rose-200/70">REJECTED</p>
-									<p className="mt-1 text-2xl font-semibold text-rose-200">{summary.rejected}</p>
+									<p className="mt-1 text-xl font-semibold text-rose-200">{summary.rejected}</p>
 								</div>
 							</div>
 						</div>
 					</div>
 
-					<div className="px-6 py-5 md:px-8">
-						<div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+					<div className="px-5 py-4 md:px-6">
+						<div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
 							<div className="flex flex-wrap gap-2">
 								{FILTERS.map((status) => {
 									const active = filter === status;
@@ -208,7 +208,7 @@ export default function EventApprovals() {
 											key={status}
 											type="button"
 											onClick={() => setFilter(status)}
-											className={`rounded-full border px-4 py-2 text-sm font-medium transition ${active ? "border-sky-400/40 bg-sky-400/10 text-sky-200" : "border-white/10 bg-white/5 text-white/65 hover:bg-white/10"}`}
+											className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition ${active ? "border-sky-400/40 bg-sky-400/10 text-sky-200" : "border-white/10 bg-white/5 text-white/65 hover:bg-white/10"}`}
 										>
 											{status}
 										</button>
@@ -216,7 +216,7 @@ export default function EventApprovals() {
 								})}
 							</div>
 
-							<label className="flex w-full max-w-md items-center gap-3 rounded-2xl border border-white/10 bg-[#111110] px-4 py-3 text-white/70 shadow-[0_12px_28px_rgba(0,0,0,0.18)]">
+							<label className="flex w-full max-w-md items-center gap-3 rounded-xl border border-white/10 bg-[#111110] px-4 py-2.5 text-white/70 shadow-[0_12px_28px_rgba(0,0,0,0.18)]">
 								<FiSearch className="shrink-0" />
 								<input
 									type="text"
@@ -233,25 +233,25 @@ export default function EventApprovals() {
 				{error && <div className="rounded-2xl border border-rose-400/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">{error}</div>}
 
 				{visibleApprovals.length === 0 ? (
-					<div className="rounded-[1.75rem] border border-white/10 bg-[#1b1b19] p-8 text-center shadow-[0_18px_48px_rgba(0,0,0,0.32)]">
-						<div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70">
-							<FiClock className="h-6 w-6" />
+					<div className="rounded-2xl border border-white/10 bg-[#1b1b19] p-7 text-center shadow-[0_18px_48px_rgba(0,0,0,0.32)]">
+						<div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70">
+							<FiClock className="h-5 w-5" />
 						</div>
-						<h3 className="mt-4 text-xl font-semibold">No approvals found</h3>
+						<h3 className="mt-4 text-lg font-semibold">No approvals found</h3>
 						<p className="mt-2 text-sm text-white/60">Try a different filter or search term to find the event you want to review.</p>
 					</div>
 				) : (
-					<div className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#1b1b19] shadow-[0_18px_48px_rgba(0,0,0,0.30)]">
+					<div className="overflow-hidden rounded-2xl border border-white/10 bg-[#1b1b19] shadow-[0_18px_48px_rgba(0,0,0,0.30)]">
 						<div className="overflow-x-auto">
 							<table className="min-w-full text-left text-sm">
 								<thead className="border-b border-white/10 bg-white/5 text-white/60">
 									<tr>
-										<th className="px-5 py-4 font-medium">Event</th>
-										<th className="px-5 py-4 font-medium">Organizer</th>
-										<th className="px-5 py-4 font-medium">Venue</th>
-										<th className="px-5 py-4 font-medium">Status</th>
-										<th className="px-5 py-4 font-medium">Created</th>
-										<th className="px-5 py-4 font-medium">Actions</th>
+										<th className="px-4 py-3.5 font-medium">Event</th>
+										<th className="px-4 py-3.5 font-medium">Organizer</th>
+										<th className="px-4 py-3.5 font-medium">Venue</th>
+										<th className="px-4 py-3.5 font-medium">Status</th>
+										<th className="px-4 py-3.5 font-medium">Created</th>
+										<th className="px-4 py-3.5 font-medium">Actions</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -262,20 +262,20 @@ export default function EventApprovals() {
 
 										return (
 											<tr key={approval.id} className="border-b border-white/5 last:border-b-0 align-top">
-												<td className="px-5 py-5">
+												<td className="px-4 py-4">
 													<div className="space-y-1">
 														<p className="font-semibold text-white">{approval.event?.title || "Untitled Event"}</p>
 														<p className="max-w-xl text-xs leading-5 text-white/55">{approval.event?.description || "No description provided."}</p>
 													</div>
 												</td>
-												<td className="px-5 py-5 text-white/80">{approval.event?.organizer?.name || "N/A"}</td>
-												<td className="px-5 py-5 text-white/80">{approval.event?.venue?.name || "N/A"}</td>
-												<td className="px-5 py-5">
+												<td className="px-4 py-4 text-white/80">{approval.event?.organizer?.name || "N/A"}</td>
+												<td className="px-4 py-4 text-white/80">{approval.event?.venue?.name || "N/A"}</td>
+												<td className="px-4 py-4">
 													<span className={`inline-flex rounded-full border px-3 py-1 text-xs font-medium ${statusMeta.className}`}>{statusMeta.label}</span>
 												</td>
-												<td className="px-5 py-5 text-white/70">{formatDateTime(approval.createdAt)}</td>
-												<td className="px-5 py-5">
-													<div className="space-y-3">
+												<td className="px-4 py-4 text-white/70">{formatDateTime(approval.createdAt)}</td>
+												<td className="px-4 py-4">
+													<div className="space-y-2.5">
 														<input
 															type="text"
 															placeholder="Reason if rejecting"
