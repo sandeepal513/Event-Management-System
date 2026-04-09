@@ -33,6 +33,18 @@ public class TicketController {
         }
     }
 
+    // Admin edits ticket
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody Map<String, String> body) {
+        try {
+            String ticketNumber = body.get("ticketNumber");
+            String qrCode = body.get("qrCode");
+            return ResponseEntity.ok(ticketService.updateTicket(id, ticketNumber, qrCode));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     // Admin gets all tickets
     @GetMapping
     public ResponseEntity<List<Ticket>> getAll() {
