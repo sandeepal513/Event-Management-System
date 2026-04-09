@@ -13,8 +13,16 @@ export default function Events() {
     const [keyword, setKeyword] = useState("");
 
     useEffect(() => {
-        if(!loaded){
-            axios.get("http://localhost:3000/api/events/all")
+        if (!loaded) {
+
+            const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+
+            if (!loggedInUser?.id) {
+                console.error("User not logged in");
+                return;
+            }
+
+            axios.get(`http://localhost:3000/api/events/organizer/${loggedInUser.id}`)
                 .then((response) => {
                     console.log("Fetched events:", response.data);
                     setEvents(response.data);
@@ -50,18 +58,31 @@ export default function Events() {
     }
 
     async function searchEvents() {
-        try{
+        try {
+            const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
 
-            if(keyword.trim() === ""){
-                const res = await axios.get("http://localhost:3000/api/events/all");
-                setEvents(res.data);
-            }else{
-                const res = await axios.get(`http://localhost:3000/api/events/search?keyword=${keyword}`);
-                setEvents(res.data);
+            if (!loggedInUser?.id) {
+                console.error("User not logged in");
+                return;
             }
 
-        }catch(error){
+            let res;
+
+            if (keyword.trim() === "") {
+                res = await axios.get(
+                    `http://localhost:3000/api/events/organizer/${loggedInUser.id}`
+                );
+            } else {
+                res = await axios.get(
+                    `http://localhost:3000/api/events/organizer/${loggedInUser.id}/search?keyword=${keyword}`
+                );
+            }
+
+            setEvents(res.data);
+
+        } catch (error) {
             console.error("Error searching events:", error);
+            toast.error("Failed to search events");
         }
     }
 
