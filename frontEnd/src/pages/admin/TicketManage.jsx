@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { FiCalendar, FiClock, FiEdit3, FiMapPin, FiSearch, FiSlash, FiUsers } from "react-icons/fi";
+import { FiArrowLeft, FiCalendar, FiClock, FiEdit3, FiMapPin, FiSearch, FiSlash, FiUsers } from "react-icons/fi";
 
 function formatDateTime(value) {
 	if (!value) return "N/A";
@@ -83,6 +83,11 @@ export default function TicketManage() {
 		<div className="space-y-4">
 			<div className="overflow-hidden rounded-2xl border border-white/10 bg-[#1c1c1a] shadow-[0_14px_42px_rgba(0,0,0,0.28)]">
 				<div className="border-b border-white/10 px-5 py-5 md:px-6">
+					<div className="mb-4">
+						<Link to="/admin/tickets/create" className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3.5 py-2 text-xs font-medium text-white/80 transition hover:bg-white/10 hover:text-white">
+							<FiArrowLeft /> Back to Ticket Create
+						</Link>
+					</div>
 					<div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
 						<div className="max-w-2xl">
 							<p className="text-[11px] uppercase tracking-[0.32em] text-white/45">Admin dashboard</p>
