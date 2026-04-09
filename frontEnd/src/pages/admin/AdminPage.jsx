@@ -5,6 +5,9 @@ import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import EventApprovals from "./EventApproval";
 import EventRegistration from "./EventRegistration";
 import TicketCreate from "./TicketCreate";
+import TicketManage from "./TicketManage";
+import TicketEdit from "./TicketEdit";
+import TicketCancel from "./TicketCancel";
 import ProfilePage from "../../components/ProfilePage";
 import ChangePassword from "../../components/ChangePassword";
 import DeleteAccount from "../../components/DeleteAccount";
@@ -63,7 +66,7 @@ export default function AdminPage() {
 		{ label: "Profile", path: "/admin/profile" },
 		{ label: "Approvals", path: "/admin/approvals" },
 		{ label: "Registrations", path: "/admin/registrations" },
-		{ label: "Tickets", path: "/admin/tickets" },
+		{ label: "Tickets", path: "/admin/tickets/create" },
 		{ label: "Users", path: "/admin/userlist" },
 		{ label: "Change Password", path: "/admin/change-password" },
 		{ label: "Delete Account", path: "/admin/delete-account" },
@@ -116,7 +119,11 @@ export default function AdminPage() {
 					<Route path="profile" element={<ProfilePage />} />
 					<Route path="approvals" element={<EventApprovals />} />
 					<Route path="registrations" element={<EventRegistration />} />
-					<Route path="tickets" element={<TicketCreate />} />
+					<Route path="tickets" element={<Navigate to="create" replace />} />
+					<Route path="tickets/manage" element={<TicketManage />} />
+					<Route path="tickets/create" element={<TicketCreate />} />
+					<Route path="tickets/edit/:ticketId" element={<TicketEdit />} />
+					<Route path="tickets/cancel/:ticketId" element={<TicketCancel />} />
 					<Route path="userlist" element={<UsersList />} />
 					<Route path="change-password" element={<ChangePassword />} />
 					<Route path="delete-account" element={<DeleteAccount />} />
