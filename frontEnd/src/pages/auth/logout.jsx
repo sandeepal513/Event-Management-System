@@ -4,7 +4,10 @@ const Logout = () => {
     const navigate = useNavigate();
 
     const handleConfirmLogout = () => {
-        localStorage.clear();
+        localStorage.removeItem("token");
+        localStorage.removeItem("username");
+        localStorage.removeItem("userRole");
+        localStorage.removeItem("displayName");
         navigate("/auth/login", { replace: true });
     };
 
@@ -20,7 +23,7 @@ const Logout = () => {
                 <p className="text-[11px] uppercase tracking-[0.32em] text-white/45">Logout confirmation</p>
                 <h1 className="mt-3 text-3xl font-semibold">Are you sure?</h1>
                 <p className="mt-3 text-sm leading-6 text-white/60">
-                    You are about to sign out. This will clear all items from local storage on this browser.
+                    You are about to sign out. Your remember-me credentials will be kept for faster login.
                 </p>
                 <div className="mt-6 flex flex-wrap justify-center gap-3">
                     <button

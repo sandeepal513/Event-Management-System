@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { FiCamera, FiEdit3, FiSave } from "react-icons/fi";
@@ -7,6 +8,8 @@ import { uploadProfileImage } from "../utils/storageService";
 const defaultAvatar = "/defaultAvatart.svg";
 
 const ProfilePage = () => {
+
+    const navigate = useNavigate();
 
     const [isLoading, setLoading] = useState(false);
     const fileInputRef = useRef(null);
@@ -30,6 +33,8 @@ const ProfilePage = () => {
             try {
                 const username = localStorage.getItem("username");
                 const userRole = localStorage.getItem("userRole");
+                const storedImageURL = localStorage.getItem("imageURL") || defaultAvatar;
+
                 if (!username) {
                     toast.error("user not found");
                     return;
@@ -54,14 +59,12 @@ const ProfilePage = () => {
                     lastName,
                     email: user.email,
                     phone: user.phoneNo,
+                    image: storedImageURL,
                     role: userRole,
                     create_at:  user.createAt,
-                    image: user.image || defaultAvatar,
                 });
 
-                if (user.image) {
-                    setProfileImage(user.image);
-                }
+                setProfileImage(storedImageURL);
             } catch (error) {
                 const message = error.response?.data?.message || "Server error. Please try again.";
                 toast.error(message);
@@ -80,7 +83,7 @@ const ProfilePage = () => {
                 return false;
             }
 
-            let imageUrl = profile.image || defaultAvatar;
+            let imageURL = profile.image;
 
             if (selectedImageFile) {
                 const uploadedUrl = await uploadProfileImage(selectedImageFile);
@@ -88,21 +91,35 @@ const ProfilePage = () => {
                     toast.error("Profile image upload failed");
                     return false;
                 }
-                imageUrl = uploadedUrl;
+                imageURL = uploadedUrl;
             }
 
             const payload = {
                 name: `${profile.firstName} ${profile.lastName}`.trim(),
                 email: profile.email,
                 phoneNo: profile.phone,
-                image: imageUrl,
+                image: imageURL,
             };
 
+            const previousEmail = String(localStorage.getItem("username") || "").trim().toLowerCase();
+            const nextEmail = String(payload.email || "").trim().toLowerCase();
+            const isEmailChanged = Boolean(previousEmail && nextEmail && previousEmail !== nextEmail);
+
             await axios.put(`http://localhost:3000/api/v1/users/${profile.id}`, payload);
-            setProfile((current) => ({ ...current, image: imageUrl }));
-            setProfileImage(imageUrl);
+            setProfile((current) => ({ ...current, image: imageURL }));
+            setProfileImage(imageURL);
+            localStorage.setItem("imageURL", imageURL || defaultAvatar);
             setSelectedImageFile(null);
             toast.success("Profile updated successfully");
+
+            if (isEmailChanged) {
+                toast.success("Email updated. Please log in again.");
+                localStorage.clear();
+                navigate("/auth/login", { replace: true });
+            } else {
+                window.location.reload();
+            }
+
             return true;
         } catch (error) {
             const message = error.response?.data?.message || "Failed to update profile";
@@ -122,9 +139,9 @@ const ProfilePage = () => {
         const file = event.target.files?.[0];
         if (!file) return;
 
-        const imageUrl = URL.createObjectURL(file);
+        const imageURL = URL.createObjectURL(file);
         setSelectedImageFile(file);
-        setProfileImage(imageUrl || defaultAvatar);
+        setProfileImage(imageURL || defaultAvatar);
     }
 
     function handleChange(event) {

@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
 
+    const defaultAvatar = "/defaultAvatart.svg";
+
     const navigate = useNavigate();
 
     const [userEmail, setUserEmail] = useState('');
@@ -58,6 +60,7 @@ const LoginPage = () => {
             localStorage.setItem("token", response.data.token);
             localStorage.setItem("username", response.data.data.email);
             localStorage.setItem("userRole", response.data.data.role);
+            localStorage.setItem("imageURL", response.data.data.image || defaultAvatar);
             toast.success(response.data.message);
             navigate('/');
         } catch (error) {
