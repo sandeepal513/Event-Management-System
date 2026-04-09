@@ -27,6 +27,9 @@ public class EventService {
     @Autowired
     private SocietyRepository societyRepository;
 
+    @Autowired
+    private EventApprovalRepository eventApprovalRepository;
+
     public Event addEvent(EventRequest request) {
 
         User organizer = userRepository.findById(request.getOrganizerId())
@@ -59,7 +62,17 @@ public class EventService {
         event.setVenue(venue);
         event.setSociety(society);
 
-        return eventRepository.save(event);
+       // return eventRepository.save(event);
+
+        Event savedEvent = eventRepository.save(event);
+
+        EventApproval approval = new EventApproval();
+        approval.setEvent(savedEvent);
+        approval.setStatus("PENDING");
+        eventApprovalRepository.save(approval);
+
+        return savedEvent;
+
     }
 
     public List<Event> getAllEvents() {
