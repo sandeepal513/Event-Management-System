@@ -1,12 +1,14 @@
 package com.university.event_management.service;
 
+import com.university.event_management.model.Event;
 import com.university.event_management.model.Registration;
-import com.university.event_management.model.Society;
 import com.university.event_management.model.Ticket;
+import com.university.event_management.repository.EventRepository;
 import com.university.event_management.repository.RegistrationRepository;
 import com.university.event_management.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,7 +21,11 @@ public class TicketService {
     @Autowired
     private RegistrationRepository registrationRepo;
 
+    @Autowired
+    private EventRepository eventRepo;
+
     //Admin manually creates ticket
+    @Transactional
     public Ticket createTicket(Integer registrationId, String ticketNumber, String qrCode) {
         Registration reg = registrationRepo.findById(registrationId)
                 .orElseThrow(() -> new RuntimeException("Registration not found"));
@@ -29,9 +35,20 @@ public class TicketService {
             throw new RuntimeException("This event does not require a ticket!");
         }
 
+        Event event = eventRepo.findById(reg.getEvent().getId())
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        if (event.getTicketsCount() == null || event.getTicketsCount() <= 0) {
+            throw new RuntimeException("No tickets available for this event!");
+        }
+
         if(ticketRepo.findByRegistrationId(registrationId).isPresent()) {
             throw new RuntimeException("This ticket already exists!");
+
         }
+
+        event.setTicketsCount(event.getTicketsCount() - 1);
+        eventRepo.save(event);
 
         Ticket ticket = new Ticket();
         ticket.setRegistration(reg);
@@ -44,15 +61,51 @@ public class TicketService {
 
     }
 
+    public Ticket updateTicket(Integer id, String ticketNumber, String qrCode) {
+        Ticket ticket = ticketRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+        if ("CANCELLED".equals(ticket.getStatus())) {
+            throw new RuntimeException("Cannot update a cancelled ticket!");
+        }
+
+
+        if (ticketNumber == null || ticketNumber.trim().isEmpty()) {
+            throw new RuntimeException("Ticket number is required!");
+        }
+
+        ticketRepo.findByTicketNumber(ticketNumber)
+                .ifPresent(existing -> {
+                    if (!existing.getTicketId().equals(id)) {
+                        throw new RuntimeException("Ticket number already exists!");
+                    }
+                });
+
+        ticket.setTicketNumber(ticketNumber);
+        ticket.setQrCode(qrCode);
+        return ticketRepo.save(ticket);
+    }
+
     // Admin gets all tickets
     public List<Ticket> getAll() {
         return ticketRepo.findAll();
     }
 
     // Admin cancels ticket
+    @Transactional
     public Ticket cancel(Integer id) {
         Ticket ticket = ticketRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
+
+        if ("CANCELLED".equals(ticket.getStatus())) {
+            throw new RuntimeException("Ticket already cancelled!");
+        }
+
+        Event event = eventRepo.findById(ticket.getRegistration().getEvent().getId())
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        event.setTicketsCount((event.getTicketsCount() == null ? 0 : event.getTicketsCount()) + 1);
+        eventRepo.save(event);
+
         ticket.setStatus("CANCELLED");
         return ticketRepo.save(ticket);
     }
