@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { MdAdminPanelSettings, MdClose, MdDashboard, MdMenu } from "react-icons/md";
+import { MdClose, MdDashboard, MdMenu } from "react-icons/md";
 
 import ProfilePage from "../../components/ProfilePage";
 import ChangePassword from "../../components/ChangePassword";

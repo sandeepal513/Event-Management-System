@@ -2,9 +2,11 @@ import { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { uploadProfileImage } from '../../utils/storageService';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
+  const defaultAvatar = "./defaultAvatart.svg"
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -85,10 +87,17 @@ const RegisterPage = () => {
 
     setLoading(true);
     try {
+      const uploadedUrl = await uploadProfileImage(defaultAvatar);
+      if (!uploadedUrl) {
+        toast.error("default profile update failed");
+        return;
+      }
+
       const response = await axios.post('http://localhost:3000/api/v1/auth/register', {
         name: formData.firstName + " " + formData.lastName,
         email: formData.email,
         phoneNo: formData.phoneNo,
+        image: uploadedUrl,
         password: formData.password,
         role: formData.role,
       });
