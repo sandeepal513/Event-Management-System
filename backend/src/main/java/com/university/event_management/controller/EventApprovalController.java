@@ -47,7 +47,7 @@ public class EventApprovalController {
 
     @GetMapping("/approve")
     public ResponseEntity<List<EventApproval>> getApprove(){
-        return ResponseEntity.ok(eventApprovalService.getApproved());
+        return ResponseEntity.ok(eventApprovalService.getUpcomingApproved());
     }
 
     @GetMapping("/reject")
