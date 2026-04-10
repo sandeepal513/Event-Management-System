@@ -6,6 +6,8 @@ import EventApprovals from "./EventApproval";
 import EventRegistration from "./EventRegistration";
 import TicketCreate from "./TicketCreate";
 import TicketManage from "./TicketManage";
+import TicketSummary from "./TicketSummary";
+import TicketSummaryEventList from "./TicketSummaryEventList";
 import TicketEdit from "./TicketEdit";
 import TicketCancel from "./TicketCancel";
 import ProfilePage from "../../components/ProfilePage";
@@ -66,7 +68,8 @@ export default function AdminPage() {
 		{ label: "Profile", path: "/admin/profile" },
 		{ label: "Approvals", path: "/admin/approvals" },
 		{ label: "Registrations", path: "/admin/registrations" },
-		{ label: "Tickets", path: "/admin/tickets/create" },
+		{ label: "Summary", path: "/admin/tickets/summary" },
+		{ label: "Ticket Create", path: "/admin/tickets/create" },
 		{ label: "Users", path: "/admin/userlist" },
 		{ label: "Change Password", path: "/admin/change-password" },
 		{ label: "Delete Account", path: "/admin/delete-account" },
@@ -89,7 +92,7 @@ export default function AdminPage() {
 				{sidebarOpen ? <MdClose className="text-2xl" /> : <MdMenu className="text-2xl" />}
 			</button>
 
-			<div className={`fixed md:static z-30 w-75 h-full bg-[#1e1e1c] transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
+			<div className={`fixed md:static z-30 w-75 h-full bg-[#1e1e1c] transition-transform duration-300 overflow-y-auto ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
 				<div className="w-full px-5 py-6 flex flex-col items-center justify-center border-b border-white/10">
 					<img
 						src={userProfile.image}
@@ -99,7 +102,7 @@ export default function AdminPage() {
 					<h2 className="text-lg font-semibold text-white text-center truncate">{userProfile.name}</h2>
 					<p className="text-xs text-white/60 mt-1">{userProfile.role}</p>
 				</div>
-				<div className="w-full flex flex-col pl-5 pt-5">
+				<div className="w-full flex flex-col pl-5 pt-5 pb-6">
 					{sidebarItems.map((item) => (
 						<Link
 							key={item.label}
@@ -119,8 +122,10 @@ export default function AdminPage() {
 					<Route path="profile" element={<ProfilePage />} />
 					<Route path="approvals" element={<EventApprovals />} />
 					<Route path="registrations" element={<EventRegistration />} />
-					<Route path="tickets" element={<Navigate to="create" replace />} />
+					<Route path="tickets" element={<Navigate to="summary" replace />} />
 					<Route path="tickets/manage" element={<TicketManage />} />
+					<Route path="tickets/summary" element={<TicketSummary />} />
+					<Route path="tickets/summary/:eventId" element={<TicketSummaryEventList />} />
 					<Route path="tickets/create" element={<TicketCreate />} />
 					<Route path="tickets/edit/:ticketId" element={<TicketEdit />} />
 					<Route path="tickets/cancel/:ticketId" element={<TicketCancel />} />
