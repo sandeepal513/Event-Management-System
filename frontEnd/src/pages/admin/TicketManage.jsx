@@ -3,6 +3,16 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { FiArrowLeft, FiCalendar, FiClock, FiEdit3, FiMapPin, FiSearch, FiSlash, FiUsers } from "react-icons/fi";
 
+function isUpcomingEvent(dateValue) {
+	if (!dateValue) return false;
+	const eventDate = new Date(`${dateValue}T00:00:00`);
+	if (Number.isNaN(eventDate.getTime())) return false;
+
+	const now = new Date();
+	const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+	return eventDate >= today;
+}
+
 function formatDateTime(value) {
 	if (!value) return "N/A";
 	const parsed = new Date(value);
@@ -50,9 +60,13 @@ export default function TicketManage() {
 		};
 	}, []);
 
+	const upcomingTickets = useMemo(() => {
+		return tickets.filter((ticket) => isUpcomingEvent(ticket.registration?.event?.date));
+	}, [tickets]);
+
 	const filteredTickets = useMemo(() => {
 		const normalizedQuery = query.trim().toLowerCase();
-		return tickets.filter((ticket) => {
+		return upcomingTickets.filter((ticket) => {
 			const status = ticket.status || "ACTIVE";
 			const matchesFilter = filter === "ALL" || status === filter;
 			const matchesQuery =
@@ -64,16 +78,16 @@ export default function TicketManage() {
 
 			return matchesFilter && matchesQuery;
 		});
-	}, [filter, query, tickets]);
+	}, [filter, query, upcomingTickets]);
 
 	const summary = useMemo(() => {
-		return tickets.reduce((counts, ticket) => {
+		return upcomingTickets.reduce((counts, ticket) => {
 			counts.total += 1;
 			if ((ticket.status || "ACTIVE") === "ACTIVE") counts.active += 1;
 			if (ticket.status === "CANCELLED") counts.cancelled += 1;
 			return counts;
 		}, { total: 0, active: 0, cancelled: 0 });
-	}, [tickets]);
+	}, [upcomingTickets]);
 
 	if (loading) {
 		return <div className="rounded-2xl border border-white/10 bg-[#1c1c1a] p-5 text-white/70">Loading tickets...</div>;
