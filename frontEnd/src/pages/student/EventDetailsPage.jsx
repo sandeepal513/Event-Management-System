@@ -9,6 +9,8 @@ export default function EventDetailsPage() {
 	const { eventId } = useParams();
 	const { state } = useLocation();
 	const navigate = useNavigate();
+	const backLink = state?.fromUrl || "/search";
+	const backLabel = state?.fromLabel || "Back";
 
 	const [event, setEvent] = useState(state?.event || null);
 	const [currentUserId, setCurrentUserId] = useState(null);
@@ -69,9 +71,9 @@ export default function EventDetailsPage() {
 
 	useEffect(() => {
 		if (!event && !loading) {
-			navigate("/student/events", { replace: true });
+			navigate(backLink, { replace: true });
 		}
-	}, [event, loading, navigate]);
+	}, [event, loading, navigate, backLink]);
 
 	async function handleRegister() {
 		if (!event || !currentUserId) return;
@@ -108,8 +110,8 @@ export default function EventDetailsPage() {
 			<div className="min-h-full bg-[#151514] p-4 text-white md:p-6">
 				<div className="mx-auto max-w-5xl rounded-3xl border border-white/10 bg-[#1c1c1a] p-6">
 					<p className="text-white/70">Event not found.</p>
-					<Link to="/student/events" className="mt-4 inline-block rounded-xl border border-white/15 px-4 py-2 text-sm text-white/80 hover:bg-white/5 hover:text-white">
-						Back
+					<Link to={backLink} className="mt-4 inline-block rounded-xl border border-white/15 px-4 py-2 text-sm text-white/80 hover:bg-white/5 hover:text-white">
+						{backLabel}
 					</Link>
 				</div>
 			</div>
@@ -138,10 +140,10 @@ export default function EventDetailsPage() {
 									{isRegistered ? "Registered" : "Not Registered"}
 								</span>
 								<Link
-									to="/student/events"
+									to={backLink}
 									className="rounded-xl border border-white/15 px-4 py-2 text-sm text-white/80 transition hover:bg-white/5 hover:text-white"
 								>
-									Back
+									{backLabel}
 								</Link>
 							</div>
 						</div>
@@ -213,8 +215,8 @@ export default function EventDetailsPage() {
 										</p>
 									)}
 
-									<Link to="/student/events" className="rounded-xl border border-white/15 px-4 py-2 text-sm text-white/80 transition hover:bg-white/5 hover:text-white">
-										Back to Events
+									<Link to={backLink} className="rounded-xl border border-white/15 px-4 py-2 text-sm text-white/80 transition hover:bg-white/5 hover:text-white">
+										{backLabel}
 									</Link>
 								</div>
 							</div>

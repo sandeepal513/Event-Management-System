@@ -146,4 +146,12 @@ public class EventService {
         }
         return eventRepository.findByOrganizerIdAndTitleContainingIgnoreCase(organizerId, keyword);
     }
+
+    public List<Event> getEventsByCategory(String categoryName) {
+        return eventRepository.findByCategoryName(categoryName);
+    }
+
+    public List<Event> getUpComingEvents(){
+        return eventRepository.findTop2ByDateAfterOrderByDateAsc(LocalDate.now());
+    }
 }

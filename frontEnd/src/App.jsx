@@ -12,6 +12,9 @@ import OrganizerPage from './pages/organizer/OrganizerPage';
 import AdminPage from './pages/admin/AdminPage';
 import StudentPage from './pages/student/StudentPage';
 
+import SearchPage from './pages/SearchPage';
+import SearchEventDetailsPage from './pages/SearchEventDetailsPage';
+
 function App() {
   const location = useLocation();
   const backgroundLocation = location.state?.backgroundLocation;
@@ -25,6 +28,9 @@ function App() {
         <Route path="/auth/login" element={<LoginPage />} />
         <Route path="/auth/register" element={<RegisterPage />} />
         <Route path="/auth/forgotPassword" element={<ForgotPassword />} />
+        <Route path="/search" element={<SearchPage />} />
+        <Route path="/search/events/:eventId" element={<SearchEventDetailsPage />} />
+        <Route path="/events/:eventId" element={<SearchEventDetailsPage />} />
         <Route path="/logout" element={<Logout />} />
 
 

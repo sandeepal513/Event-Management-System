@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FiArrowRight, FiCalendar, FiMapPin, FiUsers } from "react-icons/fi";
 import { isOrganizer, isTokenValid } from "../utils/auth";
+import axios from "axios";
 
 export default function Home() {
 	const navigate = useNavigate();
@@ -11,6 +12,7 @@ export default function Home() {
 	const [isLogin, setLogin] = useState(false);
 	const [isOrganizerUser, setIsOrganizerUser] = useState(false);
 	const [profile, setProfile] = useState('');
+	const [categories, setCategories] = useState([]);
 
 	useEffect(() => {
 		let isMounted = true;
@@ -38,114 +40,72 @@ export default function Home() {
 		};
 
 		checkOrganizer();
-		
-		setFeaturedEvents([
-			{
-				id: 1,
-				title: "Tech Conference 2026",
-				date: "April 15, 2026",
-				time: "10:00 AM",
-				venue: { name: "Convention Center" },
-				society: { name: "Tech Society" },
-				image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop",
-				attendees: 250,
-				category: "Technology",
-			},
-			{
-				id: 2,
-				title: "Music Festival",
-				date: "April 20, 2026",
-				time: "6:00 PM",
-				venue: { name: "City Park" },
-				society: { name: "Arts Club" },
-				image: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&h=300&fit=crop",
-				attendees: 500,
-				category: "Music",
-			},
-			{
-				id: 3,
-				title: "Sports Championship",
-				date: "April 25, 2026",
-				time: "2:00 PM",
-				venue: { name: "Sports Stadium" },
-				society: { name: "Sports Club" },
-				image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400&h=300&fit=crop",
-				attendees: 1000,
-				category: "Sports",
-			},
-			{
-				id: 4,
-				title: "Art Exhibition",
-				date: "May 1, 2026",
-				time: "11:00 AM",
-				venue: { name: "Art Gallery" },
-				society: { name: "Art Society" },
-				image: "https://images.unsplash.com/photo-1561214115-6e846a5f3a6f?w=400&h=300&fit=crop",
-				attendees: 200,
-				category: "Art",
-			},
-		]);
 
-		setUpcomingEvents([
-			{
-				id: 5,
-				title: "Startup Pitch Night",
-				date: "April 18, 2026",
-				time: "7:00 PM",
-				venue: { name: "Innovation Hub" },
-				society: { name: "Entrepreneurship Club" },
-				image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=300&h=250&fit=crop",
-				attendees: 150,
-			},
-			{
-				id: 6,
-				title: "Food Festival",
-				date: "April 22, 2026",
-				time: "5:00 PM",
-				venue: { name: "Food Court" },
-				society: { name: "Food Club" },
-				image: "https://images.unsplash.com/photo-1555939594-58d7cb561a1a?w=300&h=250&fit=crop",
-				attendees: 400,
-			},
-		]);
 		return () => {
 			isMounted = false;
 		};
 	}, []);
 
+	useEffect(() => {
+		let isMounted = true;
 
-	const categories = [
-		{
-			name: "Technology",
-			icon: "🖥️",
-			image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=300&h=200&fit=crop",
+		async function getCategories() {
+			try {
+				const res = await axios.get("http://localhost:3000/api/categories/all");
+
+				if (isMounted) {
+					setCategories(res.data);
+				}
+			} catch (err) {
+				console.error("Error fetching categories:", err);
+			}
+		}
+
+		getCategories();
+
+		return () => {
+			isMounted = false;
+		};
+	}, []);
+
+	useEffect(() => {
+		async function fetchUpComingEvents() {
+			try {
+				const res = await axios.get("http://localhost:3000/api/events/upcoming");
+				setUpcomingEvents(res.data);
+			} catch (err) {
+				console.error("Error fetching upcoming events:", err);
+			}
+		}
+		fetchUpComingEvents();
+	}, []);
+
+	const categoryExtras = {
+		"Academic": {
+			icon: "📚",
+			image: "https://aimemlqbnggmvrrgaayd.supabase.co/storage/v1/object/public/other-images/Academic.jpg?w=300&h=200&fit=crop"
 		},
-		{
-			name: "Music",
-			icon: "🎵",
-			image: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300&h=200&fit=crop",
-		},
-		{
-			name: "Sports",
+		"Sports": {
 			icon: "⚽",
-			image: "https://images.unsplash.com/photo-1517836357463-d25ddfcbf042?w=300&h=200&fit=crop",
+			image: "https://aimemlqbnggmvrrgaayd.supabase.co/storage/v1/object/public/other-images/Sports.jpg?w=300&h=200&fit=crop"
 		},
-		{
-			name: "Art & Culture",
+		"Arts": {
 			icon: "🎨",
-			image: "https://images.unsplash.com/photo-1561019613-cd4628902d4a?w=300&h=200&fit=crop",
+			image: "https://aimemlqbnggmvrrgaayd.supabase.co/storage/v1/object/public/other-images/Arts.jpg?w=300&h=200&fit=crop"
 		},
-		{
-			name: "Food & Drinks",
-			icon: "🍽️",
-			image: "https://images.unsplash.com/photo-1555939594-58d7cb561a1b?w=300&h=200&fit=crop",
+		"Technology": {
+			icon: "🖥️",
+			image: "https://aimemlqbnggmvrrgaayd.supabase.co/storage/v1/object/public/other-images/Technology.jpg?w=300&h=200&fit=crop"
 		},
-		{
-			name: "Business",
+		"Social Events": {
+			icon: "🎉",
+			image: "https://aimemlqbnggmvrrgaayd.supabase.co/storage/v1/object/public/other-images/Social%20Events.png?w=300&h=200&fit=crop"
+		},
+		"Other Events": {
 			icon: "💼",
-			image: "https://images.unsplash.com/photo-1552664730-d307ca884970?w=300&h=200&fit=crop",
-		},
-	];
+			image: "https://aimemlqbnggmvrrgaayd.supabase.co/storage/v1/object/public/other-images/Career%20&%20Alumni.jpg?w=300&h=200&fit=crop"
+		}
+	};
 
 	const handleLogout = () => {
 		localStorage.removeItem("token");
@@ -165,7 +125,7 @@ export default function Home() {
 						EventOra
 					</Link>
 					<div className="flex items-center gap-3">
-						{ !isLogin &&
+						{!isLogin &&
 							<Link
 								to="/auth/register"
 								className="inline-flex items-center justify-center rounded-lg bg-linear-to-r from-sky-500 to-cyan-500 px-5 py-2 text-sm font-semibold text-white hover:shadow-lg hover:shadow-sky-500/30 transition-all"
@@ -174,7 +134,7 @@ export default function Home() {
 							</Link>
 						}
 
-						{isLogin ? 
+						{isLogin ?
 							<div className="group relative">
 								<button
 									type="button"
@@ -259,74 +219,35 @@ export default function Home() {
 					<p className="text-white/60 mb-12">Explore events across different categories</p>
 
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-						{categories.map((category, index) => (
-							<Link
-								key={index}
-								to={`/search?category=${category.name}`}
-								className="group relative h-48 rounded-xl overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-300"
-							>
-								<img
-									src={category.image}
-									alt={category.name}
-									className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-								/>
-								<div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent" />
-								<div className="absolute bottom-0 left-0 right-0 p-6">
-									<p className="text-3xl mb-2">{category.icon}</p>
-									<h3 className="text-2xl font-bold text-white">{category.name}</h3>
-								</div>
-							</Link>
-						))}
-					</div>
-				</div>
-			</section>
 
-			{/* Featured Events */}
-			<section className="py-16 px-4 md:px-8">
-				<div className="max-w-7xl mx-auto">
-					<h2 className="text-4xl font-bold text-white mb-4">Featured Events</h2>
-					<p className="text-white/60 mb-12">Don't miss out on these amazing events</p>
+						{categories.map((category) => {
+							const extra = categoryExtras[category.name] || {
+								icon: "📌",
+								image: "https://via.placeholder.com/300x200"
+							};
 
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-						{featuredEvents.map((event) => (
-							<Link
-								key={event.id}
-								to={`/event/${event.id}`}
-								className="group relative h-72 rounded-xl overflow-hidden cursor-pointer hover:shadow-xl hover:shadow-sky-500/20 transition-all duration-300"
-							>
-								<img
-									src={event.image}
-									alt={event.title}
-									className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-								/>
-								<div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/30 to-transparent" />
+							return (
+								<Link
+									key={category.id}
+									to={`/search?category=${category.name}`}
+									className="group relative h-48 rounded-xl overflow-hidden cursor-pointer hover:shadow-xl transition-all duration-300"
+								>
+									<img
+										src={extra.image}
+										alt={category.name}
+										className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+									/>
 
-								{/* Badge */}
-								<div className="absolute top-4 right-4 bg-linear-to-r from-sky-500 to-cyan-500 px-3 py-1 rounded-full text-white text-sm font-semibold">
-									{event.category}
-								</div>
+									<div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent" />
 
-								{/* Event Info */}
-								<div className="absolute bottom-0 left-0 right-0 p-5">
-									<h3 className="text-xl font-bold text-white mb-3 line-clamp-2">{event.title}</h3>
-
-									<div className="space-y-2 text-sm text-white/80">
-										<p className="flex items-center gap-2">
-											<FiCalendar className="text-sky-400 shrink-0" />
-											{event.date}
-										</p>
-										<p className="flex items-center gap-2">
-											<FiMapPin className="text-pink-400 shrink-0" />
-											{event.venue?.name}
-										</p>
-										<p className="flex items-center gap-2">
-											<FiUsers className="text-emerald-400 shrink-0" />
-											{event.attendees} attending
-										</p>
+									<div className="absolute bottom-0 left-0 right-0 p-6">
+										<p className="text-3xl mb-2">{extra.icon}</p>
+										<h3 className="text-2xl font-bold text-white">{category.name}</h3>
 									</div>
-								</div>
-							</Link>
-						))}
+								</Link>
+							);
+						})}
+
 					</div>
 				</div>
 			</section>
@@ -341,11 +262,12 @@ export default function Home() {
 						{upcomingEvents.map((event) => (
 							<Link
 								key={event.id}
-								to={`/event/${event.id}`}
+								to={`/events/${event.id}`}
+								state={{ event, fromUrl: "/", fromLabel: "Back to Home" }}
 								className="group flex bg-linear-to-r from-[#1f1f1d] to-[#2a2a27] border border-white/10 rounded-xl overflow-hidden hover:border-sky-500/50 hover:shadow-lg hover:shadow-sky-500/10 transition-all duration-300"
 							>
 								<img
-									src={event.image}
+									src={event.imageUrl}
 									alt={event.title}
 									className="w-40 h-40 object-cover group-hover:scale-110 transition-transform duration-300"
 								/>

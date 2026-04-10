@@ -9,7 +9,6 @@ import DeleteAccount from "../../components/DeleteAccount";
 import StudentRegitered from "./StudentRegitered";
 import TicketPage from "./TicketPage";
 import EventDetailsPage from './EventDetailsPage';
-import EventView from './EventView';
 
 const defaultAvatar = "/defaultAvatart.svg";
 
@@ -54,7 +53,6 @@ const StudentPage = () => {
 
     const sidebarItems = [
         { label: "Profile", path: "/student/profile" },
-        { label: "Events", path: "/student/events" },
         { label: "Registered Events", path: "/student/registered-events" },
         { label: "Change Password", path: "/student/change-password" },
         { label: "Delete Account", path: "/student/delete-account" },
@@ -108,7 +106,6 @@ const StudentPage = () => {
                     <Routes>
                         <Route path="profile" element={<ProfilePage />} />
                         <Route path="registered-events" element={<StudentRegitered />} />
-                        <Route path="events" element={<EventView />} />
                         <Route path="events/:eventId" element={<EventDetailsPage />} />
                         <Route path="tickets/:registrationId" element={<TicketPage />} />
                         <Route path="change-password" element={<ChangePassword />} />
