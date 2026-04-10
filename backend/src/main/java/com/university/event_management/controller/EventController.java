@@ -50,4 +50,14 @@ public class EventController {
     public List<Event> searchEventsByOrganizer(@PathVariable Integer organizerId, @RequestParam String keyword) {
         return eventService.searchEventsByOrganizer(organizerId, keyword);
     }
+
+    @GetMapping("/category")
+    public List<Event> getEventsByCategory(@RequestParam String categoryName){
+        return eventService.getEventsByCategory(categoryName);
+    }
+
+    @GetMapping("/upcoming")
+    public List<Event> getUpComingEvents() {
+        return eventService.getUpComingEvents();
+    }
 }
