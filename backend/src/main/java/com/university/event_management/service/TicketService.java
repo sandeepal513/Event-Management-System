@@ -30,6 +30,10 @@ public class TicketService {
         Registration reg = registrationRepo.findById(registrationId)
                 .orElseThrow(() -> new RuntimeException("Registration not found"));
 
+        if (ticketNumber == null || ticketNumber.trim().isEmpty()) {
+            throw new RuntimeException("Ticket number is required!");
+        }
+
         if(reg.getEvent().getTicketRequired() == null
         || !reg.getEvent().getTicketRequired()) {
             throw new RuntimeException("This event does not require a ticket!");
@@ -42,13 +46,29 @@ public class TicketService {
             throw new RuntimeException("No tickets available for this event!");
         }
 
-        if(ticketRepo.findByRegistrationId(registrationId).isPresent()) {
-            throw new RuntimeException("This ticket already exists!");
+        Ticket existingTicket = ticketRepo.findByRegistrationId(registrationId).orElse(null);
 
+        if (existingTicket != null && !"CANCELLED".equalsIgnoreCase(existingTicket.getStatus())) {
+            throw new RuntimeException("This ticket already exists!");
         }
+
+        ticketRepo.findByTicketNumber(ticketNumber)
+                .ifPresent(found -> {
+                    // Allow same ticket record to be reactivated with its own number.
+                    if (existingTicket == null || !found.getTicketId().equals(existingTicket.getTicketId())) {
+                        throw new RuntimeException("Ticket number already exists!");
+                    }
+                });
 
         event.setTicketsCount(event.getTicketsCount() - 1);
         eventRepo.save(event);
+
+        if (existingTicket != null) {
+            existingTicket.setTicketNumber(ticketNumber);
+            existingTicket.setQrCode(qrCode);
+            existingTicket.setStatus("ACTIVE");
+            return ticketRepo.save(existingTicket);
+        }
 
         Ticket ticket = new Ticket();
         ticket.setRegistration(reg);

@@ -5,6 +5,16 @@ import toast from "react-hot-toast";
 import QRCode from "qrcode";
 import { FiArrowRight, FiCalendar, FiCheckCircle, FiMapPin, FiPlusCircle, FiSearch, FiUsers } from "react-icons/fi";
 
+function isUpcomingEvent(dateValue) {
+	if (!dateValue) return false;
+	const eventDate = new Date(`${dateValue}T00:00:00`);
+	if (Number.isNaN(eventDate.getTime())) return false;
+
+	const now = new Date();
+	const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+	return eventDate >= today;
+}
+
 function RegistrationCard({ reg, ticketValue, qrPreview, isSaving, remainingTickets, onTicketChange, onGenerateQR, onSave }) {
 	return (
 		<div className="overflow-hidden rounded-2xl border border-white/10 bg-[#1b1b19] shadow-[0_12px_30px_rgba(0,0,0,0.22)]">
@@ -78,6 +88,7 @@ function RegistrationCard({ reg, ticketValue, qrPreview, isSaving, remainingTick
 export default function TicketCreate() {
 	const navigate = useNavigate();
 	const [registrations, setRegistrations] = useState([]);
+	const [tickets, setTickets] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [selectedEventId, setSelectedEventId] = useState("ALL");
 	const [ticketInputs, setTicketInputs] = useState({});
@@ -90,10 +101,18 @@ export default function TicketCreate() {
 
 		(async () => {
 			try {
-				const response = await axios.get("http://localhost:3000/api/registration");
+				const [registrationResponse, ticketResponse] = await Promise.all([
+					axios.get("http://localhost:3000/api/registration"),
+					axios.get("http://localhost:3000/api/tickets"),
+				]);
 				if (!mounted) return;
 
-				const confirmed = response.data.filter((reg) => reg.status === "CONFIRMED" && reg.event?.ticketRequired);
+				const confirmed = Array.isArray(registrationResponse.data)
+					? registrationResponse.data.filter((reg) => reg.status === "CONFIRMED" && reg.event?.ticketRequired)
+					: [];
+				const allTickets = Array.isArray(ticketResponse.data) ? ticketResponse.data : [];
+
+				setTickets(allTickets);
 				setRegistrations(confirmed);
 			} catch (error) {
 				console.error("Error loading registrations:", error);
@@ -108,9 +127,26 @@ export default function TicketCreate() {
 		};
 	}, []);
 
+	const activeTicketRegistrationIds = useMemo(() => {
+		return new Set(
+			tickets
+				.filter((ticket) => ticket.status !== "CANCELLED")
+				.map((ticket) => ticket.registration?.id)
+				.filter(Boolean)
+		);
+	}, [tickets]);
+
 	const filteredRegistrations = useMemo(() => {
 		const q = query.trim().toLowerCase();
 		return registrations.filter((reg) => {
+			if (!isUpcomingEvent(reg.event?.date)) {
+				return false;
+			}
+
+			if (activeTicketRegistrationIds.has(reg.id)) {
+				return false;
+			}
+
 			const matchesEvent = selectedEventId === "ALL" || String(reg.event?.id) === selectedEventId;
 			const student = reg.user?.name || reg.user?.email || "";
 			const event = reg.event?.title || "";
@@ -118,18 +154,21 @@ export default function TicketCreate() {
 			const matchesQuery = q.length === 0 || student.toLowerCase().includes(q) || event.toLowerCase().includes(q) || venue.toLowerCase().includes(q) || String(reg.id).includes(q);
 			return matchesEvent && matchesQuery;
 		});
-	}, [query, registrations, selectedEventId]);
+	}, [activeTicketRegistrationIds, query, registrations, selectedEventId]);
 
 	const eventOptions = useMemo(() => {
 		const uniqueEvents = new Map();
 		registrations.forEach((reg) => {
+			if (!isUpcomingEvent(reg.event?.date)) return;
+			if (activeTicketRegistrationIds.has(reg.id)) return;
+
 			const event = reg.event;
 			if (event?.id && !uniqueEvents.has(event.id)) {
 				uniqueEvents.set(event.id, event);
 			}
 		});
 		return Array.from(uniqueEvents.values()).sort((a, b) => (a.title || "").localeCompare(b.title || ""));
-	}, [registrations]);
+	}, [activeTicketRegistrationIds, registrations]);
 
 	const selectedEvent = useMemo(() => {
 		if (selectedEventId === "ALL") return null;

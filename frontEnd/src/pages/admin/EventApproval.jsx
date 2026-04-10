@@ -36,6 +36,19 @@ function formatDateTime(value) {
 	});
 }
 
+function isUpcomingByDateOnly(event) {
+	if (!event?.date) return true;
+
+	const eventDate = new Date(event.date);
+	if (Number.isNaN(eventDate.getTime())) return true;
+
+	const now = new Date();
+	const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+	const eventDay = new Date(eventDate.getFullYear(), eventDate.getMonth(), eventDate.getDate());
+
+	return eventDay >= today;
+}
+
 export default function EventApprovals() {
 	const [approvals, setApprovals] = useState([]);
 	const [loading, setLoading] = useState(true);
@@ -68,7 +81,9 @@ export default function EventApprovals() {
 	}, []);
 
 	const summary = useMemo(() => {
-		return approvals.reduce(
+		const upcomingApprovals = approvals.filter((approval) => isUpcomingByDateOnly(approval.event));
+
+		return upcomingApprovals.reduce(
 			(counts, approval) => {
 				const status = normalizeStatus(approval.status);
 				counts.total += 1;
@@ -85,6 +100,10 @@ export default function EventApprovals() {
 		const normalizedQuery = query.trim().toLowerCase();
 
 		return approvals.filter((approval) => {
+			if (!isUpcomingByDateOnly(approval.event)) {
+				return false;
+			}
+
 			const status = normalizeStatus(approval.status);
 			const matchesFilter = filter === "ALL" || status === filter;
 			const eventTitle = approval.event?.title || "";
