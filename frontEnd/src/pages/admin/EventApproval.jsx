@@ -63,7 +63,12 @@ export default function EventApprovals() {
 
 		(async () => {
 			try {
-				const response = await fetch("http://localhost:3000/api/event-approvals");
+				let endpoint = "http://localhost:3000/api/event-approvals";
+				if (filter === "PENDING") endpoint = "http://localhost:3000/api/event-approvals/pending";
+				else if (filter === "APPROVED") endpoint = "http://localhost:3000/api/event-approvals/approve";
+				else if (filter === "REJECTED") endpoint = "http://localhost:3000/api/event-approvals/reject";
+
+				const response = await fetch(endpoint);
 				if (!response.ok) throw new Error(`Request failed with ${response.status}`);
 				const data = await response.json();
 				if (mounted) setApprovals(Array.isArray(data) ? data : []);
@@ -78,23 +83,27 @@ export default function EventApprovals() {
 		return () => {
 			mounted = false;
 		};
-	}, []);
+	}, [filter]);
 
 	const summary = useMemo(() => {
 		const upcomingApprovals = approvals.filter((approval) => isUpcomingByDateOnly(approval.event));
+		const counts = { total: 0, pending: 0, approved: 0, rejected: 0 };
+		counts.total = upcomingApprovals.length;
 
-		return upcomingApprovals.reduce(
-			(counts, approval) => {
+		if (filter === "PENDING") counts.pending = upcomingApprovals.length;
+		else if (filter === "APPROVED") counts.approved = upcomingApprovals.length;
+		else if (filter === "REJECTED") counts.rejected = upcomingApprovals.length;
+		else {
+			upcomingApprovals.forEach((approval) => {
 				const status = normalizeStatus(approval.status);
-				counts.total += 1;
 				if (status === "PENDING") counts.pending += 1;
 				if (status === "APPROVED") counts.approved += 1;
 				if (status === "REJECTED") counts.rejected += 1;
-				return counts;
-			},
-			{ total: 0, pending: 0, approved: 0, rejected: 0 }
-		);
-	}, [approvals]);
+			});
+		}
+
+		return counts;
+	}, [approvals, filter]);
 
 	const visibleApprovals = useMemo(() => {
 		const normalizedQuery = query.trim().toLowerCase();
@@ -104,8 +113,6 @@ export default function EventApprovals() {
 				return false;
 			}
 
-			const status = normalizeStatus(approval.status);
-			const matchesFilter = filter === "ALL" || status === filter;
 			const eventTitle = approval.event?.title || "";
 			const organizerName = approval.event?.organizer?.name || "";
 			const venueName = approval.event?.venue?.name || "";
@@ -118,9 +125,9 @@ export default function EventApprovals() {
 				categoryName.toLowerCase().includes(normalizedQuery) ||
 				String(approval.id).includes(normalizedQuery);
 
-			return matchesFilter && matchesQuery;
+			return matchesQuery;
 		});
-	}, [approvals, filter, query]);
+	}, [approvals, query]);
 
 	const showActionsColumn = visibleApprovals.some((approval) => normalizeStatus(approval.status) === "PENDING");
 
