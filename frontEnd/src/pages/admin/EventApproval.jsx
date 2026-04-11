@@ -51,6 +51,7 @@ function isUpcomingByDateOnly(event) {
 
 export default function EventApprovals() {
 	const [approvals, setApprovals] = useState([]);
+	const [summaryApprovals, setSummaryApprovals] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
 	const [filter, setFilter] = useState("PENDING");
@@ -63,15 +64,26 @@ export default function EventApprovals() {
 
 		(async () => {
 			try {
-				let endpoint = "http://localhost:3000/api/event-approvals";
-				if (filter === "PENDING") endpoint = "http://localhost:3000/api/event-approvals/pending";
-				else if (filter === "APPROVED") endpoint = "http://localhost:3000/api/event-approvals/approve";
-				else if (filter === "REJECTED") endpoint = "http://localhost:3000/api/event-approvals/reject";
+				let filteredEndpoint = "http://localhost:3000/api/event-approvals";
+				if (filter === "PENDING") filteredEndpoint = "http://localhost:3000/api/event-approvals/pending";
+				else if (filter === "APPROVED") filteredEndpoint = "http://localhost:3000/api/event-approvals/approve";
+				else if (filter === "REJECTED") filteredEndpoint = "http://localhost:3000/api/event-approvals/reject";
 
-				const response = await fetch(endpoint);
-				if (!response.ok) throw new Error(`Request failed with ${response.status}`);
-				const data = await response.json();
-				if (mounted) setApprovals(Array.isArray(data) ? data : []);
+				const [filteredResponse, allResponse] = await Promise.all([
+					fetch(filteredEndpoint),
+					filter === "ALL" ? null : fetch("http://localhost:3000/api/event-approvals"),
+				]);
+
+				if (!filteredResponse.ok) throw new Error(`Request failed with ${filteredResponse.status}`);
+				if (allResponse && !allResponse.ok) throw new Error(`Request failed with ${allResponse.status}`);
+
+				const filteredData = await filteredResponse.json();
+				const allData = allResponse ? await allResponse.json() : filteredData;
+
+				if (mounted) {
+					setApprovals(Array.isArray(filteredData) ? filteredData : []);
+					setSummaryApprovals(Array.isArray(allData) ? allData : []);
+				}
 			} catch (loadError) {
 				console.error("Error loading approvals:", loadError);
 				if (mounted) setError("Unable to load event approvals right now.");
@@ -86,24 +98,19 @@ export default function EventApprovals() {
 	}, [filter]);
 
 	const summary = useMemo(() => {
-		const upcomingApprovals = approvals.filter((approval) => isUpcomingByDateOnly(approval.event));
+		const upcomingApprovals = summaryApprovals.filter((approval) => isUpcomingByDateOnly(approval.event));
 		const counts = { total: 0, pending: 0, approved: 0, rejected: 0 };
 		counts.total = upcomingApprovals.length;
 
-		if (filter === "PENDING") counts.pending = upcomingApprovals.length;
-		else if (filter === "APPROVED") counts.approved = upcomingApprovals.length;
-		else if (filter === "REJECTED") counts.rejected = upcomingApprovals.length;
-		else {
-			upcomingApprovals.forEach((approval) => {
-				const status = normalizeStatus(approval.status);
-				if (status === "PENDING") counts.pending += 1;
-				if (status === "APPROVED") counts.approved += 1;
-				if (status === "REJECTED") counts.rejected += 1;
-			});
-		}
+		upcomingApprovals.forEach((approval) => {
+			const status = normalizeStatus(approval.status);
+			if (status === "PENDING") counts.pending += 1;
+			if (status === "APPROVED") counts.approved += 1;
+			if (status === "REJECTED") counts.rejected += 1;
+		});
 
 		return counts;
-	}, [approvals, filter]);
+	}, [summaryApprovals]);
 
 	const visibleApprovals = useMemo(() => {
 		const normalizedQuery = query.trim().toLowerCase();
@@ -140,7 +147,13 @@ export default function EventApprovals() {
 
 			if (!response.ok) throw new Error(`Request failed with ${response.status}`);
 
-			setApprovals((current) => current.filter((approval) => approval.id !== id));
+			setApprovals((current) => {
+				if (filter !== "ALL") return current.filter((approval) => approval.id !== id);
+				return current.map((approval) => (approval.id === id ? { ...approval, status: "APPROVED" } : approval));
+			});
+			setSummaryApprovals((current) =>
+				current.map((approval) => (approval.id === id ? { ...approval, status: "APPROVED" } : approval))
+			);
 			toast.success("Event approved");
 		} catch (approveError) {
 			console.error("Error approving event:", approveError);
@@ -167,7 +180,13 @@ export default function EventApprovals() {
 
 			if (!response.ok) throw new Error(`Request failed with ${response.status}`);
 
-			setApprovals((current) => current.filter((approval) => approval.id !== id));
+			setApprovals((current) => {
+				if (filter !== "ALL") return current.filter((approval) => approval.id !== id);
+				return current.map((approval) => (approval.id === id ? { ...approval, status: "REJECTED" } : approval));
+			});
+			setSummaryApprovals((current) =>
+				current.map((approval) => (approval.id === id ? { ...approval, status: "REJECTED" } : approval))
+			);
 			setRejectReason((current) => {
 				const next = { ...current };
 				delete next[id];
