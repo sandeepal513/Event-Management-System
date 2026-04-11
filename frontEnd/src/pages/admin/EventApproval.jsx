@@ -122,6 +122,8 @@ export default function EventApprovals() {
 		});
 	}, [approvals, filter, query]);
 
+	const showActionsColumn = visibleApprovals.some((approval) => normalizeStatus(approval.status) === "PENDING");
+
 	async function handleApprove(id) {
 		try {
 			setProcessingId(id);
@@ -270,7 +272,7 @@ export default function EventApprovals() {
 										<th className="px-4 py-3.5 font-medium">Venue</th>
 										<th className="px-4 py-3.5 font-medium">Status</th>
 										<th className="px-4 py-3.5 font-medium">Created</th>
-										<th className="px-4 py-3.5 font-medium">Actions</th>
+										{showActionsColumn ? <th className="px-4 py-3.5 font-medium">Actions</th> : null}
 									</tr>
 								</thead>
 								<tbody>
@@ -293,43 +295,47 @@ export default function EventApprovals() {
 													<span className={`inline-flex rounded-full border px-3 py-1 text-xs font-medium ${statusMeta.className}`}>{statusMeta.label}</span>
 												</td>
 												<td className="px-4 py-4 text-white/70">{formatDateTime(approval.createdAt)}</td>
-												<td className="px-4 py-4">
-													<div className="space-y-2.5">
-														<input
-															type="text"
-															placeholder="Reason if rejecting"
-															value={rejectReason[approval.id] || ""}
-															onChange={(event) =>
-																setRejectReason((current) => ({
-																	...current,
-																	[approval.id]: event.target.value,
-																}))
-															}
-															className="w-full rounded-xl border border-white/10 bg-[#111110] px-3 py-2 text-xs text-white outline-none placeholder:text-white/35 focus:border-sky-400/50"
-														/>
+												{showActionsColumn ? (
+													<td className="px-4 py-4">
+													{canAct ? (
+														<div className="space-y-2.5">
+															<input
+																type="text"
+																placeholder="Reason if rejecting"
+																value={rejectReason[approval.id] || ""}
+																onChange={(event) =>
+																	setRejectReason((current) => ({
+																		...current,
+																		[approval.id]: event.target.value,
+																	}))
+																}
+																className="w-full rounded-xl border border-white/10 bg-[#111110] px-3 py-2 text-xs text-white outline-none placeholder:text-white/35 focus:border-sky-400/50"
+															/>
 
-														<div className="flex flex-wrap gap-2">
-															<button
-																type="button"
-																onClick={() => handleApprove(approval.id)}
-																disabled={!canAct || processingId === approval.id}
-																className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-3 py-2 text-xs font-medium text-white transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50"
-															>
-																<FiCheckCircle />
-																{processingId === approval.id ? "Updating..." : "Approve"}
-															</button>
-															<button
-																type="button"
-																onClick={() => handleReject(approval.id)}
-																disabled={!canAct || processingId === approval.id}
-																className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-white/80 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
-															>
-																<FiSlash />
-																{processingId === approval.id ? "Updating..." : "Reject"}
-															</button>
+															<div className="flex flex-wrap gap-2">
+																<button
+																	type="button"
+																	onClick={() => handleApprove(approval.id)}
+																	disabled={processingId === approval.id}
+																	className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-3 py-2 text-xs font-medium text-white transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50"
+																>
+																	<FiCheckCircle />
+																	{processingId === approval.id ? "Updating..." : "Approve"}
+																</button>
+																<button
+																	type="button"
+																	onClick={() => handleReject(approval.id)}
+																	disabled={processingId === approval.id}
+																	className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-white/80 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+																>
+																	<FiSlash />
+																	{processingId === approval.id ? "Updating..." : "Reject"}
+																</button>
+															</div>
 														</div>
-													</div>
-												</td>
+													) : null}
+													</td>
+												) : null}
 											</tr>
 										);
 									})}
