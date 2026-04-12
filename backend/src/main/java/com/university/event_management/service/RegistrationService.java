@@ -36,6 +36,10 @@ public class  RegistrationService {
         Event event = eventRepo.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
 
+        if (registrationRepo.existsByUserIdAndEventId(userId, eventId)) {
+            throw new RuntimeException("You have already registered for this event!");
+        }
+
         // ← Block if event does not require ticket
         if (event.getTicketRequired() == null || !event.getTicketRequired()) {
             throw new RuntimeException("This event does not require registration!");
@@ -73,6 +77,14 @@ public class  RegistrationService {
     //Admin sees all registrations
     public List<Registration> getAll(){
         return registrationRepo.findAll();
+    }
+
+    public List<Registration> getConfirmed() {
+        return registrationRepo.findByStatus("CONFIRMED");
+    }
+
+    public List<Registration> getConfirmedTicketRequired() {
+        return registrationRepo.findByStatusAndEventTicketRequiredTrue("CONFIRMED");
     }
 
     //Admin sees registration by event

@@ -51,6 +51,11 @@ public class TicketController {
         return ResponseEntity.ok(ticketService.getAll());
     }
 
+    @GetMapping("/summary")
+    public ResponseEntity<List<Map<String, Object>>> getSummary() {
+        return ResponseEntity.ok(ticketService.getTicketSummary());
+    }
+
     // Admin cancels ticket
     @PostMapping("/{id}/cancel")
     public ResponseEntity<?> cancel(@PathVariable Integer id) {

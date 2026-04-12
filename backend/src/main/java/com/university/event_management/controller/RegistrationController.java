@@ -55,6 +55,16 @@ public class RegistrationController {
         return ResponseEntity.ok(registrationService.getAll());
     }
 
+    @GetMapping("/confirmed")
+    public ResponseEntity<List<Registration>> getConfirmed() {
+        return ResponseEntity.ok(registrationService.getConfirmed());
+    }
+
+    @GetMapping("/confirmed-ticket-required")
+    public ResponseEntity<List<Registration>> getConfirmedTicketRequired() {
+        return ResponseEntity.ok(registrationService.getConfirmedTicketRequired());
+    }
+
     //Admin sees registration by event
     @GetMapping("/event/{eventId}")
     public ResponseEntity<List<Registration>> getByEventId(@PathVariable Integer eventId) {

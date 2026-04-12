@@ -11,4 +11,10 @@ public interface RegistrationRepository extends JpaRepository<Registration, Inte
 
     List<Registration> findByEventId(Integer eventId);
 
+    List<Registration> findByStatus(String status);
+
+    List<Registration> findByStatusAndEventTicketRequiredTrue(String status);
+
+    boolean existsByUserIdAndEventId(Integer userId, Integer eventId);
+
 }

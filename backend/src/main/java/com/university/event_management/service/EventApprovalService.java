@@ -32,19 +32,11 @@ public class EventApprovalService {
 
     }
 
-    public List<EventApproval> getPending() {
-        return eventApprovalRepo.findByStatus("PENDING");
-    }
-
-    public List<EventApproval> getApproved() {
-        return eventApprovalRepo.findByStatus("APPROVED");
-    }
-
-    public List<EventApproval> getUpcomingApproved() {
+    private List<EventApproval> filterUpcomingEvents(List<EventApproval> approvals) {
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now();
 
-        return eventApprovalRepo.findByStatus("APPROVED").stream()
+        return approvals.stream()
                 .filter(approval -> approval.getEvent() != null && approval.getEvent().getDate() != null)
                 .filter(approval -> {
                     Event event = approval.getEvent();
@@ -53,7 +45,10 @@ public class EventApprovalService {
                         return true;
                     }
 
-                    if (event.getDate().isEqual(today) && event.getTime() != null) {
+                    if (event.getDate().isEqual(today)) {
+                        if (event.getTime() == null) {
+                            return true;
+                        }
                         return !event.getTime().toLocalTime().isBefore(now);
                     }
 
@@ -85,12 +80,24 @@ public class EventApprovalService {
                 .collect(Collectors.toList());
     }
 
+    public List<EventApproval> getPending() {
+        return filterUpcomingEvents(eventApprovalRepo.findByStatus("PENDING"));
+    }
+
+    public List<EventApproval> getApproved() {
+        return filterUpcomingEvents(eventApprovalRepo.findByStatus("APPROVED"));
+    }
+
+    public List<EventApproval> getUpcomingApproved() {
+        return filterUpcomingEvents(eventApprovalRepo.findByStatus("APPROVED"));
+    }
+
     public List<EventApproval> getRejected() {
-        return eventApprovalRepo.findByStatus("REJECTED");
+        return filterUpcomingEvents(eventApprovalRepo.findByStatus("REJECTED"));
     }
 
     public List<EventApproval> getAllApproval() {
-        return eventApprovalRepo.findAll();
+        return filterUpcomingEvents(eventApprovalRepo.findAll());
     }
 
     public EventApproval approve(Integer eventId) {
@@ -101,10 +108,14 @@ public class EventApprovalService {
     }
 
     public EventApproval reject(Integer eventId,String reason) {
+        if (reason == null || reason.trim().isEmpty()) {
+            throw new IllegalArgumentException("Rejection reason is required");
+        }
+
         EventApproval approval = eventApprovalRepo.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
         approval.setStatus("REJECTED");
-        approval.setReason(reason);
+        approval.setReason(reason.trim());
         return eventApprovalRepo.save(approval);
     }
 

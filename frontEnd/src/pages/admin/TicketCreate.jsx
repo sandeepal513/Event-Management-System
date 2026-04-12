@@ -101,10 +101,13 @@ export default function TicketCreate() {
 
 		(async () => {
 			try {
-				const [registrationResponse, ticketResponse] = await Promise.all([
-					axios.get("http://localhost:3000/api/registration"),
-					axios.get("http://localhost:3000/api/tickets"),
-				]);
+				const ticketPromise = axios.get("http://localhost:3000/api/tickets");
+				const registrationPromise = axios
+					.get("http://localhost:3000/api/registration/confirmed-ticket-required")
+					.catch(() => axios.get("http://localhost:3000/api/registration/confirmed"))
+					.catch(() => axios.get("http://localhost:3000/api/registration"));
+
+				const [registrationResponse, ticketResponse] = await Promise.all([registrationPromise, ticketPromise]);
 				if (!mounted) return;
 
 				const confirmed = Array.isArray(registrationResponse.data)

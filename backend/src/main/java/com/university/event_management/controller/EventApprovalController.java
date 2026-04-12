@@ -42,7 +42,11 @@ public class EventApprovalController {
 
     @PostMapping("/{id}/reject")
     public ResponseEntity<EventApproval> reject(@PathVariable("id") Integer eventId,@RequestBody Map<String,String> body){
-        return ResponseEntity.ok(eventApprovalService.reject(eventId,body.get("reason")));
+        String reason = body == null ? null : body.get("reason");
+        if (reason == null || reason.trim().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(eventApprovalService.reject(eventId, reason));
     }
 
     @GetMapping("/approve")
