@@ -10,6 +10,9 @@ import TicketSummary from "./TicketSummary";
 import TicketSummaryEventList from "./TicketSummaryEventList";
 import TicketEdit from "./TicketEdit";
 import TicketCancel from "./TicketCancel";
+import VenueListing from "./VenueListing";
+import AddVenuePage from "./AddVenuePage";
+import UpdateVenuePage from "./UpdateVenuePage";
 import ProfilePage from "../../components/ProfilePage";
 import ChangePassword from "../../components/ChangePassword";
 import DeleteAccount from "../../components/DeleteAccount";
@@ -68,6 +71,7 @@ export default function AdminPage() {
 		{ label: "Profile", path: "/admin/profile" },
 		{ label: "Approvals", path: "/admin/approvals" },
 		{ label: "Registrations", path: "/admin/registrations" },
+		{ label: "Venues", path: "/admin/venues" },
 		{ label: "Summary", path: "/admin/tickets/summary" },
 		{ label: "Ticket Create", path: "/admin/tickets/create" },
 		{ label: "Users", path: "/admin/userlist" },
@@ -129,6 +133,9 @@ export default function AdminPage() {
 					<Route path="tickets/create" element={<TicketCreate />} />
 					<Route path="tickets/edit/:ticketId" element={<TicketEdit />} />
 					<Route path="tickets/cancel/:ticketId" element={<TicketCancel />} />
+					<Route path="venues" element={<VenueListing />} />
+					<Route path="venues/add" element={<AddVenuePage />} />
+					<Route path="venues/edit/:venueId" element={<UpdateVenuePage />} />
 					<Route path="userlist" element={<UsersList />} />
 					<Route path="change-password" element={<ChangePassword />} />
 					<Route path="delete-account" element={<DeleteAccount />} />
