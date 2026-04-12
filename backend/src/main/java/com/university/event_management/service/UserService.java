@@ -53,7 +53,7 @@ public class UserService {
 
     public void generateAndSendOtp(String to) throws UnsupportedEncodingException {
         String otp = String.valueOf((int)(Math.random() * 900000) + 100000);
-        this.otpExpiryTime = System.currentTimeMillis() * 10 * 60 * 1000;
+        this.otpExpiryTime = System.currentTimeMillis() + (10 * 60 * 1000);
 
         this.otp = otp;
         String subject = "Your One-Time Verification Code (OTP) – EventOra";
@@ -72,9 +72,10 @@ public class UserService {
 
     public boolean verifyOtp(String clientOtp) {
         if (otp == null) return false;
+        System.out.println(otp);
 
         if (System.currentTimeMillis() > otpExpiryTime) {
-            otp = null;
+            this.otp = null;
             return false;
         }
 
@@ -83,6 +84,27 @@ public class UserService {
             return true;
         }
         return false;
+    }
+
+    public void sendVerifyEmailOTP(String to) throws UnsupportedEncodingException {
+        String otp = String.valueOf((int)(Math.random() * 900000) + 100000);
+        this.otpExpiryTime = System.currentTimeMillis() + (1000 * 60 * 5);
+
+        this.otp = otp;
+        String subject = "EventOra Security Code: Verify Your Login";
+        String body = "Hi,\n\n" +
+                "We received a request to verify your login to EventOra.\n" +
+                "Use the one-time verification code below to continue:\n\n" +
+                "    " + otp + "\n\n" +
+                "This code expires in 5 minutes and can only be used once.\n" +
+                "For your security, do not share this code with anyone.\n\n" +
+                "If you did not request this code, please ignore this email or contact support immediately.\n\n" +
+                "Best regards,\n" +
+                "EventOra Security Team\n" +
+                "support@eventmanagement.com";
+
+
+        publicService.sendMail(to, subject, body);
     }
 
     public void sendWelcomeEmail(String to) throws UnsupportedEncodingException {
