@@ -13,10 +13,11 @@ public class VenueService {
     @Autowired
     private VenueRepository venueRepository;
 
-    public Venue addVenue(String name, Integer capacity) {
+    public Venue addVenue(Venue adminVenue) {
         Venue venue = new Venue();
-        venue.setName(name);
-        venue.setCapacity(capacity);
+        venue.setName(adminVenue.getName());
+        venue.setCapacity(adminVenue.getCapacity());
+        venue.setDescription(adminVenue.getDescription());
         return venueRepository.save(venue);
     }
 
@@ -29,12 +30,13 @@ public class VenueService {
                 .orElseThrow(() -> new RuntimeException("Venue not found"));
     }
 
-    public Venue updateVenue(Integer id, String name, Integer capacity) {
+    public Venue updateVenue(Integer id, Venue updateVenue) {
         Venue venue = venueRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Venue not found"));
 
-        venue.setName(name);
-        venue.setCapacity(capacity);
+        venue.setName(updateVenue.getName());
+        venue.setCapacity(updateVenue.getCapacity());
+        venue.setDescription(updateVenue.getDescription());
         return venueRepository.save(venue);
     }
 

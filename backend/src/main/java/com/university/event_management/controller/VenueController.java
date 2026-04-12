@@ -16,8 +16,8 @@ public class VenueController {
     private VenueService venueService;
 
     @PostMapping("/add")
-    public Venue addVenue(String name, Integer capacity) {
-        return venueService.addVenue(name, capacity);
+    public Venue addVenue(@RequestBody Venue venue) {
+        return venueService.addVenue(venue);
     }
 
     @GetMapping("/all")
@@ -32,7 +32,7 @@ public class VenueController {
 
     @PutMapping("/update/{id}")
     public Venue updateVenue(@PathVariable Integer id, @RequestBody Venue venue) {
-        return venueService.updateVenue(id, venue.getName(), venue.getCapacity());
+        return venueService.updateVenue(id, venue);
     }
 
     @DeleteMapping("/delete/{id}")
