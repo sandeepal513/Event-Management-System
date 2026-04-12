@@ -36,7 +36,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role = Role.student;
 
-    @Column(nullable = false)
     private Boolean verifyEmail;
 
     @Column(name = "create_at", updatable = false)
@@ -50,5 +49,6 @@ public class User {
         if (createAt == null) {
             createAt = LocalDateTime.now();
         }
+        verifyEmail = false;
     }
 }
