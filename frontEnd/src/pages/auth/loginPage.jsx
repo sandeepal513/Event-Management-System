@@ -65,8 +65,16 @@ const LoginPage = () => {
             navigate('/');
         } catch (error) {
             const message =
-                error.response?.data?.message || 'Server error. Please try again.';
+            error.response?.data?.message || 'Server error. Please try again.';
             toast.error(message);
+
+            setTimeout(() => {
+                if (error.response?.status === 403) {
+                    toast.success("Redirecting to verification page...");
+                    navigate(`/auth/verifymail?username=${userEmail}`);
+                    return;
+                }
+            }, 1500);
         } finally {
             setLoading(false);
         }

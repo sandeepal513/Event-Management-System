@@ -108,7 +108,7 @@ const RegisterPage = () => {
       }
 
       toast.success(response.data.message);
-      navigate('/auth/login');
+      navigate(`/auth/verifymail?username=${formData.email}`);
     } catch (error) {
       const message = error.response?.data?.message || 'Server error. Please try again.';
       toast.error(message);
