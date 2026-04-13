@@ -6,7 +6,9 @@ import com.university.event_management.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -59,5 +61,10 @@ public class EventController {
     @GetMapping("/upcoming")
     public List<Event> getUpComingEvents() {
         return eventService.getUpComingEvents();
+    }
+
+    @GetMapping("/stats")
+    public Map<String, Object> getStats() {
+        return eventService.getStats();
     }
 }
