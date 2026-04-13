@@ -12,14 +12,13 @@ import Events from "./Events";
 import EditEventPage from "./EditEventPage";
 import EventDetailsPage from "./EventDetailsPage";
 
-const defaultAvatar = "/defaultAvatart.svg";
-
 export default function OrganizerPage() {
 
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [userProfile, setUserProfile] = useState({
         name: "",
-        image: defaultAvatar,
+        username: "",
+        image: "",
         role: "Organizer",
     });
     const location = useLocation();
@@ -34,7 +33,8 @@ export default function OrganizerPage() {
                     if (user) {
                         setUserProfile({
                             name: user.name || "Organizer",
-                            image: user.image || defaultAvatar,
+                            username,
+                            image: user.image || "",
                             role: localStorage.getItem("userRole") || "Organizer",
                         });
                     }
@@ -62,6 +62,8 @@ export default function OrganizerPage() {
         { label: "Logout", path: "/logout" },
     ];
 
+    const profileInitial = String(userProfile.username || "").trim().charAt(0).toUpperCase() || "U";
+
     return (
         <div className="w-full h-screen flex relative">
             {sidebarOpen &&(
@@ -81,11 +83,17 @@ export default function OrganizerPage() {
             {/* Sidebar */}
             <div className={`fixed md:static z-30 w-75 h-full bg-[#1e1e1c] transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
                 <div className="w-full px-5 py-6 flex flex-col items-center justify-center border-b border-white/10">
-                    <img
-                        src={userProfile.image}
-                        alt={userProfile.name}
-                        className="w-16 h-16 rounded-full object-cover border-2 border-white/10 mb-3"
-                    />
+                    {userProfile.image ? (
+                        <img
+                            src={userProfile.image}
+                            alt={userProfile.name}
+                            className="w-16 h-16 rounded-full object-cover border-2 border-white/10 mb-3"
+                        />
+                    ) : (
+                        <div className="w-16 h-16 rounded-full border-2 border-white/10 mb-3 bg-sky-600 text-white flex items-center justify-center text-xl font-semibold">
+                            {profileInitial}
+                        </div>
+                    )}
                     <h2 className="text-lg font-semibold text-white text-center truncate">{userProfile.name}</h2>
                     <p className="text-xs text-white/60 mt-1">{userProfile.role}</p>
                 </div>

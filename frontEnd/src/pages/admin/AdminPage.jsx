@@ -3,6 +3,7 @@ import axios from "axios";
 import { MdDashboard, MdMenu, MdClose } from "react-icons/md";
 import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import EventApprovals from "./EventApproval";
+import OrganizerApproval from "./OrganizerApproval";
 import EventRegistration from "./EventRegistration";
 import TicketCreate from "./TicketCreate";
 import TicketManage from "./TicketManage";
@@ -16,15 +17,14 @@ import UpdateVenuePage from "./UpdateVenuePage";
 import ProfilePage from "../../components/ProfilePage";
 import ChangePassword from "../../components/ChangePassword";
 import DeleteAccount from "../../components/DeleteAccount";
-import UsersList from "../../components/UsersList";
-
-const defaultAvatar = "/defaultAvatart.svg";
+import UsersList from "./UsersList";
 
 export default function AdminPage() {
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 	const [userProfile, setUserProfile] = useState({
 		name: "",
-		image: defaultAvatar,
+		username: "",
+		image: "",
 		role: "Admin",
 	});
 	const location = useLocation();
@@ -39,7 +39,8 @@ export default function AdminPage() {
 					if (user) {
 						setUserProfile({
 							name: user.name || "Admin",
-							image: user.image || defaultAvatar,
+							username,
+							image: user.image || "",
 							role: localStorage.getItem("userRole") || "Admin",
 						});
 					}
@@ -56,6 +57,10 @@ export default function AdminPage() {
 			return location.pathname.startsWith("/admin/approvals");
 		}
 
+		if (path === "/admin/organizer-approvals") {
+			return location.pathname.startsWith("/admin/organizer-approvals");
+		}
+
 		if (path === "/admin/registrations") {
 			return location.pathname.startsWith("/admin/registrations");
 		}
@@ -70,6 +75,7 @@ export default function AdminPage() {
 	const sidebarItems = [
 		{ label: "Profile", path: "/admin/profile" },
 		{ label: "Approvals", path: "/admin/approvals" },
+		{ label: "Organizer Approvals", path: "/admin/organizer-approvals" },
 		{ label: "Registrations", path: "/admin/registrations" },
 		{ label: "Venues", path: "/admin/venues" },
 		{ label: "Summary", path: "/admin/tickets/summary" },
@@ -79,6 +85,8 @@ export default function AdminPage() {
 		{ label: "Delete Account", path: "/admin/delete-account" },
 		{ label: "Logout", path: "/logout" },
 	];
+
+	const profileInitial = String(userProfile.username || "").trim().charAt(0).toUpperCase() || "U";
 
 	return (
 		<div className="w-full h-screen flex relative">
@@ -98,11 +106,17 @@ export default function AdminPage() {
 
 			<div className={`fixed md:static z-30 w-75 h-full bg-[#1e1e1c] transition-transform duration-300 overflow-y-auto ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
 				<div className="w-full px-5 py-6 flex flex-col items-center justify-center border-b border-white/10">
-					<img
-						src={userProfile.image}
-						alt={userProfile.name}
-						className="w-16 h-16 rounded-full object-cover border-2 border-white/10 mb-3"
-					/>
+					{userProfile.image ? (
+						<img
+							src={userProfile.image}
+							alt={userProfile.name}
+							className="w-16 h-16 rounded-full object-cover border-2 border-white/10 mb-3"
+						/>
+					) : (
+						<div className="w-16 h-16 rounded-full border-2 border-white/10 mb-3 bg-sky-600 text-white flex items-center justify-center text-xl font-semibold">
+							{profileInitial}
+						</div>
+					)}
 					<h2 className="text-lg font-semibold text-white text-center truncate">{userProfile.name}</h2>
 					<p className="text-xs text-white/60 mt-1">{userProfile.role}</p>
 				</div>
@@ -125,6 +139,7 @@ export default function AdminPage() {
 				<Routes>
 					<Route path="profile" element={<ProfilePage />} />
 					<Route path="approvals" element={<EventApprovals />} />
+					<Route path="organizer-approvals" element={<OrganizerApproval />} />
 					<Route path="registrations" element={<EventRegistration />} />
 					<Route path="tickets" element={<Navigate to="summary" replace />} />
 					<Route path="tickets/manage" element={<TicketManage />} />

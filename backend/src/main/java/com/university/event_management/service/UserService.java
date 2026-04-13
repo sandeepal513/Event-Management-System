@@ -136,4 +136,45 @@ public class UserService {
 
         publicService.sendMail(to, subject, body);
     }
+
+    public void sendOrganizerApproveRejectMail(String to, String status, String reason) throws UnsupportedEncodingException {
+
+        String username = to.split("@")[0];
+        String subject;
+        String body;
+
+        if ("approve".equalsIgnoreCase(status)) {
+
+            subject = "🎉 Your Organizer Account Has Been Approved!";
+
+            body = "Hi " + username + ",\n\n" +
+                    "Great news! 🎉\n\n" +
+                    "Your organizer account on EventOra has been successfully approved.\n\n" +
+                    "You can now start creating and managing your own events, connect with attendees, and grow your community.\n\n" +
+                    "What you can do next:\n" +
+                    "🎟️ Create and publish events\n" +
+                    "📊 Manage attendees\n" +
+                    "📢 Promote your events\n\n" +
+                    "We’re excited to see the amazing events you’ll create!\n\n" +
+                    "Best regards,\n" +
+                    "Team EventOra 🚀";
+
+        } else {
+
+            subject = "❌ Organizer Registration Update";
+
+            body = "Hi " + username + ",\n\n" +
+                    "Thank you for your interest in becoming an organizer on EventOra.\n\n" +
+                    "We regret to inform you that your organizer registration has been rejected at this time.\n\n" +
+                    "Reason:\n" +
+                    (reason != null && !reason.isEmpty() ? reason : "Not specified") + "\n\n" +
+                    "You may review the requirements and apply again after making the necessary changes.\n\n" +
+                    "If you have any questions, feel free to contact our support team.\n\n" +
+                    "Best regards,\n" +
+                    "Team EventOra";
+
+        }
+
+        publicService.sendMail(to, subject, body);
+    }
 }

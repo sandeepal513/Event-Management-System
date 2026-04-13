@@ -42,3 +42,30 @@ export async function uploadProfileImage(image){
 
     return data.publicUrl;
 }
+
+export async function deleteProfileImage(imageUrl) {
+    if (!imageUrl) return true;
+
+    const marker = "/user-profile/";
+    const markerIndex = String(imageUrl).indexOf(marker);
+
+    if (markerIndex === -1) {
+        return true;
+    }
+
+    const rawPath = imageUrl.slice(markerIndex + marker.length).split("?")[0];
+    const filePath = decodeURIComponent(rawPath);
+
+    if (!filePath) return true;
+
+    const { error } = await supabase.storage
+        .from("user-profile")
+        .remove([filePath]);
+
+    if (error) {
+        console.error("Error deleting profile image:", error);
+        return false;
+    }
+
+    return true;
+}
