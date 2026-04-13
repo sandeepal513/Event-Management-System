@@ -14,6 +14,12 @@ export default function Home() {
 	const [profile, setProfile] = useState('');
 	const [categories, setCategories] = useState([]);
 
+	const [stats, setStats] = useState({
+		totalEvents: 0,
+		totalUsers: 0,
+		upcomingEvents: 0
+	});
+
 	useEffect(() => {
 		let isMounted = true;
 
@@ -78,6 +84,18 @@ export default function Home() {
 			}
 		}
 		fetchUpComingEvents();
+	}, []);
+
+	useEffect(() => {
+		async function fetchStats() {
+			try {
+				const res = await axios.get("http://localhost:3000/api/events/stats");
+				setStats(res.data);
+			} catch (err) {
+				console.error("Error fetching stats:", err);
+			}
+		}
+		fetchStats();
 	}, []);
 
 	const categoryExtras = {
@@ -197,17 +215,23 @@ export default function Home() {
 			{/* Stats Section */}
 			<section className="py-12 px-4 md:px-8">
 				<div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-					<div className="bg-linear-to-brrom-sky-500/10 to-sky-500/5 border border-sky-500/20 rounded-xl p-6">
-						<div className="text-4xl font-bold text-sky-400 mb-2">1.2K+</div>
+					<div className="bg-linear-to-br from-sky-500/10 to-sky-500/5 border border-sky-500/20 rounded-xl p-6">
+						<div className="text-4xl font-bold text-sky-400 mb-2">
+							{stats.totalEvents}
+						</div>
 						<p className="text-white/70">Active Events</p>
 					</div>
 					<div className="bg-linear-to-br from-cyan-500/10 to-cyan-500/5 border border-cyan-500/20 rounded-xl p-6">
-						<div className="text-4xl font-bold text-cyan-400 mb-2">50K+</div>
+						<div className="text-4xl font-bold text-cyan-400 mb-2">
+							{stats.totalUsers}
+						</div>
 						<p className="text-white/70">Active Members</p>
 					</div>
 					<div className="bg-linear-to-br from-violet-500/10 to-violet-500/5 border border-violet-500/20 rounded-xl p-6">
-						<div className="text-4xl font-bold text-violet-400 mb-2">4.8★</div>
-						<p className="text-white/70">Average Rating</p>
+						<div className="text-4xl font-bold text-violet-400 mb-2">
+							{stats.upcomingEvents}
+						</div>
+						<p className="text-white/70">Upcoming Events</p>
 					</div>
 				</div>
 			</section>
@@ -259,38 +283,41 @@ export default function Home() {
 					<p className="text-white/60 mb-12">Mark your calendar for these exciting events</p>
 
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-						{upcomingEvents.map((event) => (
-							<Link
-								key={event.id}
-								to={`/events/${event.id}`}
-								state={{ event, fromUrl: "/", fromLabel: "Back to Home" }}
-								className="group flex bg-linear-to-r from-[#1f1f1d] to-[#2a2a27] border border-white/10 rounded-xl overflow-hidden hover:border-sky-500/50 hover:shadow-lg hover:shadow-sky-500/10 transition-all duration-300"
-							>
-								<img
-									src={event.imageUrl}
-									alt={event.title}
-									className="w-40 h-40 object-cover group-hover:scale-110 transition-transform duration-300"
-								/>
-								<div className="flex-1 p-6 flex flex-col justify-between">
-									<div>
-										<h3 className="text-xl font-bold text-white mb-2">{event.title}</h3>
-										<div className="space-y-2 text-sm text-white/70">
-											<p className="flex items-center gap-2">
-												<FiCalendar className="text-sky-400" />
-												{event.date} at {event.time}
-											</p>
-											<p className="flex items-center gap-2">
-												<FiMapPin className="text-pink-400" />
-												{event.venue?.name}
-											</p>
+						{upcomingEvents.length === 0 ? (
+							<p className="text-white/70 col-span-full text-center">No upcoming events.</p>
+						) : (
+							upcomingEvents.map((event) => (
+								<Link
+									key={event.id}
+									to={`/events/${event.id}`}
+									state={{ event, fromUrl: "/", fromLabel: "Back to Home" }}
+									className="group flex bg-linear-to-r from-[#1f1f1d] to-[#2a2a27] border border-white/10 rounded-xl overflow-hidden hover:border-sky-500/50 hover:shadow-lg hover:shadow-sky-500/10 transition-all duration-300"
+								>
+									<img
+										src={event.imageUrl}
+										alt={event.title}
+										className="w-40 h-40 object-cover group-hover:scale-110 transition-transform duration-300"
+									/>
+									<div className="flex-1 p-6 flex flex-col justify-between">
+										<div>
+											<h3 className="text-xl font-bold text-white mb-2">{event.title}</h3>
+											<div className="space-y-2 text-sm text-white/70">
+												<p className="flex items-center gap-2">
+													<FiCalendar className="text-sky-400" />
+													{event.date} at {event.time}
+												</p>
+												<p className="flex items-center gap-2">
+													<FiMapPin className="text-pink-400" />
+													{event.venue?.name}
+												</p>
+											</div>
 										</div>
+										<button className="mt-4 inline-flex items-center gap-2 text-sky-400 hover:text-sky-300 transition-colors">
+											Learn More <FiArrowRight />
+										</button>
 									</div>
-									<button className="mt-4 inline-flex items-center gap-2 text-sky-400 hover:text-sky-300 transition-colors">
-										Learn More <FiArrowRight />
-									</button>
-								</div>
-							</Link>
-						))}
+								</Link>
+							)))}
 					</div>
 				</div>
 			</section>
@@ -303,7 +330,7 @@ export default function Home() {
 						<p className="text-white/70 text-lg mb-8">Join thousands of organizers and create unforgettable experiences</p>
 						<div className="flex flex-col sm:flex-row gap-4 justify-center">
 							<Link
-								to="/organizer/create"
+								to="/organizer/event"
 								className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-linear-to-r from-sky-500 to-cyan-500 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-sky-500/50 transition-all"
 							>
 								Create Event <FiArrowRight />
