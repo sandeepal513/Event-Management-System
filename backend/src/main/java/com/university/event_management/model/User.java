@@ -38,17 +38,29 @@ public class User {
 
     private Boolean verifyEmail;
 
+    @Enumerated(EnumType.STRING)
+    private UserStatus userStatus = UserStatus.approve;
+
     @Column(name = "create_at", updatable = false)
     private LocalDateTime createAt = LocalDateTime.now();
+
 
     @PrePersist
     public void prePersist() {
         if (role == null) {
             role = Role.student ;
         }
+
         if (createAt == null) {
             createAt = LocalDateTime.now();
         }
-        verifyEmail = false;
+
+        if (verifyEmail == null) {
+            verifyEmail = false;
+        }
+
+        if (userStatus == null) {
+            userStatus = UserStatus.approve;
+        }
     }
 }

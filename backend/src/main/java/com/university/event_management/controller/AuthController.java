@@ -1,7 +1,9 @@
 package com.university.event_management.controller;
 
 import com.university.event_management.dto.ApiResponse;
+import com.university.event_management.model.Role;
 import com.university.event_management.model.User;
+import com.university.event_management.model.UserStatus;
 import com.university.event_management.service.UserService;
 import com.university.event_management.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 
@@ -44,6 +47,11 @@ public class AuthController {
             return ResponseEntity.status(403).body(response);
         }
 
+        if (loggedInUser.getUserStatus() == UserStatus.pending) {
+            ApiResponse<User> response = new ApiResponse<>(false, "Your account is pending admin approval.", null);
+            return ResponseEntity.status(403).body(response);
+        }
+
         loggedInUser.setPassword(null);
         final String jwtToken = jwtUtil.generateToken(loggedInUser);
 
@@ -61,8 +69,13 @@ public class AuthController {
                     .body(new ApiResponse<>(false, "Email already exists", null));
         }
 
+        if (user.getRole() == Role.organizer) {
+            user.setUserStatus(UserStatus.pending);
+        }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User createdUser = userService.createUser(user);
+
 
         try {
             userService.sendWelcomeEmail(user.getEmail());
