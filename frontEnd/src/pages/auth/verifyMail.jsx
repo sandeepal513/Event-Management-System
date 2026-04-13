@@ -158,13 +158,13 @@ const VerifyMail = () => {
 	};
 
 	return (
-		<section className="relative min-h-screen overflow-hidden bg-amber-50">
+		<section className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.14),_transparent_32%),radial-gradient(circle_at_top_right,_rgba(244,114,182,0.08),_transparent_28%),linear-gradient(180deg,_#171716_0%,_#101010_100%)]">
 			
 			{isLoading && (
-				<div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 px-4 backdrop-blur-sm">
-					<div className="flex flex-col items-center gap-4 rounded-2xl border border-orange-100 bg-white p-8 shadow-2xl">
-						<div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-orange-600" />
-						<p className="text-sm font-semibold tracking-wide text-slate-700 animate-pulse">
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
+					<div className="flex flex-col items-center gap-4 rounded-2xl border border-white/10 bg-[#1c1c1a] p-8 shadow-2xl">
+						<div className="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-sky-400" />
+						<p className="text-sm font-semibold tracking-wide text-white/60 animate-pulse">
 							Sending OTP...
 						</p>
 					</div>
@@ -172,16 +172,16 @@ const VerifyMail = () => {
 			)}
 			
 			<div className="pointer-events-none absolute inset-0">
-				<div className="absolute -left-24 top-8 h-80 w-80 rounded-full bg-orange-300/35 blur-3xl motion-safe:animate-pulse" />
-				<div className="absolute -right-24 bottom-10 h-96 w-96 rounded-full bg-cyan-300/35 blur-3xl motion-safe:animate-pulse" />
-				<div className="absolute left-1/3 top-1/2 h-64 w-64 rounded-full bg-emerald-300/25 blur-3xl" />
+				<div className="absolute -left-24 top-8 h-80 w-80 rounded-full bg-sky-400/20 blur-3xl" />
+				<div className="absolute -right-24 bottom-10 h-96 w-96 rounded-full bg-emerald-400/15 blur-3xl" />
+				<div className="absolute left-1/3 top-1/2 h-64 w-64 rounded-full bg-sky-300/15 blur-3xl" />
 			</div>
 
 			<div className="relative mx-auto flex min-h-screen w-full max-w-6xl items-center px-4 py-10 md:px-8">
 				<div className="grid w-full items-stretch gap-8 md:grid-cols-2">
-					<div className="hidden rounded-3xl bg-linear-to-br from-orange-900 via-amber-800 to-teal-900 p-10 text-white shadow-2xl md:flex md:flex-col md:justify-between">
+					<div className="hidden rounded-3xl bg-[#1c1c1a] border border-white/10 p-10 text-white shadow-[0_20px_60px_rgba(0,0,0,0.38)] md:flex md:flex-col md:justify-between">
 						<div>
-							<p className="mb-4 inline-block rounded-full border border-amber-200/40 px-3 py-1 text-xs uppercase tracking-[0.18em] text-amber-100">
+							<p className="mb-4 inline-block rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs uppercase tracking-[0.18em] text-sky-200">
 								EventOra
 							</p>
 							<h1 className="text-4xl font-bold leading-tight">
@@ -189,15 +189,15 @@ const VerifyMail = () => {
 								<br />
 								email address
 							</h1>
-							<p className="mt-5 max-w-md text-sm text-amber-50/90">
+							<p className="mt-5 max-w-md text-sm text-white/70">
 								We use one-time passcodes to protect your account and keep event
 								access secure for students, organizers, and admins.
 							</p>
 						</div>
 
-						<div className="rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur-sm">
-							<p className="text-sm font-semibold text-amber-100">Quick tips</p>
-							<ul className="mt-2 space-y-1 text-xs text-amber-50/90">
+						<div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+							<p className="text-sm font-semibold text-white/80">Quick tips</p>
+							<ul className="mt-2 space-y-1 text-xs text-white/60">
 								<li>Use your registered email address.</li>
 								<li>OTP expires quickly, so verify immediately.</li>
 								<li>Check spam or promotions if not received.</li>
@@ -205,25 +205,25 @@ const VerifyMail = () => {
 						</div>
 					</div>
 
-						<div className="w-full rounded-3xl border border-orange-100 bg-white/90 p-6 shadow-xl backdrop-blur-sm sm:p-8">
+					<div className="w-full rounded-3xl border border-white/10 bg-[#1c1c1a] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.38)] sm:p-8">
 						<div className="mb-6">
-							<p className="text-sm font-semibold uppercase tracking-widest text-orange-700">
+							<p className="text-sm font-semibold uppercase tracking-widest text-sky-400">
 								Email Verification
 							</p>
-							<h2 className="mt-2 text-3xl font-bold text-slate-900">
-									{verified ? 'Email Verified' : 'Verify Your Email'}
+							<h2 className="mt-2 text-3xl font-bold text-white">
+								{verified ? 'Email Verified' : 'Verify Your Email'}
 							</h2>
-							<p className="mt-2 text-sm text-slate-600">
+							<p className="mt-2 text-sm text-white/60">
 								{verified
 									? 'Your account is now confirmed. You can continue to login.'
-										: 'Send OTP to your email, then enter the 6-digit code to verify.'}
+									: 'Send OTP to your email, then enter the 6-digit code to verify.'}
 							</p>
 						</div>
 
-							{!verified && (
-								<form className="mt-6 space-y-6 border-t border-orange-100 pt-6" onSubmit={handleVerifyOtp}>
+						{!verified && (
+							<form className="mt-6 space-y-6 border-t border-white/10 pt-6" onSubmit={handleVerifyOtp}>
 								<div>
-									<p className="mb-3 text-sm font-medium text-slate-700">
+									<p className="mb-3 text-sm font-medium text-white/80">
 										Enter 6-digit OTP
 									</p>
 									<div className="flex flex-wrap gap-2 sm:gap-3">
@@ -237,73 +237,82 @@ const VerifyMail = () => {
 												value={digit}
 												onChange={(event) => handleOtpChange(index, event.target.value)}
 												onKeyDown={(event) => handleOtpKeyDown(index, event)}
-													disabled={!otpSent}
-													className="h-12 w-11 rounded-xl border border-slate-300 text-center text-lg font-bold text-slate-900 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-200 disabled:cursor-not-allowed disabled:bg-slate-100 sm:h-14 sm:w-12"
+												disabled={!otpSent}
+												className="h-12 w-11 sm:h-14 sm:w-12 rounded-xl border border-white/10 bg-[#111110] text-center text-lg font-bold text-white outline-none transition focus:border-sky-400/50 focus:ring-2 focus:ring-sky-400/20 disabled:cursor-not-allowed disabled:opacity-50"
 											/>
 										))}
 									</div>
 								</div>
 
-									<div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-800">
-										{otpSent ? (
-											<>
-												OTP sent to <span className="font-semibold">{email}</span>
-											</>
-										) : (
-											'Send OTP first. You will receive the code to your mail.'
-										)}
+								<div className="rounded-xl border border-sky-400/20 bg-sky-400/10 px-4 py-3 text-xs text-white/60">
+									{otpSent ? (
+										<>
+											OTP sent to <span className="font-semibold text-sky-200">{email}</span>
+										</>
+									) : (
+										'Send OTP first. You will receive the code to your mail.'
+									)}
 								</div>
 
 								<div className="flex flex-col gap-3 sm:flex-row">
 									<button
 										type="submit"
 										disabled={isLoading}
-										className="w-full rounded-xl bg-linear-to-r from-teal-700 to-emerald-700 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:from-teal-800 hover:to-emerald-800 focus:outline-none focus:ring-2 focus:ring-teal-300"
+										className="flex-1 rounded-xl bg-sky-500 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-sky-400 disabled:opacity-60 disabled:cursor-not-allowed"
 									>
-										{isLoading ? "verifing OTP" : "Verify OTP"}
+										{isLoading ? "Verifying OTP..." : "Verify OTP"}
 									</button>
 
 									<button
 										type="button"
 										onClick={() => setOtp(['', '', '', '', '', ''])}
-										className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+										className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white/80 transition hover:bg-white/10"
 									>
 										Clear
 									</button>
 								</div>
 
-								{otpSent && (
+								{!otpSent ? (
 									<button
 										type="button"
-										onClick={() => setOtpSent(false)}
-										className="text-sm font-semibold text-orange-700 hover:text-orange-800"
+										onClick={handleSendOtp}
+										disabled={isLoading}
+										className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-sky-400 hover:text-sky-300 transition disabled:opacity-60 disabled:cursor-not-allowed"
 									>
-										Change email
+										{isLoading ? "Sending..." : "Send OTP"}
 									</button>
+								) : (
+									<>
+									</>
+									// <button
+									// 	type="button"
+									// 	onClick={() => setOtp(['', '', '', '', '', ''])}
+									// 	className="w-full text-sm font-semibold text-sky-400 hover:text-sky-300 transition"
+									// >
+									// 	Change email
+									// </button>
 								)}
 							</form>
 						)}
 
 						{verified && (
 							<div className="space-y-5">
-								<div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-									<p className="text-sm font-semibold text-emerald-800">
-										Verification successful
+								<div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-4">
+									<p className="text-sm font-semibold text-emerald-300">
+										✓ Verification Successful
 									</p>
-									<p className="mt-1 text-sm text-emerald-700">
-										Your email has been verified for EventOra access.
+									<p className="mt-1 text-sm text-emerald-200/80">
+										Your email has been verified. You can now proceed to login.
 									</p>
 								</div>
 
-								<div className="flex flex-col gap-3 sm:flex-row">
-									<button
-										type="button"
-										onClick={() => navigate('/auth/login')}
-										className="w-full rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-									>
-										Continue to Login
-									</button>
-								</div>
+								<button
+									type="button"
+									onClick={() => navigate('/auth/login')}
+									className="w-full rounded-xl bg-sky-500 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-sky-400"
+								>
+									Continue to Login
+								</button>
 							</div>
 						)}
 					</div>

@@ -110,18 +110,18 @@ const RegisterPage = () => {
   };
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-slate-100">
+    <section className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.14),_transparent_32%),radial-gradient(circle_at_top_right,_rgba(244,114,182,0.08),_transparent_28%),linear-gradient(180deg,_#171716_0%,_#101010_100%)]">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-20 -top-16 h-72 w-72 rounded-full bg-amber-300/40 blur-3xl" />
-        <div className="absolute -right-24 top-20 h-80 w-80 rounded-full bg-teal-400/30 blur-3xl" />
-        <div className="absolute bottom-0 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-cyan-300/30 blur-3xl" />
+        <div className="absolute -left-20 -top-16 h-72 w-72 rounded-full bg-sky-400/20 blur-3xl" />
+        <div className="absolute -right-24 top-20 h-80 w-80 rounded-full bg-emerald-400/15 blur-3xl" />
+        <div className="absolute bottom-0 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-sky-300/15 blur-3xl" />
       </div>
 
       <div className="relative mx-auto grid min-h-screen w-full max-w-6xl items-center gap-8 px-4 py-10 md:grid-cols-2 md:px-8">
 
         {/* Left Panel */}
-        <div className="hidden rounded-3xl bg-linear-to-br from-slate-900 via-teal-900 to-cyan-900 p-8 text-white shadow-2xl md:block lg:p-10">
-          <p className="mb-3 inline-block rounded-full border border-white/30 px-3 py-1 text-xs uppercase tracking-[0.2em] text-amber-200">
+        <div className="hidden rounded-3xl bg-[#1c1c1a] border border-white/10 p-8 text-white shadow-[0_20px_60px_rgba(0,0,0,0.38)] md:block lg:p-10">
+          <p className="mb-3 inline-block rounded-full border border-sky-400/30 bg-sky-400/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-sky-200">
             EventOra
           </p>
           <h1 className="text-3xl font-bold leading-tight lg:text-4xl">
@@ -129,18 +129,18 @@ const RegisterPage = () => {
             <br />
             University of Ruhuna
           </h1>
-          <p className="mt-4 max-w-md text-sm text-slate-100/90 lg:text-base">
+          <p className="mt-4 max-w-md text-sm text-white/70 lg:text-base">
             Plan, organize, and monitor faculty events with a single secure
             platform built for administrators, academic staff, and coordinators.
           </p>
 
           <div className="mt-8 flex flex-col gap-4">
-            <p className="text-sm text-slate-300">
+            <p className="text-sm text-white/60">
               Already have an account?
             </p>
             <button
               onClick={() => navigate('/auth/login')}
-              className="rounded-xl bg-amber-300/20 border border-amber-300/50 px-6 py-3 text-sm font-semibold text-amber-200 hover:bg-amber-300/30 transition"
+              className="rounded-xl bg-sky-500/20 border border-sky-400/50 px-6 py-3 text-sm font-semibold text-sky-200 hover:bg-sky-500/30 transition"
             >
               Sign in to your account
             </button>
@@ -148,15 +148,15 @@ const RegisterPage = () => {
         </div>
 
         {/* Right Panel */}
-        <div className="w-full rounded-3xl border border-slate-200 bg-white/90 p-6 shadow-xl backdrop-blur-sm sm:p-8">
+        <div className="w-full rounded-3xl border border-white/10 bg-[#1c1c1a] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.38)] sm:p-8 max-h-[90vh] overflow-y-auto">
           <div className="mb-6">
-            <p className="text-sm font-semibold uppercase tracking-widest text-teal-700">
+            <p className="text-sm font-semibold uppercase tracking-widest text-sky-400">
               Join Us
             </p>
-            <h2 className="mt-2 text-2xl font-bold text-slate-900 sm:text-3xl">
+            <h2 className="mt-2 text-2xl font-bold text-white sm:text-3xl">
               Create your account
             </h2>
-            <p className="mt-2 text-sm text-slate-600">
+            <p className="mt-2 text-sm text-white/60">
               Register with your faculty details to get started.
             </p>
           </div>
@@ -166,11 +166,11 @@ const RegisterPage = () => {
             {/* First Name & Last Name */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor="firstName">
+                <label className="mb-2 block text-sm font-medium text-white/80" htmlFor="firstName">
                   First Name
                 </label>
                 <input
-                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-200"
+                  className="w-full rounded-xl border border-white/10 bg-[#111110] px-4 py-3 text-sm text-white outline-none transition focus:border-sky-400/50 focus:ring-2 focus:ring-sky-400/20 placeholder:text-white/35"
                   id="firstName"
                   name="firstName"
                   placeholder="John"
@@ -181,11 +181,11 @@ const RegisterPage = () => {
                 />
               </div>
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor="lastName">
+                <label className="mb-2 block text-sm font-medium text-white/80" htmlFor="lastName">
                   Last Name
                 </label>
                 <input
-                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-200"
+                  className="w-full rounded-xl border border-white/10 bg-[#111110] px-4 py-3 text-sm text-white outline-none transition focus:border-sky-400/50 focus:ring-2 focus:ring-sky-400/20 placeholder:text-white/35"
                   id="lastName"
                   name="lastName"
                   placeholder="Doe"
@@ -199,11 +199,11 @@ const RegisterPage = () => {
 
             {/* Email */}
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor="email">
+              <label className="mb-2 block text-sm font-medium text-white/80" htmlFor="email">
                 Email Address
               </label>
               <input
-                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-200"
+                className="w-full rounded-xl border border-white/10 bg-[#111110] px-4 py-3 text-sm text-white outline-none transition focus:border-sky-400/50 focus:ring-2 focus:ring-sky-400/20 placeholder:text-white/35"
                 id="email"
                 name="email"
                 placeholder="name@tech.ruh.ac.lk"
@@ -216,11 +216,11 @@ const RegisterPage = () => {
             
             {/* Phone */}
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor="phone">
+              <label className="mb-2 block text-sm font-medium text-white/80" htmlFor="phone">
                 Phone No
               </label>
               <input
-                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-200"
+                className="w-full rounded-xl border border-white/10 bg-[#111110] px-4 py-3 text-sm text-white outline-none transition focus:border-sky-400/50 focus:ring-2 focus:ring-sky-400/20 placeholder:text-white/35"
                 id="phone"
                 name="phoneNo"
                 placeholder="+94 766845685"
@@ -233,35 +233,35 @@ const RegisterPage = () => {
 
             {/* Role */}
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor="role">
+              <label className="mb-2 block text-sm font-medium text-white/80" htmlFor="role">
                 Select Role
               </label>
               <div className="relative">
                 <select
-                  className="w-full appearance-none rounded-xl border border-slate-300 bg-white px-4 py-3 pr-12 text-sm text-slate-900 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-200"
+                  className="w-full appearance-none rounded-xl border border-white/10 bg-[#111110] px-4 py-3 pr-12 text-sm text-white outline-none transition focus:border-sky-400/50 focus:ring-2 focus:ring-sky-400/20"
                   id="role"
                   name="role"
                   required
                   value={formData.role}
                   onChange={handleChange}
                 >
-                  <option value="">-- Choose your role --</option>
-                  <option value="organizer">Organizer</option>
-                  <option value="student">Student</option>
+                  <option value="" className="bg-[#111110]">-- Choose your role --</option>
+                  <option value="organizer" className="bg-[#111110]">Organizer</option>
+                  <option value="student" className="bg-[#111110]">Student</option>
                 </select>
-                <svg className="pointer-events-none absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="pointer-events-none absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 9l6 6 6-6" />
                 </svg>
               </div>
             </div>
             {/* Password */}
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor="password">
+              <label className="mb-2 block text-sm font-medium text-white/80" htmlFor="password">
                 Password
               </label>
               <div className="relative">
                 <input
-                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 pr-24 text-sm text-slate-900 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-200"
+                  className="w-full rounded-xl border border-white/10 bg-[#111110] px-4 py-3 pr-24 text-sm text-white outline-none transition focus:border-sky-400/50 focus:ring-2 focus:ring-sky-400/20 placeholder:text-white/35"
                   id="password"
                   name="password"
                   type={showPassword ? 'text' : 'password'}
@@ -272,37 +272,37 @@ const RegisterPage = () => {
                 />
                 <button
                   type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md px-2 py-1 text-xs font-semibold text-teal-700 hover:bg-teal-50"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md px-2 py-1 text-xs font-semibold text-sky-400 hover:bg-sky-400/10"
                   onClick={() => setShowPassword((prev) => !prev)}
                 >
                   {showPassword ? 'Hide' : 'Show'}
                 </button>
               </div>
               {formData.password && (
-                <div className="mt-3 space-y-2 rounded-lg bg-slate-50 p-3">
-                  <p className="text-xs font-semibold text-slate-700">Password Requirements:</p>
+                <div className="mt-3 space-y-2 rounded-lg bg-white/5 border border-white/10 p-3">
+                  <p className="text-xs font-semibold text-white/70">Password Requirements:</p>
                   <div className="space-y-1">
-                    <div className={`flex items-center gap-2 text-xs ${passwordValidation.hasUppercase ? 'text-green-600' : 'text-slate-500'}`}>
-                      <span className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${passwordValidation.hasUppercase ? 'bg-green-600 border-green-600' : 'border-slate-300'}`}>
-                        {passwordValidation.hasUppercase && <span className="text-white text-xs">✓</span>}
+                    <div className={`flex items-center gap-2 text-xs ${passwordValidation.hasUppercase ? 'text-emerald-400' : 'text-white/50'}`}>
+                      <span className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${passwordValidation.hasUppercase ? 'bg-emerald-500/30 border-emerald-400' : 'border-white/20'}`}>
+                        {passwordValidation.hasUppercase && <span className="text-emerald-300 text-xs">✓</span>}
                       </span>
                       Uppercase letter (A-Z)
                     </div>
-                    <div className={`flex items-center gap-2 text-xs ${passwordValidation.hasLowercase ? 'text-green-600' : 'text-slate-500'}`}>
-                      <span className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${passwordValidation.hasLowercase ? 'bg-green-600 border-green-600' : 'border-slate-300'}`}>
-                        {passwordValidation.hasLowercase && <span className="text-white text-xs">✓</span>}
+                    <div className={`flex items-center gap-2 text-xs ${passwordValidation.hasLowercase ? 'text-emerald-400' : 'text-white/50'}`}>
+                      <span className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${passwordValidation.hasLowercase ? 'bg-emerald-500/30 border-emerald-400' : 'border-white/20'}`}>
+                        {passwordValidation.hasLowercase && <span className="text-emerald-300 text-xs">✓</span>}
                       </span>
                       Lowercase letter (a-z)
                     </div>
-                    <div className={`flex items-center gap-2 text-xs ${passwordValidation.hasNumber ? 'text-green-600' : 'text-slate-500'}`}>
-                      <span className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${passwordValidation.hasNumber ? 'bg-green-600 border-green-600' : 'border-slate-300'}`}>
-                        {passwordValidation.hasNumber && <span className="text-white text-xs">✓</span>}
+                    <div className={`flex items-center gap-2 text-xs ${passwordValidation.hasNumber ? 'text-emerald-400' : 'text-white/50'}`}>
+                      <span className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${passwordValidation.hasNumber ? 'bg-emerald-500/30 border-emerald-400' : 'border-white/20'}`}>
+                        {passwordValidation.hasNumber && <span className="text-emerald-300 text-xs">✓</span>}
                       </span>
                       Number (0-9)
                     </div>
-                    <div className={`flex items-center gap-2 text-xs ${passwordValidation.hasSymbol ? 'text-green-600' : 'text-slate-500'}`}>
-                      <span className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${passwordValidation.hasSymbol ? 'bg-green-600 border-green-600' : 'border-slate-300'}`}>
-                        {passwordValidation.hasSymbol && <span className="text-white text-xs">✓</span>}
+                    <div className={`flex items-center gap-2 text-xs ${passwordValidation.hasSymbol ? 'text-emerald-400' : 'text-white/50'}`}>
+                      <span className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${passwordValidation.hasSymbol ? 'bg-emerald-500/30 border-emerald-400' : 'border-white/20'}`}>
+                        {passwordValidation.hasSymbol && <span className="text-emerald-300 text-xs">✓</span>}
                       </span>
                       Special symbol (!@#$%^&*)
                     </div>
@@ -313,12 +313,12 @@ const RegisterPage = () => {
 
             {/* Confirm Password */}
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700" htmlFor="confirmPassword">
+              <label className="mb-2 block text-sm font-medium text-white/80" htmlFor="confirmPassword">
                 Confirm Password
               </label>
               <div className="relative">
                 <input
-                  className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 pr-24 text-sm text-slate-900 outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-200"
+                  className="w-full rounded-xl border border-white/10 bg-[#111110] px-4 py-3 pr-24 text-sm text-white outline-none transition focus:border-sky-400/50 focus:ring-2 focus:ring-sky-400/20 placeholder:text-white/35"
                   id="confirmPassword"
                   name="confirmPassword"
                   type={showConfirmPassword ? 'text' : 'password'}
@@ -329,7 +329,7 @@ const RegisterPage = () => {
                 />
                 <button
                   type="button"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md px-2 py-1 text-xs font-semibold text-teal-700 hover:bg-teal-50"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md px-2 py-1 text-xs font-semibold text-sky-400 hover:bg-sky-400/10"
                   onClick={() => setShowConfirmPassword((prev) => !prev)}
                 >
                   {showConfirmPassword ? 'Hide' : 'Show'}
@@ -341,7 +341,7 @@ const RegisterPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-linear-to-r from-teal-700 to-cyan-700 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:from-teal-800 hover:to-cyan-800 focus:outline-none focus:ring-2 focus:ring-cyan-300 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full rounded-xl bg-sky-500 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400/50 disabled:opacity-60 disabled:cursor-not-allowed mt-6"
             >
               {loading ? 'Creating account…' : 'Create Account'}
             </button>
