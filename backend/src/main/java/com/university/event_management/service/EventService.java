@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class EventService {
@@ -153,5 +155,15 @@ public class EventService {
 
     public List<Event> getUpComingEvents(){
         return eventRepository.findTop2ByDateAfterOrderByDateAsc(LocalDate.now());
+    }
+
+    public Map<String, Object> getStats(){
+        Map<String, Object> stats = new HashMap<>();
+
+        stats.put("totalEvents", eventRepository.count());
+        stats.put("upcomingEvents", eventRepository.countByDateAfter(LocalDate.now()));
+        stats.put("totalUsers", userRepository.count());
+
+        return stats;
     }
 }
