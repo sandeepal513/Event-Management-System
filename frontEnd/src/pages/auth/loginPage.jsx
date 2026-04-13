@@ -5,8 +5,6 @@ import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
 
-    const defaultAvatar = "/defaultAvatart.svg";
-
     const navigate = useNavigate();
 
     const [userEmail, setUserEmail] = useState('');
@@ -60,7 +58,7 @@ const LoginPage = () => {
             localStorage.setItem("token", response.data.token);
             localStorage.setItem("username", response.data.data.email);
             localStorage.setItem("userRole", response.data.data.role);
-            localStorage.setItem("imageURL", response.data.data.image || defaultAvatar);
+            localStorage.setItem("imageURL", response.data.data.image || "");
             toast.success(response.data.message);
             navigate('/');
         } catch (error) {
@@ -69,11 +67,21 @@ const LoginPage = () => {
             toast.error(message);
 
             setTimeout(() => {
+                if (
+                    error.response?.status === 403 && 
+                    error.response?.data?.message == "Your account is pending admin approval."
+                ) {
+                    toast.error("Please contect admin [eventOraAdmin@gmail.com]");
+                    navigate(`/auth/login`);
+                    return;
+                }
+
                 if (error.response?.status === 403) {
                     toast.success("Redirecting to verification page...");
                     navigate(`/auth/verifymail?username=${userEmail}`);
                     return;
                 }
+                
             }, 1500);
         } finally {
             setLoading(false);

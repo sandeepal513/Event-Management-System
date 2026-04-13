@@ -3,6 +3,7 @@ import axios from "axios";
 import { MdDashboard, MdMenu, MdClose } from "react-icons/md";
 import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import EventApprovals from "./EventApproval";
+import OrganizerApproval from "./OrganizerApproval";
 import EventRegistration from "./EventRegistration";
 import TicketCreate from "./TicketCreate";
 import TicketManage from "./TicketManage";
@@ -56,6 +57,10 @@ export default function AdminPage() {
 			return location.pathname.startsWith("/admin/approvals");
 		}
 
+		if (path === "/admin/organizer-approvals") {
+			return location.pathname.startsWith("/admin/organizer-approvals");
+		}
+
 		if (path === "/admin/registrations") {
 			return location.pathname.startsWith("/admin/registrations");
 		}
@@ -70,6 +75,7 @@ export default function AdminPage() {
 	const sidebarItems = [
 		{ label: "Profile", path: "/admin/profile" },
 		{ label: "Approvals", path: "/admin/approvals" },
+		{ label: "Organizer Approvals", path: "/admin/organizer-approvals" },
 		{ label: "Registrations", path: "/admin/registrations" },
 		{ label: "Venues", path: "/admin/venues" },
 		{ label: "Summary", path: "/admin/tickets/summary" },
@@ -133,6 +139,7 @@ export default function AdminPage() {
 				<Routes>
 					<Route path="profile" element={<ProfilePage />} />
 					<Route path="approvals" element={<EventApprovals />} />
+					<Route path="organizer-approvals" element={<OrganizerApproval />} />
 					<Route path="registrations" element={<EventRegistration />} />
 					<Route path="tickets" element={<Navigate to="summary" replace />} />
 					<Route path="tickets/manage" element={<TicketManage />} />

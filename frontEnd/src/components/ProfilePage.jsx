@@ -104,18 +104,27 @@ const ProfilePage = () => {
                 imageURL = uploadedUrl;
             }
 
+            
+            const previousEmail = localStorage.getItem("username")?.trim().toLowerCase();
+            const nextEmail = profile.email?.trim().toLowerCase();
+            const isEmailChanged = previousEmail && nextEmail && previousEmail !== nextEmail;
+            
             const payload = {
                 name: `${profile.firstName} ${profile.lastName}`.trim(),
                 email: profile.email,
                 phoneNo: profile.phone,
                 image: imageURL,
+                verifyEmail: !isEmailChanged,
             };
+            
 
-            const previousEmail = String(localStorage.getItem("username") || "").trim().toLowerCase();
-            const nextEmail = String(payload.email || "").trim().toLowerCase();
-            const isEmailChanged = Boolean(previousEmail && nextEmail && previousEmail !== nextEmail);
-
-            await axios.put(`http://localhost:3000/api/v1/users/${profile.id}`, payload);
+            const response = await axios.put(`http://localhost:3000/api/v1/users/${profile.id}`, payload);
+            
+            if(!response.data.success) {
+                toast.error(response.data.message);
+                return;
+            }
+            
             setProfile((current) => ({ ...current, image: imageURL }));
             setProfileImage(imageURL);
             localStorage.setItem("imageURL", imageURL || "");
