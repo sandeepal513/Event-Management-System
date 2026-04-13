@@ -17,7 +17,7 @@ import UpdateVenuePage from "./UpdateVenuePage";
 import ProfilePage from "../../components/ProfilePage";
 import ChangePassword from "../../components/ChangePassword";
 import DeleteAccount from "../../components/DeleteAccount";
-import UsersList from "../../components/UsersList";
+import UsersList from "./UsersList";
 
 export default function AdminPage() {
 	const [sidebarOpen, setSidebarOpen] = useState(false);
