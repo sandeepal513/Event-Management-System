@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FiArrowRight, FiCalendar, FiMapPin, FiUsers } from "react-icons/fi";
+import { FiArrowRight, FiCalendar, FiMapPin } from "react-icons/fi";
 import { isOrganizer, isTokenValid } from "../utils/auth";
 import axios from "axios";
 
