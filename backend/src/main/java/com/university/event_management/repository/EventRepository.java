@@ -12,4 +12,5 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     List<Event> findByOrganizerIdAndTitleContainingIgnoreCase(Integer organizerId, String keyword);
     List<Event> findByCategoryName(String name);
     List<Event> findTop2ByDateAfterOrderByDateAsc(LocalDate date);
+    Long countByDateAfter(LocalDate date);
 }
