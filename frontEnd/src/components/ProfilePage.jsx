@@ -2,10 +2,18 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { FiArrowLeft, FiCamera, FiEdit3, FiSave } from "react-icons/fi";
-import { uploadProfileImage } from "../utils/storageService";
+import { FiArrowLeft, FiCamera, FiEdit3, FiSave, FiTrash2 } from "react-icons/fi";
+import { deleteProfileImage, uploadProfileImage } from "../utils/storageService";
 
-const defaultAvatar = "/defaultAvatart.svg";
+const getProfileInitial = (profile) => {
+    const fullName = `${profile.firstName || ""} ${profile.lastName || ""}`.trim();
+    if (fullName) return fullName.charAt(0).toUpperCase();
+
+    const emailPart = String(profile.email || "").trim().split("@")[0];
+    if (emailPart) return emailPart.charAt(0).toUpperCase();
+
+    return "U";
+};
 
 const ProfilePage = () => {
 
@@ -15,7 +23,8 @@ const ProfilePage = () => {
     const fileInputRef = useRef(null);
     const [isEditing, setIsEditing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    const [profileImage, setProfileImage] = useState(defaultAvatar);
+    const [isDeletingImage, setIsDeletingImage] = useState(false);
+    const [profileImage, setProfileImage] = useState("");
     const [selectedImageFile, setSelectedImageFile] = useState(null);
     const [profile, setProfile] = useState({
         id: "",
@@ -25,7 +34,7 @@ const ProfilePage = () => {
         phone: "",
         role: "",
         create_at: "",
-        image: defaultAvatar,
+        image: "",
     });
 
     useEffect(() => {
@@ -33,7 +42,7 @@ const ProfilePage = () => {
             try {
                 const username = localStorage.getItem("username");
                 const userRole = localStorage.getItem("userRole");
-                const storedImageURL = localStorage.getItem("imageURL") || defaultAvatar;
+                const storedImageURL = localStorage.getItem("imageURL") || "";
 
                 if (!username) {
                     toast.error("user not found");
@@ -52,6 +61,7 @@ const ProfilePage = () => {
                 const parts = fullName ? fullName.split(/\s+/) : [];
                 const firstName = parts[0];
                 const lastName = parts.slice(1).join(" ");
+                const imageURL = user.image || storedImageURL || "";
 
                 setProfile({
                     id: user.id,
@@ -59,12 +69,12 @@ const ProfilePage = () => {
                     lastName,
                     email: user.email,
                     phone: user.phoneNo,
-                    image: storedImageURL,
+                    image: imageURL,
                     role: userRole,
                     create_at:  user.createAt,
                 });
 
-                setProfileImage(storedImageURL);
+                setProfileImage(imageURL);
             } catch (error) {
                 const message = error.response?.data?.message || "Server error. Please try again.";
                 toast.error(message);
@@ -94,21 +104,30 @@ const ProfilePage = () => {
                 imageURL = uploadedUrl;
             }
 
+            
+            const previousEmail = localStorage.getItem("username")?.trim().toLowerCase();
+            const nextEmail = profile.email?.trim().toLowerCase();
+            const isEmailChanged = previousEmail && nextEmail && previousEmail !== nextEmail;
+            
             const payload = {
                 name: `${profile.firstName} ${profile.lastName}`.trim(),
                 email: profile.email,
                 phoneNo: profile.phone,
                 image: imageURL,
+                verifyEmail: !isEmailChanged,
             };
+            
 
-            const previousEmail = String(localStorage.getItem("username") || "").trim().toLowerCase();
-            const nextEmail = String(payload.email || "").trim().toLowerCase();
-            const isEmailChanged = Boolean(previousEmail && nextEmail && previousEmail !== nextEmail);
-
-            await axios.put(`http://localhost:3000/api/v1/users/${profile.id}`, payload);
+            const response = await axios.put(`http://localhost:3000/api/v1/users/${profile.id}`, payload);
+            
+            if(!response.data.success) {
+                toast.error(response.data.message);
+                return;
+            }
+            
             setProfile((current) => ({ ...current, image: imageURL }));
             setProfileImage(imageURL);
-            localStorage.setItem("imageURL", imageURL || defaultAvatar);
+            localStorage.setItem("imageURL", imageURL || "");
             setSelectedImageFile(null);
             toast.success("Profile updated successfully");
 
@@ -141,7 +160,7 @@ const ProfilePage = () => {
 
         const imageURL = URL.createObjectURL(file);
         setSelectedImageFile(file);
-        setProfileImage(imageURL || defaultAvatar);
+        setProfileImage(imageURL);
     }
 
     function handleChange(event) {
@@ -157,6 +176,52 @@ const ProfilePage = () => {
         }
         setIsSaving(false);
     }
+
+    async function handleDeleteProfileImage() {
+        if (!profile.id) {
+            toast.error("User ID not found");
+            return;
+        }
+
+        if (!profile.image && !selectedImageFile) {
+            toast("No profile image to delete");
+            return;
+        }
+
+        setIsDeletingImage(true);
+        try {
+            if (profile.image) {
+                const deletedFromStorage = await deleteProfileImage(profile.image);
+                if (!deletedFromStorage) {
+                    toast.error("Failed to remove image from storage");
+                    return;
+                }
+            }
+
+            const payload = {
+                name: `${profile.firstName} ${profile.lastName}`.trim(),
+                email: profile.email,
+                phoneNo: profile.phone,
+                image: "",
+            };
+
+            await axios.put(`http://localhost:3000/api/v1/users/${profile.id}`, payload);
+
+            setProfile((current) => ({ ...current, image: "" }));
+            setProfileImage("");
+            setSelectedImageFile(null);
+            localStorage.setItem("imageURL", "");
+            toast.success("Profile image deleted");
+        } catch (error) {
+            const message = error.response?.data?.message || "Failed to delete profile image";
+            toast.error(message);
+        } finally {
+            setIsDeletingImage(false);
+        }
+    }
+
+    const hasProfileImage = Boolean(profileImage);
+    const profileInitial = getProfileInitial(profile);
 
     return (
         <div className="space-y-6 text-white">
@@ -212,7 +277,13 @@ const ProfilePage = () => {
                             className={`group relative h-40 w-40 overflow-hidden rounded-full border border-white/10 ${isEditing ? "cursor-pointer" : "cursor-default"}`}
                             aria-label="Change profile picture"
                         >
-                            <img src={profileImage} alt="Profile" className="h-full w-full object-cover" />
+                            {hasProfileImage ? (
+                                <img src={profileImage} alt="Profile" className="h-full w-full object-cover" />
+                            ) : (
+                                <div className="flex h-full w-full items-center justify-center bg-sky-600 text-5xl font-semibold text-white">
+                                    {profileInitial}
+                                </div>
+                            )}
                             {isEditing && (
                                 <span className="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 transition group-hover:opacity-100">
                                     <span className="flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-2 text-xs font-medium text-white backdrop-blur-sm">
@@ -233,6 +304,17 @@ const ProfilePage = () => {
 
                         <h3 className="mt-4 text-xl font-semibold text-white">{profile.firstName} {profile.lastName}</h3>
                         <p className="mt-1 text-sm text-white/55">Student</p>
+                        {isEditing && (
+                            <button
+                                type="button"
+                                onClick={handleDeleteProfileImage}
+                                disabled={isDeletingImage}
+                                className="mt-4 inline-flex items-center gap-2 rounded-xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-xs font-medium text-red-200 transition hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                                <FiTrash2 />
+                                {isDeletingImage ? "Deleting..." : "Delete Photo"}
+                            </button>
+                        )}
                         <p className="mt-3 text-xs text-white/45">Profile photo and personal details</p>
                     </div>
 

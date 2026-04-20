@@ -5,6 +5,16 @@ import { MdSearch, MdDelete } from "react-icons/md";
 
 const defaultAvatar = "/defaultAvatart.svg";
 
+const getProfileInitial = (user) => {
+  const fullName = String(user?.name || "").trim();
+  if (fullName) return fullName.charAt(0).toUpperCase();
+
+  const emailPart = String(user?.email || "").trim().split("@")[0];
+  if (emailPart) return emailPart.charAt(0).toUpperCase();
+
+  return "U";
+};
+
 const UsersList = () => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -195,11 +205,20 @@ const UsersList = () => {
                     onChange={() => toggleUserSelection(user.id)}
                     className="w-4 h-4 rounded shrink-0 border-white/10 bg-[#111110] cursor-pointer"
                   />
-                  <img
-                    src={user.image || defaultAvatar}
-                    alt={user.name}
-                    className="h-12 w-12 shrink-0 rounded-full object-cover border border-white/10"
-                  />
+                  
+                  <div className="h-12 w-12 shrink-0 rounded-full border border-white/10 overflow-hidden flex items-center justify-center">
+                    {user.image ? (
+                      <img
+                        src={user.image}
+                        alt={user.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="h-full w-full bg-sky-600 flex items-center justify-center text-sm font-semibold text-white">
+                        {getProfileInitial(user)}
+                      </div>
+                    )}
+                  </div>
 
                   <div className="flex-1 min-w-0">
                     <h3 className="truncate text-sm font-semibold text-white">

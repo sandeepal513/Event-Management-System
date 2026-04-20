@@ -7,12 +7,12 @@ import axios from "axios";
 export default function Home() {
 	const navigate = useNavigate();
 	const [upcomingEvents, setUpcomingEvents] = useState([]);
-	const [featuredEvents, setFeaturedEvents] = useState([]);
 
 	const [isLogin, setLogin] = useState(false);
 	const [isOrganizerUser, setIsOrganizerUser] = useState(false);
 	const [profile, setProfile] = useState('');
 	const [categories, setCategories] = useState([]);
+	const role = localStorage.getItem("userRole");
 
 	const [stats, setStats] = useState({
 		totalEvents: 0,
@@ -163,7 +163,7 @@ export default function Home() {
 
 								<div className="invisible absolute right-0 top-12 z-40 min-w-36 rounded-lg border border-white/15 bg-[#1f1f1d] p-1 opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:opacity-100">
 									<Link
-										to="/"
+										to={`/${role}/profile`}
 										className="block rounded-md px-3 py-2 text-sm text-white/90 hover:bg-white/10"
 									>
 										Profile

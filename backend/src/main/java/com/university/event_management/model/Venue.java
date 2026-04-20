@@ -18,4 +18,5 @@ public class Venue {
     private Integer id;
     private String name;
     private Integer capacity;
+    private String description;
 }

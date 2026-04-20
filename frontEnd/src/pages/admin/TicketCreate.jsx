@@ -101,10 +101,13 @@ export default function TicketCreate() {
 
 		(async () => {
 			try {
-				const [registrationResponse, ticketResponse] = await Promise.all([
-					axios.get("http://localhost:3000/api/registration"),
-					axios.get("http://localhost:3000/api/tickets"),
-				]);
+				const ticketPromise = axios.get("http://localhost:3000/api/tickets");
+				const registrationPromise = axios
+					.get("http://localhost:3000/api/registration/confirmed-ticket-required")
+					.catch(() => axios.get("http://localhost:3000/api/registration/confirmed"))
+					.catch(() => axios.get("http://localhost:3000/api/registration"));
+
+				const [registrationResponse, ticketResponse] = await Promise.all([registrationPromise, ticketPromise]);
 				if (!mounted) return;
 
 				const confirmed = Array.isArray(registrationResponse.data)
@@ -276,7 +279,7 @@ export default function TicketCreate() {
 				<div className="mt-4">
 					<div className="grid gap-3 md:grid-cols-2">
 						<label className="flex w-full items-center gap-3 rounded-xl border border-white/10 bg-[#111110] px-4 py-3 text-white/70">
-							<select value={selectedEventId} onChange={(event) => setSelectedEventId(event.target.value)} className="w-full bg-transparent text-sm text-white outline-none">
+							<select value={selectedEventId} onChange={(event) => setSelectedEventId(event.target.value)} className="w-full rounded-lg bg-white px-3 py-2 text-sm text-black outline-none">
 								<option value="ALL">All events</option>
 								{eventOptions.map((event) => (
 									<option key={event.id} value={event.id}>

@@ -47,40 +47,51 @@ export default function StudentRegitered() {
 	const [statusFilter, setStatusFilter] = useState("ALL");
 	const [cancelingId, setCancelingId] = useState(null);
 
+	const loadRegistrations = async (mountedRef) => {
+		try {
+			const username = localStorage.getItem("username");
+			if (!username) {
+				toast.error("Please login again");
+				return;
+			}
+
+			const userResponse = await axios.get(`http://localhost:3000/api/v1/users/username/${username}`);
+			const userId = userResponse?.data?.data?.id;
+			if (!userId) {
+				toast.error("Unable to identify student account");
+				return;
+			}
+
+			const response = await axios.get(`http://localhost:3000/api/registration/user/${userId}`);
+			if (mountedRef?.current === false) return;
+
+			setRegistrations(Array.isArray(response.data) ? response.data : []);
+		} catch (error) {
+			console.error("Error loading registered events:", error);
+			toast.error("Unable to load registered events");
+		} finally {
+			if (!mountedRef || mountedRef.current) setLoading(false);
+		}
+	};
+
 	useEffect(() => {
-		let mounted = true;
+		const mountedRef = { current: true };
 
-		const loadRegistrations = async () => {
-			try {
-				const username = localStorage.getItem("username");
-				if (!username) {
-					toast.error("Please login again");
-					return;
-				}
+		loadRegistrations(mountedRef);
 
-				const userResponse = await axios.get(`http://localhost:3000/api/v1/users/username/${username}`);
-				const userId = userResponse?.data?.data?.id;
-				if (!userId) {
-					toast.error("Unable to identify student account");
-					return;
-				}
-
-				const response = await axios.get(`http://localhost:3000/api/registration/user/${userId}`);
-				if (!mounted) return;
-
-				setRegistrations(Array.isArray(response.data) ? response.data : []);
-			} catch (error) {
-				console.error("Error loading registered events:", error);
-				toast.error("Unable to load registered events");
-			} finally {
-				if (mounted) setLoading(false);
+		const refreshOnFocus = () => {
+			if (document.visibilityState === "visible") {
+				loadRegistrations(mountedRef);
 			}
 		};
 
-		loadRegistrations();
+		window.addEventListener("focus", refreshOnFocus);
+		document.addEventListener("visibilitychange", refreshOnFocus);
 
 		return () => {
-			mounted = false;
+			mountedRef.current = false;
+			window.removeEventListener("focus", refreshOnFocus);
+			document.removeEventListener("visibilitychange", refreshOnFocus);
 		};
 	}, []);
 

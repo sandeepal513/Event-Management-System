@@ -51,6 +51,7 @@ function isUpcomingByDateOnly(event) {
 
 export default function EventApprovals() {
 	const [approvals, setApprovals] = useState([]);
+	const [summaryApprovals, setSummaryApprovals] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
 	const [filter, setFilter] = useState("PENDING");
@@ -63,10 +64,26 @@ export default function EventApprovals() {
 
 		(async () => {
 			try {
-				const response = await fetch("http://localhost:3000/api/event-approvals");
-				if (!response.ok) throw new Error(`Request failed with ${response.status}`);
-				const data = await response.json();
-				if (mounted) setApprovals(Array.isArray(data) ? data : []);
+				let filteredEndpoint = "http://localhost:3000/api/event-approvals";
+				if (filter === "PENDING") filteredEndpoint = "http://localhost:3000/api/event-approvals/pending";
+				else if (filter === "APPROVED") filteredEndpoint = "http://localhost:3000/api/event-approvals/approve";
+				else if (filter === "REJECTED") filteredEndpoint = "http://localhost:3000/api/event-approvals/reject";
+
+				const [filteredResponse, allResponse] = await Promise.all([
+					fetch(filteredEndpoint),
+					filter === "ALL" ? null : fetch("http://localhost:3000/api/event-approvals"),
+				]);
+
+				if (!filteredResponse.ok) throw new Error(`Request failed with ${filteredResponse.status}`);
+				if (allResponse && !allResponse.ok) throw new Error(`Request failed with ${allResponse.status}`);
+
+				const filteredData = await filteredResponse.json();
+				const allData = allResponse ? await allResponse.json() : filteredData;
+
+				if (mounted) {
+					setApprovals(Array.isArray(filteredData) ? filteredData : []);
+					setSummaryApprovals(Array.isArray(allData) ? allData : []);
+				}
 			} catch (loadError) {
 				console.error("Error loading approvals:", loadError);
 				if (mounted) setError("Unable to load event approvals right now.");
@@ -78,23 +95,22 @@ export default function EventApprovals() {
 		return () => {
 			mounted = false;
 		};
-	}, []);
+	}, [filter]);
 
 	const summary = useMemo(() => {
-		const upcomingApprovals = approvals.filter((approval) => isUpcomingByDateOnly(approval.event));
+		const upcomingApprovals = summaryApprovals.filter((approval) => isUpcomingByDateOnly(approval.event));
+		const counts = { total: 0, pending: 0, approved: 0, rejected: 0 };
+		counts.total = upcomingApprovals.length;
 
-		return upcomingApprovals.reduce(
-			(counts, approval) => {
-				const status = normalizeStatus(approval.status);
-				counts.total += 1;
-				if (status === "PENDING") counts.pending += 1;
-				if (status === "APPROVED") counts.approved += 1;
-				if (status === "REJECTED") counts.rejected += 1;
-				return counts;
-			},
-			{ total: 0, pending: 0, approved: 0, rejected: 0 }
-		);
-	}, [approvals]);
+		upcomingApprovals.forEach((approval) => {
+			const status = normalizeStatus(approval.status);
+			if (status === "PENDING") counts.pending += 1;
+			if (status === "APPROVED") counts.approved += 1;
+			if (status === "REJECTED") counts.rejected += 1;
+		});
+
+		return counts;
+	}, [summaryApprovals]);
 
 	const visibleApprovals = useMemo(() => {
 		const normalizedQuery = query.trim().toLowerCase();
@@ -104,8 +120,6 @@ export default function EventApprovals() {
 				return false;
 			}
 
-			const status = normalizeStatus(approval.status);
-			const matchesFilter = filter === "ALL" || status === filter;
 			const eventTitle = approval.event?.title || "";
 			const organizerName = approval.event?.organizer?.name || "";
 			const venueName = approval.event?.venue?.name || "";
@@ -118,9 +132,11 @@ export default function EventApprovals() {
 				categoryName.toLowerCase().includes(normalizedQuery) ||
 				String(approval.id).includes(normalizedQuery);
 
-			return matchesFilter && matchesQuery;
+			return matchesQuery;
 		});
-	}, [approvals, filter, query]);
+	}, [approvals, query]);
+
+	const showActionsColumn = visibleApprovals.some((approval) => normalizeStatus(approval.status) === "PENDING");
 
 	async function handleApprove(id) {
 		try {
@@ -131,7 +147,13 @@ export default function EventApprovals() {
 
 			if (!response.ok) throw new Error(`Request failed with ${response.status}`);
 
-			setApprovals((current) => current.filter((approval) => approval.id !== id));
+			setApprovals((current) => {
+				if (filter !== "ALL") return current.filter((approval) => approval.id !== id);
+				return current.map((approval) => (approval.id === id ? { ...approval, status: "APPROVED" } : approval));
+			});
+			setSummaryApprovals((current) =>
+				current.map((approval) => (approval.id === id ? { ...approval, status: "APPROVED" } : approval))
+			);
 			toast.success("Event approved");
 		} catch (approveError) {
 			console.error("Error approving event:", approveError);
@@ -158,7 +180,13 @@ export default function EventApprovals() {
 
 			if (!response.ok) throw new Error(`Request failed with ${response.status}`);
 
-			setApprovals((current) => current.filter((approval) => approval.id !== id));
+			setApprovals((current) => {
+				if (filter !== "ALL") return current.filter((approval) => approval.id !== id);
+				return current.map((approval) => (approval.id === id ? { ...approval, status: "REJECTED" } : approval));
+			});
+			setSummaryApprovals((current) =>
+				current.map((approval) => (approval.id === id ? { ...approval, status: "REJECTED" } : approval))
+			);
 			setRejectReason((current) => {
 				const next = { ...current };
 				delete next[id];
@@ -270,7 +298,7 @@ export default function EventApprovals() {
 										<th className="px-4 py-3.5 font-medium">Venue</th>
 										<th className="px-4 py-3.5 font-medium">Status</th>
 										<th className="px-4 py-3.5 font-medium">Created</th>
-										<th className="px-4 py-3.5 font-medium">Actions</th>
+										{showActionsColumn ? <th className="px-4 py-3.5 font-medium">Actions</th> : null}
 									</tr>
 								</thead>
 								<tbody>
@@ -293,43 +321,47 @@ export default function EventApprovals() {
 													<span className={`inline-flex rounded-full border px-3 py-1 text-xs font-medium ${statusMeta.className}`}>{statusMeta.label}</span>
 												</td>
 												<td className="px-4 py-4 text-white/70">{formatDateTime(approval.createdAt)}</td>
-												<td className="px-4 py-4">
-													<div className="space-y-2.5">
-														<input
-															type="text"
-															placeholder="Reason if rejecting"
-															value={rejectReason[approval.id] || ""}
-															onChange={(event) =>
-																setRejectReason((current) => ({
-																	...current,
-																	[approval.id]: event.target.value,
-																}))
-															}
-															className="w-full rounded-xl border border-white/10 bg-[#111110] px-3 py-2 text-xs text-white outline-none placeholder:text-white/35 focus:border-sky-400/50"
-														/>
+												{showActionsColumn ? (
+													<td className="px-4 py-4">
+													{canAct ? (
+														<div className="space-y-2.5">
+															<input
+																type="text"
+																placeholder="Reason if rejecting"
+																value={rejectReason[approval.id] || ""}
+																onChange={(event) =>
+																	setRejectReason((current) => ({
+																		...current,
+																		[approval.id]: event.target.value,
+																	}))
+																}
+																className="w-full rounded-xl border border-white/10 bg-[#111110] px-3 py-2 text-xs text-white outline-none placeholder:text-white/35 focus:border-sky-400/50"
+															/>
 
-														<div className="flex flex-wrap gap-2">
-															<button
-																type="button"
-																onClick={() => handleApprove(approval.id)}
-																disabled={!canAct || processingId === approval.id}
-																className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-3 py-2 text-xs font-medium text-white transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50"
-															>
-																<FiCheckCircle />
-																{processingId === approval.id ? "Updating..." : "Approve"}
-															</button>
-															<button
-																type="button"
-																onClick={() => handleReject(approval.id)}
-																disabled={!canAct || processingId === approval.id}
-																className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-white/80 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
-															>
-																<FiSlash />
-																{processingId === approval.id ? "Updating..." : "Reject"}
-															</button>
+															<div className="flex flex-wrap gap-2">
+																<button
+																	type="button"
+																	onClick={() => handleApprove(approval.id)}
+																	disabled={processingId === approval.id}
+																	className="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-3 py-2 text-xs font-medium text-white transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-50"
+																>
+																	<FiCheckCircle />
+																	{processingId === approval.id ? "Updating..." : "Approve"}
+																</button>
+																<button
+																	type="button"
+																	onClick={() => handleReject(approval.id)}
+																	disabled={processingId === approval.id}
+																	className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-white/80 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+																>
+																	<FiSlash />
+																	{processingId === approval.id ? "Updating..." : "Reject"}
+																</button>
+															</div>
 														</div>
-													</div>
-												</td>
+													) : null}
+													</td>
+												) : null}
 											</tr>
 										);
 									})}
