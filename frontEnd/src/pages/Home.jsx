@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FiArrowRight, FiCalendar, FiMapPin, FiUsers } from "react-icons/fi";
+import { FiArrowRight, FiCalendar, FiMapPin } from "react-icons/fi";
 import { isOrganizer, isTokenValid } from "../utils/auth";
 import axios from "axios";
 
 export default function Home() {
 	const navigate = useNavigate();
 	const [upcomingEvents, setUpcomingEvents] = useState([]);
-	const [featuredEvents, setFeaturedEvents] = useState([]);
 
 	const [isLogin, setLogin] = useState(false);
 	const [isOrganizerUser, setIsOrganizerUser] = useState(false);
