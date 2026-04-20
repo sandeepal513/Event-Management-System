@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TicketService {
@@ -29,6 +32,10 @@ public class TicketService {
     public Ticket createTicket(Integer registrationId, String ticketNumber, String qrCode) {
         Registration reg = registrationRepo.findById(registrationId)
                 .orElseThrow(() -> new RuntimeException("Registration not found"));
+
+        if (!"CONFIRMED".equals(reg.getStatus())) {
+            throw new RuntimeException("Only confirmed registrations can create a ticket!");
+        }
 
         if (ticketNumber == null || ticketNumber.trim().isEmpty()) {
             throw new RuntimeException("Ticket number is required!");
@@ -126,6 +133,12 @@ public class TicketService {
         event.setTicketsCount((event.getTicketsCount() == null ? 0 : event.getTicketsCount()) + 1);
         eventRepo.save(event);
 
+        Registration registration = registrationRepo.findById(ticket.getRegistration().getId())
+            .orElseThrow(() -> new RuntimeException("Registration not found"));
+
+        registration.setStatus("REJECTED");
+        registrationRepo.save(registration);
+
         ticket.setStatus("CANCELLED");
         return ticketRepo.save(ticket);
     }
@@ -142,5 +155,50 @@ public class TicketService {
     public Ticket getByRegistrationId(Integer registrationId) {
         return ticketRepo.findByRegistrationId(registrationId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
+    }
+
+    public List<Map<String, Object>> getTicketSummary() {
+        List<Event> events = eventRepo.findAll();
+        List<Ticket> tickets = ticketRepo.findAll();
+        LocalDate today = LocalDate.now();
+
+        Map<Integer, Integer> createdByEvent = new HashMap<>();
+        Map<Integer, Integer> activeByEvent = new HashMap<>();
+        Map<Integer, Integer> cancelledByEvent = new HashMap<>();
+
+        for (Ticket ticket : tickets) {
+            Integer eventId = ticket.getRegistration() != null && ticket.getRegistration().getEvent() != null
+                    ? ticket.getRegistration().getEvent().getId()
+                    : null;
+
+            if (eventId == null) continue;
+
+            createdByEvent.put(eventId, createdByEvent.getOrDefault(eventId, 0) + 1);
+
+            if ("CANCELLED".equals(ticket.getStatus())) {
+                cancelledByEvent.put(eventId, cancelledByEvent.getOrDefault(eventId, 0) + 1);
+            } else {
+                activeByEvent.put(eventId, activeByEvent.getOrDefault(eventId, 0) + 1);
+            }
+        }
+
+        return events.stream()
+                .map(event -> {
+                    Map<String, Object> row = new HashMap<>();
+                    Integer eventId = event.getId();
+
+                    row.put("id", eventId);
+                    row.put("title", event.getTitle());
+                    row.put("date", event.getDate());
+                    row.put("time", event.getTime());
+                    row.put("ticketsCount", event.getTicketsCount());
+                    row.put("createdTickets", createdByEvent.getOrDefault(eventId, 0));
+                    row.put("activeTickets", activeByEvent.getOrDefault(eventId, 0));
+                    row.put("cancelledTickets", cancelledByEvent.getOrDefault(eventId, 0));
+                    row.put("upcoming", event.getDate() != null && !event.getDate().isBefore(today));
+
+                    return row;
+                })
+                .toList();
     }
 }

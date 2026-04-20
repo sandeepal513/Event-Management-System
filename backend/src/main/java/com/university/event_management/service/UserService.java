@@ -53,7 +53,7 @@ public class UserService {
 
     public void generateAndSendOtp(String to) throws UnsupportedEncodingException {
         String otp = String.valueOf((int)(Math.random() * 900000) + 100000);
-        this.otpExpiryTime = System.currentTimeMillis() * 10 * 60 * 1000;
+        this.otpExpiryTime = System.currentTimeMillis() + (10 * 60 * 1000);
 
         this.otp = otp;
         String subject = "Your One-Time Verification Code (OTP) – EventOra";
@@ -72,9 +72,10 @@ public class UserService {
 
     public boolean verifyOtp(String clientOtp) {
         if (otp == null) return false;
+        System.out.println(otp);
 
         if (System.currentTimeMillis() > otpExpiryTime) {
-            otp = null;
+            this.otp = null;
             return false;
         }
 
@@ -83,6 +84,27 @@ public class UserService {
             return true;
         }
         return false;
+    }
+
+    public void sendVerifyEmailOTP(String to) throws UnsupportedEncodingException {
+        String otp = String.valueOf((int)(Math.random() * 900000) + 100000);
+        this.otpExpiryTime = System.currentTimeMillis() + (1000 * 60 * 5);
+
+        this.otp = otp;
+        String subject = "EventOra Security Code: Verify Your Login";
+        String body = "Hi,\n\n" +
+                "We received a request to verify your login to EventOra.\n" +
+                "Use the one-time verification code below to continue:\n\n" +
+                "    " + otp + "\n\n" +
+                "This code expires in 5 minutes and can only be used once.\n" +
+                "For your security, do not share this code with anyone.\n\n" +
+                "If you did not request this code, please ignore this email or contact support immediately.\n\n" +
+                "Best regards,\n" +
+                "EventOra Security Team\n" +
+                "support@eventmanagement.com";
+
+
+        publicService.sendMail(to, subject, body);
     }
 
     public void sendWelcomeEmail(String to) throws UnsupportedEncodingException {
@@ -111,6 +133,47 @@ public class UserService {
                 "\n" +
                 "Best regards,\n" +
                 "Team EventOra \uD83D\uDE80";
+
+        publicService.sendMail(to, subject, body);
+    }
+
+    public void sendOrganizerApproveRejectMail(String to, String status, String reason) throws UnsupportedEncodingException {
+
+        String username = to.split("@")[0];
+        String subject;
+        String body;
+
+        if ("approve".equalsIgnoreCase(status)) {
+
+            subject = "🎉 Your Organizer Account Has Been Approved!";
+
+            body = "Hi " + username + ",\n\n" +
+                    "Great news! 🎉\n\n" +
+                    "Your organizer account on EventOra has been successfully approved.\n\n" +
+                    "You can now start creating and managing your own events, connect with attendees, and grow your community.\n\n" +
+                    "What you can do next:\n" +
+                    "🎟️ Create and publish events\n" +
+                    "📊 Manage attendees\n" +
+                    "📢 Promote your events\n\n" +
+                    "We’re excited to see the amazing events you’ll create!\n\n" +
+                    "Best regards,\n" +
+                    "Team EventOra 🚀";
+
+        } else {
+
+            subject = "❌ Organizer Registration Update";
+
+            body = "Hi " + username + ",\n\n" +
+                    "Thank you for your interest in becoming an organizer on EventOra.\n\n" +
+                    "We regret to inform you that your organizer registration has been rejected at this time.\n\n" +
+                    "Reason:\n" +
+                    (reason != null && !reason.isEmpty() ? reason : "Not specified") + "\n\n" +
+                    "You may review the requirements and apply again after making the necessary changes.\n\n" +
+                    "If you have any questions, feel free to contact our support team.\n\n" +
+                    "Best regards,\n" +
+                    "Team EventOra";
+
+        }
 
         publicService.sendMail(to, subject, body);
     }

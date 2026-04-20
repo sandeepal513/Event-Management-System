@@ -2,13 +2,16 @@ package com.university.event_management.controller;
 
 import com.university.event_management.dto.ApiResponse;
 import com.university.event_management.model.User;
+import com.university.event_management.model.UserStatus;
 import com.university.event_management.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -53,6 +56,7 @@ public class UserController {
         currentUser.setEmail(updateUser.getEmail());
         currentUser.setPhoneNo(updateUser.getPhoneNo());
         currentUser.setImage(updateUser.getImage());
+        currentUser.setVerifyEmail(updateUser.getVerifyEmail());
         User user = userService.updateUser(id, currentUser);
 
         ApiResponse<User> response = new ApiResponse<>(true, "User updated successfully", user);
@@ -83,6 +87,39 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.status(500)
                     .body(new ApiResponse<>(false, "Server error: " + e.getMessage(), null));
+        }
+    }
+
+    // update organizerStatus
+    @PutMapping("/users/{organizerId}/status")
+    public ResponseEntity<ApiResponse<String>> updateUserStatus(@PathVariable Integer organizerId, @RequestBody Map<String, Object> body
+    ) throws UnsupportedEncodingException {
+
+        User user = userService.getUser(organizerId);
+
+        String status = String.valueOf(body.get("userStatus"));
+        System.out.println(status);
+        String reason = "";
+
+        if ("APPROVED".equalsIgnoreCase(status)) {
+            user.setUserStatus(UserStatus.approve);
+        } else {
+            user.setUserStatus(UserStatus.reject);
+            reason = (String) body.get("reason");
+        }
+
+        try {
+            userService.updateUser(user.getId(), user);
+            userService.sendOrganizerApproveRejectMail(user.getEmail(), user.getUserStatus().toString(), reason);
+
+            return ResponseEntity.ok(
+                    new ApiResponse<>(true, "Organizer status update success", null)
+            );
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(
+                    new ApiResponse<>(false, "Organizer status update failed", null)
+            );
         }
     }
 }

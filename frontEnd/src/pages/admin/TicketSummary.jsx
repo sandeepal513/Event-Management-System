@@ -60,8 +60,7 @@ function EventSummaryCard({ event }) {
 }
 
 export default function TicketSummary() {
-	const [events, setEvents] = useState([]);
-	const [tickets, setTickets] = useState([]);
+	const [eventStats, setEventStats] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
 
@@ -70,15 +69,11 @@ export default function TicketSummary() {
 
 		(async () => {
 			try {
-				const [eventRes, ticketRes] = await Promise.all([
-					axios.get("http://localhost:3000/api/events/all"),
-					axios.get("http://localhost:3000/api/tickets"),
-				]);
+				const summaryRes = await axios.get("http://localhost:3000/api/tickets/summary");
 
 				if (!mounted) return;
 
-				setEvents(Array.isArray(eventRes.data) ? eventRes.data : []);
-				setTickets(Array.isArray(ticketRes.data) ? ticketRes.data : []);
+				setEventStats(Array.isArray(summaryRes.data) ? summaryRes.data : []);
 			} catch (requestError) {
 				console.error("Error loading ticket summary:", requestError);
 				if (mounted) setError("Unable to load ticket summary right now.");
@@ -92,40 +87,13 @@ export default function TicketSummary() {
 		};
 	}, []);
 
-	const eventStats = useMemo(() => {
-		const ticketsByEventId = new Map();
-
-		for (const ticket of tickets) {
-			const eventId = ticket?.registration?.event?.id;
-			if (!eventId) continue;
-
-			if (!ticketsByEventId.has(eventId)) {
-				ticketsByEventId.set(eventId, []);
-			}
-			ticketsByEventId.get(eventId).push(ticket);
-		}
-
-		return events.map((event) => {
-			const eventTickets = ticketsByEventId.get(event.id) || [];
-			const active = eventTickets.filter((ticket) => (ticket.status || "ACTIVE") !== "CANCELLED").length;
-			const cancelled = eventTickets.filter((ticket) => ticket.status === "CANCELLED").length;
-
-			return {
-				...event,
-				createdTickets: eventTickets.length,
-				activeTickets: active,
-				cancelledTickets: cancelled,
-			};
-		});
-	}, [events, tickets]);
-
 	const upcomingEvents = useMemo(
-		() => eventStats.filter((event) => isUpcomingEvent(event.date)).sort((a, b) => String(a.date).localeCompare(String(b.date))),
+		() => eventStats.filter((event) => event.upcoming ?? isUpcomingEvent(event.date)).sort((a, b) => String(a.date).localeCompare(String(b.date))),
 		[eventStats]
 	);
 
 	const outdatedEvents = useMemo(
-		() => eventStats.filter((event) => !isUpcomingEvent(event.date)).sort((a, b) => String(b.date).localeCompare(String(a.date))),
+		() => eventStats.filter((event) => !(event.upcoming ?? isUpcomingEvent(event.date))).sort((a, b) => String(b.date).localeCompare(String(a.date))),
 		[eventStats]
 	);
 
