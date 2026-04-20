@@ -15,13 +15,6 @@ export default function Events() {
     useEffect(() => {
         if (!loaded) {
 
-            const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
-
-            if (!loggedInUser?.id) {
-                console.error("User not logged in");
-                return;
-            }
-
             axios.get(`http://localhost:3000/api/events/organizer/${loggedInUser.id}`)
                 .then((response) => {
                     console.log("Fetched events:", response.data);
