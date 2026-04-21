@@ -12,19 +12,46 @@ export default function Events() {
     const [pendingDeleteEvent, setPendingDeleteEvent] = useState(null);
     const [keyword, setKeyword] = useState("");
 
-    useEffect(() => {
-        if (!loaded) {
+    async function fetchOrganizerEvents(searchKeyword = "") {
+        const username = localStorage.getItem("username");
 
-            axios.get(`http://localhost:3000/api/events/organizer/${loggedInUser.id}`)
-                .then((response) => {
-                    console.log("Fetched events:", response.data);
-                    setEvents(response.data);
-                    setLoaded(true);
-                })
-                .catch((error) => {
-                    console.error("Error fetching events:", error);
-                });
+        if (!username) {
+            console.error("User not logged in");
+            setEvents([]);
+            setLoaded(true);
+            return;
         }
+
+        const userResponse = await axios.get(`http://localhost:3000/api/v1/users/username/${encodeURIComponent(username)}`);
+        const organizerId = userResponse?.data?.data?.id;
+
+        if (!organizerId) {
+            console.error("Unable to identify organizer account");
+            setEvents([]);
+            setLoaded(true);
+            return;
+        }
+
+        const trimmedKeyword = searchKeyword.trim();
+        const endpoint = trimmedKeyword
+            ? `http://localhost:3000/api/events/organizer/${organizerId}/search?keyword=${encodeURIComponent(trimmedKeyword)}`
+            : `http://localhost:3000/api/events/organizer/${organizerId}`;
+
+        const response = await axios.get(endpoint);
+        const responseData = Array.isArray(response.data) ? response.data : [];
+
+        setEvents(responseData);
+        setLoaded(true);
+    }
+
+
+
+    useEffect(() => {
+        fetchOrganizerEvents().catch((error) => {
+            console.error("Error fetching events:", error);
+            setEvents([]);
+            setLoaded(true);
+        });
     }, []);
 
     function handleDeleteEvent(eventId, eventTitle) {
@@ -52,39 +79,25 @@ export default function Events() {
 
     async function searchEvents() {
         try {
-            const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
-
-            if (!loggedInUser?.id) {
-                console.error("User not logged in");
-                return;
-            }
-
-            let res;
-
-            if (keyword.trim() === "") {
-                res = await axios.get(
-                    `http://localhost:3000/api/events/organizer/${loggedInUser.id}`
-                );
-            } else {
-                res = await axios.get(
-                    `http://localhost:3000/api/events/organizer/${loggedInUser.id}/search?keyword=${keyword}`
-                );
-            }
-
-            setEvents(res.data);
+            await fetchOrganizerEvents(keyword);
 
         } catch (error) {
             console.error("Error searching events:", error);
+            setEvents([]);
             toast.error("Failed to search events");
         }
     }
 
     useEffect(() => {
+        if (!loaded) {
+            return;
+        }
+
         const delayDebounceFn = setTimeout(() => {
             searchEvents();
         }, 500);
         return () => clearTimeout(delayDebounceFn);
-    }, [keyword]);
+    }, [keyword, loaded]);
 
     const stats = useMemo(() => {
         const now = new Date();
