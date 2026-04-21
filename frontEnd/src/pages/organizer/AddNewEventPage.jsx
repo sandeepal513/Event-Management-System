@@ -77,10 +77,20 @@ export default function AddNewEventPage() {
 
     async function addEvent() {
 
-       const username = localStorage.getItem("username");
+        const username = localStorage.getItem("username");
 
         if (!username) {
             console.error("User not logged in");
+            setEvents([]);
+            setLoaded(true);
+            return;
+        }
+
+        const userResponse = await axios.get(`http://localhost:3000/api/v1/users/username/${encodeURIComponent(username)}`);
+        const organizerId = userResponse?.data?.data?.id;
+
+        if (!organizerId) {
+            console.error("Unable to identify organizer account");
             setEvents([]);
             setLoaded(true);
             return;
