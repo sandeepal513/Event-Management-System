@@ -236,15 +236,7 @@ const ProfilePage = () => {
                         </div>
 
                         <div className="flex items-center gap-3 self-start md:self-auto">
-                            <button
-                                type="button"
-                                onClick={() => navigate("/")}
-                                className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-medium text-white/85 transition hover:bg-white/10"
-                            >
-                                <FiArrowLeft />
-                                Back To Home
-                            </button>
-
+                
                             {!isEditing ? (
                                 <button
                                     type="button"

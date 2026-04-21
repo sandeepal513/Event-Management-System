@@ -50,7 +50,8 @@ export default function SearchEventDetailsPage() {
 
     const backLink = state?.fromUrl || state?.fromSearchUrl || "/";
     const backLabel = state?.fromLabel || "Back to Results";
-    const isStudentLoggedIn = localStorage.getItem("userRole") === "student" && Boolean(localStorage.getItem("token"));
+    const hasToken = Boolean(localStorage.getItem("token"));
+    const isStudentLoggedIn = localStorage.getItem("userRole") === "student" && hasToken;
 
     return (
         <div className="min-h-screen bg-linear-to-b from-[#0f0f0e] to-[#1a1a18] px-4 py-10 md:px-8">
@@ -125,7 +126,7 @@ export default function SearchEventDetailsPage() {
                                 >
                                     {backLabel}
                                 </Link>
-                                {isStudentLoggedIn ? (
+                                {isStudentLoggedIn && (
                                     <Link
                                         to={`/student/events/${event.id}`}
                                         state={{ event, fromUrl: backLink, fromLabel: backLabel }}
@@ -133,7 +134,8 @@ export default function SearchEventDetailsPage() {
                                     >
                                         Open Registration Page
                                     </Link>
-                                ) : (
+                                )}
+                                {!hasToken && (
                                     <Link
                                         to="/auth/login"
                                         className="rounded-lg bg-cyan-600 px-4 py-2 text-sm font-semibold text-white hover:bg-cyan-500"
