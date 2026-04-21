@@ -77,11 +77,12 @@ export default function AddNewEventPage() {
 
     async function addEvent() {
 
-        const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser") || "null");
+       const username = localStorage.getItem("username");
 
-        if (!loggedInUser?.id) {
-            toast.error("Please log in to add an event");
-            navigate("/auth/login");
+        if (!username) {
+            console.error("User not logged in");
+            setEvents([]);
+            setLoaded(true);
             return;
         }
 
@@ -107,7 +108,7 @@ export default function AddNewEventPage() {
                 date: date,
                 time: `${time}:00`,
                 categoryId: category,
-                organizerId: loggedInUser.id,
+                organizerId: organizerId,
                 venueId: venue,
                 societyId: society,
                 ticketRequired: ticketsRequired,
