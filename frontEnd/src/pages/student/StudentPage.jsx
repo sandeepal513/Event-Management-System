@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { MdClose, MdDashboard, MdMenu } from "react-icons/md";
+import { MdClose, MdDashboard, MdMenu, MdHome } from "react-icons/md";
 
 import ProfilePage from "../../components/ProfilePage";
 import ChangePassword from "../../components/ChangePassword";
@@ -77,7 +77,7 @@ const StudentPage = () => {
                 {sidebarOpen ? <MdClose className="text-2xl" /> : <MdMenu className="text-2xl" />}
             </button>
 
-            <div className={`fixed md:static z-30 w-75 h-full bg-[#1e1e1c] transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
+            <div className={`fixed md:static z-30 w-75 h-full bg-[#1e1e1c] transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 flex flex-col`}>
                 <div className="w-full px-5 py-6 flex flex-col items-center justify-center border-b border-white/10">
                     {userProfile.image ? (
                         <img
@@ -94,18 +94,31 @@ const StudentPage = () => {
                     <p className="text-xs text-white/60 mt-1">{userProfile.role}</p>
                 </div>
 
-                <div className="w-full flex flex-col pl-5 pt-5">
-                    {sidebarItems.map((item) => (
+                <div className="flex-1 flex flex-col justify-between">
+                    <div className="w-full flex flex-col pl-5 pt-5">
+                        {sidebarItems.map((item) => (
+                            <Link
+                                key={item.label}
+                                to={item.path}
+                                state={item.path === "/logout" ? { backgroundLocation: location } : undefined}
+                                onClick={() => setSidebarOpen(false)}
+                                className={`flex items-center gap-2 border-r-4 px-3 py-3 text-lg transition ${isActiveItem(item.path) ? "border-sky-400 bg-sky-400/10 text-white" : "border-transparent text-white/70 hover:border-white/15 hover:bg-white/5 hover:text-white"}`}
+                            >
+                                <MdDashboard className="text-2xl" /> {item.label}
+                            </Link>
+                        ))}
+                    </div>
+
+                    <div className="px-5 pb-6">
                         <Link
-                            key={item.label}
-                            to={item.path}
-                            state={item.path === "/logout" ? { backgroundLocation: location } : undefined}
+                            to="/"
                             onClick={() => setSidebarOpen(false)}
-                            className={`flex items-center gap-2 border-r-4 px-3 py-3 text-lg transition ${isActiveItem(item.path) ? "border-sky-400 bg-sky-400/10 text-white" : "border-transparent text-white/70 hover:border-white/15 hover:bg-white/5 hover:text-white"}`}
+                            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
                         >
-                            <MdDashboard className="text-2xl" /> {item.label}
+                            <MdHome className="text-xl" />
+                            Back to Home
                         </Link>
-                    ))}
+                    </div>
                 </div>
             </div>
 
