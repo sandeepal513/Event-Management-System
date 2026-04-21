@@ -11,6 +11,7 @@ export default function Home() {
 	const [isLogin, setLogin] = useState(false);
 	const [isOrganizerUser, setIsOrganizerUser] = useState(false);
 	const [profile, setProfile] = useState('');
+	const [profileImage, setProfileImage] = useState("");
 	const [categories, setCategories] = useState([]);
 	const role = localStorage.getItem("userRole");
 
@@ -29,10 +30,13 @@ export default function Home() {
 		if (!valid) {
 			setLogin(false);
 			setProfile('');
+			setProfileImage("");
 		} else {
 			setLogin(true);
 			const profileText = localStorage.getItem("username");
+			const storedImageURL = localStorage.getItem("imageURL") || "";
 			if (profileText) setProfile(profileText.toUpperCase());
+			setProfileImage(storedImageURL);
 		}
 
 		const checkOrganizer = async () => {
@@ -129,9 +133,11 @@ export default function Home() {
 		localStorage.removeItem("token");
 		localStorage.removeItem("username");
 		localStorage.removeItem("user");
+		localStorage.removeItem("imageURL");
 		setLogin(false);
 		setIsOrganizerUser(false);
 		setProfile("");
+		setProfileImage("");
 		navigate("/auth/login");
 	};
 
@@ -158,7 +164,15 @@ export default function Home() {
 									type="button"
 									className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-red-600 text-sm font-semibold text-white border border-white/30 hover:border-sky-400/50 hover:bg-red-500 transition-all"
 								>
-									{profile[0] || "U"}
+									{profileImage ? (
+										<img
+											src={profileImage}
+											alt="Profile"
+											className="h-full w-full rounded-full object-cover"
+										/>
+									) : (
+										profile[0] || "U"
+									)}
 								</button>
 
 								<div className="invisible absolute right-0 top-12 z-40 min-w-36 rounded-lg border border-white/15 bg-[#1f1f1d] p-1 opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:opacity-100">
@@ -330,7 +344,7 @@ export default function Home() {
 						<p className="text-white/70 text-lg mb-8">Join thousands of organizers and create unforgettable experiences</p>
 						<div className="flex flex-col sm:flex-row gap-4 justify-center">
 							<Link
-								to="/organizer/event"
+								to="/organizer/events"
 								className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-linear-to-r from-sky-500 to-cyan-500 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-sky-500/50 transition-all"
 							>
 								Create Event <FiArrowRight />
