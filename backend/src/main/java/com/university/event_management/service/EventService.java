@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,26 @@ public class EventService {
     @Autowired
     private EventApprovalRepository eventApprovalRepository;
 
+
+    //Validate that event date and time
+    private void validateEventDateTime(LocalDate date, LocalTime time) {
+        if (date == null ) {
+            throw new RuntimeException("Event date is required");
+        }
+
+        if (time == null ) {
+            throw new RuntimeException("Event time is required");
+        }
+
+        LocalDateTime eventDateTime = LocalDateTime.of(date, time);
+
+        if (eventDateTime.isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Event date and time cannot be in the past");
+        }
+    }
+
+
+    //Add new event with validation and approval process
     public Event addEvent(EventRequest request) {
 
         User organizer = userRepository.findById(request.getOrganizerId())
@@ -50,6 +71,8 @@ public class EventService {
             throw new RuntimeException("User is not an organizer");
         }
 
+        validateEventDateTime(request.getDate(), request.getTime().toLocalTime());
+
         Event event = new Event();
 
         event.setTitle(request.getTitle());
@@ -64,8 +87,6 @@ public class EventService {
         event.setVenue(venue);
         event.setSociety(society);
 
-       // return eventRepository.save(event);
-
         Event savedEvent = eventRepository.save(event);
 
         EventApproval approval = new EventApproval();
@@ -77,15 +98,21 @@ public class EventService {
 
     }
 
+
+    //Get all events
     public List<Event> getAllEvents() {
         return eventRepository.findAll();
     }
 
+
+    //Get event by id
     public Event getEventById(Integer id) {
         return eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
     }
 
+
+    //Update event with validation
     public Event updateEvent(Integer id, EventRequest request) {
 
         Event event = eventRepository.findById(id)
@@ -119,6 +146,8 @@ public class EventService {
                     .orElseThrow(() -> new RuntimeException("Venue not found"));
         }
 
+        validateEventDateTime(request.getDate(), request.getTime().toLocalTime());
+
         event.setTitle(request.getTitle());
         event.setDescription(request.getDescription());
         event.setDate(request.getDate());
@@ -134,6 +163,8 @@ public class EventService {
         return eventRepository.save(event);
     }
 
+
+    //Delete event by id
     public Event deleteEvent(Integer id) {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
@@ -142,6 +173,8 @@ public class EventService {
         return event;
     }
 
+
+    //Search events by organizer with optional keyword
     public List<Event> searchEventsByOrganizer(Integer organizerId, String keyword) {
         if (keyword == null || keyword.trim().isEmpty()) {
             return eventRepository.findByOrganizerId(organizerId);
