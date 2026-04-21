@@ -138,7 +138,7 @@ export default function Home() {
 		setIsOrganizerUser(false);
 		setProfile("");
 		setProfileImage("");
-		navigate("/auth/login");
+		navigate("/");
 	};
 
 	return (
