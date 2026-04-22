@@ -56,29 +56,41 @@ export default function EventApprovals() {
 	const [error, setError] = useState("");
 	const [filter, setFilter] = useState("PENDING");
 	const [query, setQuery] = useState("");
+	const [debouncedQuery, setDebouncedQuery] = useState("");
 	const [rejectReason, setRejectReason] = useState({});
 	const [processingId, setProcessingId] = useState(null);
+
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setDebouncedQuery(query.trim());
+		}, 300);
+
+		return () => clearTimeout(timer);
+	}, [query]);
 
 	useEffect(() => {
 		let mounted = true;
 
 		(async () => {
 			try {
-				let filteredEndpoint = "http://localhost:3000/api/event-approvals";
-				if (filter === "PENDING") filteredEndpoint = "http://localhost:3000/api/event-approvals/pending";
-				else if (filter === "APPROVED") filteredEndpoint = "http://localhost:3000/api/event-approvals/approve";
-				else if (filter === "REJECTED") filteredEndpoint = "http://localhost:3000/api/event-approvals/reject";
+				const params = new URLSearchParams();
+				if (filter !== "ALL") params.set("status", filter);
+				if (debouncedQuery) params.set("q", debouncedQuery);
+
+				const filteredEndpoint = params.toString()
+					? `http://localhost:3000/api/event-approvals?${params.toString()}`
+					: "http://localhost:3000/api/event-approvals";
 
 				const [filteredResponse, allResponse] = await Promise.all([
 					fetch(filteredEndpoint),
-					filter === "ALL" ? null : fetch("http://localhost:3000/api/event-approvals"),
+					fetch("http://localhost:3000/api/event-approvals"),
 				]);
 
 				if (!filteredResponse.ok) throw new Error(`Request failed with ${filteredResponse.status}`);
 				if (allResponse && !allResponse.ok) throw new Error(`Request failed with ${allResponse.status}`);
 
 				const filteredData = await filteredResponse.json();
-				const allData = allResponse ? await allResponse.json() : filteredData;
+				const allData = await allResponse.json();
 
 				if (mounted) {
 					setApprovals(Array.isArray(filteredData) ? filteredData : []);
@@ -95,7 +107,7 @@ export default function EventApprovals() {
 		return () => {
 			mounted = false;
 		};
-	}, [filter]);
+	}, [filter, debouncedQuery]);
 
 	const summary = useMemo(() => {
 		const upcomingApprovals = summaryApprovals.filter((approval) => isUpcomingByDateOnly(approval.event));
@@ -112,29 +124,7 @@ export default function EventApprovals() {
 		return counts;
 	}, [summaryApprovals]);
 
-	const visibleApprovals = useMemo(() => {
-		const normalizedQuery = query.trim().toLowerCase();
-
-		return approvals.filter((approval) => {
-			if (!isUpcomingByDateOnly(approval.event)) {
-				return false;
-			}
-
-			const eventTitle = approval.event?.title || "";
-			const organizerName = approval.event?.organizer?.name || "";
-			const venueName = approval.event?.venue?.name || "";
-			const categoryName = approval.event?.category?.name || "";
-			const matchesQuery =
-				normalizedQuery.length === 0 ||
-				eventTitle.toLowerCase().includes(normalizedQuery) ||
-				organizerName.toLowerCase().includes(normalizedQuery) ||
-				venueName.toLowerCase().includes(normalizedQuery) ||
-				categoryName.toLowerCase().includes(normalizedQuery) ||
-				String(approval.id).includes(normalizedQuery);
-
-			return matchesQuery;
-		});
-	}, [approvals, query]);
+	const visibleApprovals = useMemo(() => approvals.filter((approval) => isUpcomingByDateOnly(approval.event)), [approvals]);
 
 	const showActionsColumn = visibleApprovals.some((approval) => normalizeStatus(approval.status) === "PENDING");
 
