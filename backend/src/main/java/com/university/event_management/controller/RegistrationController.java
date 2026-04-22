@@ -51,8 +51,12 @@ public class RegistrationController {
 
     //Admin sees all registrations
     @GetMapping
-    public ResponseEntity<List<Registration>> getAll() {
-        return ResponseEntity.ok(registrationService.getAll());
+    public ResponseEntity<List<Registration>> getAll(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Integer eventId,
+            @RequestParam(required = false) String q
+    ) {
+        return ResponseEntity.ok(registrationService.getFiltered(status, eventId, q));
     }
 
     @GetMapping("/confirmed")

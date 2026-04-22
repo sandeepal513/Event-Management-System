@@ -9,6 +9,7 @@ import com.university.event_management.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -77,6 +78,53 @@ public class  RegistrationService {
     //Admin sees all registrations
     public List<Registration> getAll(){
         return registrationRepo.findAll();
+    }
+
+    public List<Registration> getFiltered(String status, Integer eventId, String q) {
+        String normalizedStatus = status == null ? null : status.trim().toUpperCase();
+        String normalizedQuery = q == null ? "" : q.trim().toLowerCase();
+
+        List<Registration> base;
+        if (normalizedStatus != null && !normalizedStatus.isEmpty() && eventId != null) {
+            base = registrationRepo.findByStatusAndEventId(normalizedStatus, eventId);
+        } else if (normalizedStatus != null && !normalizedStatus.isEmpty()) {
+            base = registrationRepo.findByStatus(normalizedStatus);
+        } else if (eventId != null) {
+            base = registrationRepo.findByEventId(eventId);
+        } else {
+            base = registrationRepo.findAll();
+        }
+
+        return base.stream()
+                .filter(registration -> {
+                    if (normalizedQuery.isEmpty()) {
+                        return true;
+                    }
+
+                    String studentName = registration.getUser() != null && registration.getUser().getName() != null
+                            ? registration.getUser().getName().toLowerCase()
+                            : "";
+                    String studentEmail = registration.getUser() != null && registration.getUser().getEmail() != null
+                            ? registration.getUser().getEmail().toLowerCase()
+                            : "";
+                    String eventTitle = registration.getEvent() != null && registration.getEvent().getTitle() != null
+                            ? registration.getEvent().getTitle().toLowerCase()
+                            : "";
+                    String venueName = registration.getEvent() != null
+                            && registration.getEvent().getVenue() != null
+                            && registration.getEvent().getVenue().getName() != null
+                            ? registration.getEvent().getVenue().getName().toLowerCase()
+                            : "";
+
+                    return String.valueOf(registration.getId()).contains(normalizedQuery)
+                            || studentName.contains(normalizedQuery)
+                            || studentEmail.contains(normalizedQuery)
+                            || eventTitle.contains(normalizedQuery)
+                            || venueName.contains(normalizedQuery);
+                })
+                .sorted(Comparator.comparing(Registration::getRegister_at,
+                        Comparator.nullsLast(Comparator.naturalOrder())).reversed())
+                .toList();
     }
 
     public List<Registration> getConfirmed() {
