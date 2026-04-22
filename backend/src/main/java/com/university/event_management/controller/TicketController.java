@@ -47,8 +47,12 @@ public class TicketController {
 
     // Admin gets all tickets
     @GetMapping
-    public ResponseEntity<List<Ticket>> getAll() {
-        return ResponseEntity.ok(ticketService.getAll());
+    public ResponseEntity<List<Ticket>> getAll(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Integer eventId,
+            @RequestParam(required = false) String q
+    ) {
+        return ResponseEntity.ok(ticketService.getFiltered(status, eventId, q));
     }
 
     @GetMapping("/summary")
