@@ -24,6 +24,12 @@ export default function AddNewEventPage() {
     const [imagePreview, setImagePreview] = useState("");
     const navigate = useNavigate();
 
+    function buildEventDateTime(selectedDate, selectedTime) {
+        const [year, month, day] = selectedDate.split("-").map(Number);
+        const [hours, minutes] = selectedTime.split(":").map(Number);
+        return new Date(year, month - 1, day, hours, minutes, 0, 0);
+    }
+
     useEffect(() => {
         async function fetchOptions() {
             try {
@@ -96,10 +102,19 @@ export default function AddNewEventPage() {
             return;
         }
 
+        
+
         if (!title || !description || !date || !time || !category || !venue || !society) {
             toast.error("Please fill in all fields");
             return;
         }
+
+        const eventDateTime = buildEventDateTime(date, time);
+        if (eventDateTime <= new Date()) {
+            toast.error("Event date and time must be in the future");
+            return;
+        }
+
         try {
             setAdding(true);
             let imageUrl = null;
