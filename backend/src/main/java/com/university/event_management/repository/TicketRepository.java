@@ -12,6 +12,12 @@ public interface TicketRepository extends JpaRepository<Ticket,Integer> {
 
     Optional<Ticket> findByTicketNumber(String ticketNumber);
 
+    List<Ticket> findByStatus(String status);
+
+    List<Ticket> findByRegistrationEventId(Integer eventId);
+
+    List<Ticket> findByStatusAndRegistrationEventId(String status, Integer eventId);
+
     List<Ticket> findAll();
 
 

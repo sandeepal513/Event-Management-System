@@ -11,4 +11,6 @@ public interface EventApprovalRepository extends JpaRepository<EventApproval, In
 
     List<EventApproval> findByEventId(Integer eventId);
 
+    List<EventApproval> findByStatusAndEventId(String status, Integer eventId);
+
 }

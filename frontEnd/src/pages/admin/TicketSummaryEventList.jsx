@@ -17,7 +17,7 @@ export default function TicketSummaryEventList() {
 			try {
 				const [eventsRes, ticketsRes] = await Promise.all([
 					axios.get("http://localhost:3000/api/events/all"),
-					axios.get("http://localhost:3000/api/tickets"),
+					axios.get(`http://localhost:3000/api/tickets?eventId=${eventId}`),
 				]);
 
 				if (!mounted) return;
@@ -34,16 +34,14 @@ export default function TicketSummaryEventList() {
 		return () => {
 			mounted = false;
 		};
-	}, []);
+	}, [eventId]);
 
 	const selectedEvent = useMemo(
 		() => events.find((event) => String(event.id) === String(eventId)) || null,
 		[events, eventId]
 	);
 
-	const eventTickets = useMemo(() => {
-		return tickets.filter((ticket) => String(ticket?.registration?.event?.id) === String(eventId));
-	}, [tickets, eventId]);
+	const eventTickets = useMemo(() => tickets, [tickets]);
 
 	if (loading) {
 		return <div className="rounded-2xl border border-white/10 bg-[#1c1c1a] p-6 text-white/70">Loading event tickets...</div>;

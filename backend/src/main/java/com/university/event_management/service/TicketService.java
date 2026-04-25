@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,6 +116,49 @@ public class TicketService {
     // Admin gets all tickets
     public List<Ticket> getAll() {
         return ticketRepo.findAll();
+    }
+
+    public List<Ticket> getFiltered(String status, Integer eventId, String q) {
+        String normalizedStatus = status == null ? null : status.trim().toUpperCase();
+        String normalizedQuery = q == null ? "" : q.trim().toLowerCase();
+
+        List<Ticket> base;
+        if (normalizedStatus != null && !normalizedStatus.isEmpty() && eventId != null) {
+            base = ticketRepo.findByStatusAndRegistrationEventId(normalizedStatus, eventId);
+        } else if (normalizedStatus != null && !normalizedStatus.isEmpty()) {
+            base = ticketRepo.findByStatus(normalizedStatus);
+        } else if (eventId != null) {
+            base = ticketRepo.findByRegistrationEventId(eventId);
+        } else {
+            base = ticketRepo.findAll();
+        }
+
+        return base.stream()
+                .filter(ticket -> {
+                    if (normalizedQuery.isEmpty()) {
+                        return true;
+                    }
+
+                    String ticketNumber = ticket.getTicketNumber() == null ? "" : ticket.getTicketNumber().toLowerCase();
+                    String studentName = ticket.getRegistration() != null
+                            && ticket.getRegistration().getUser() != null
+                            && ticket.getRegistration().getUser().getName() != null
+                            ? ticket.getRegistration().getUser().getName().toLowerCase()
+                            : "";
+                    String eventTitle = ticket.getRegistration() != null
+                            && ticket.getRegistration().getEvent() != null
+                            && ticket.getRegistration().getEvent().getTitle() != null
+                            ? ticket.getRegistration().getEvent().getTitle().toLowerCase()
+                            : "";
+
+                    return String.valueOf(ticket.getTicketId()).contains(normalizedQuery)
+                            || ticketNumber.contains(normalizedQuery)
+                            || studentName.contains(normalizedQuery)
+                            || eventTitle.contains(normalizedQuery);
+                })
+                .sorted(Comparator.comparing(Ticket::getCreatedAt,
+                        Comparator.nullsLast(Comparator.naturalOrder())).reversed())
+                .toList();
     }
 
     // Admin cancels ticket

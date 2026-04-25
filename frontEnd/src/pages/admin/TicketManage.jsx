@@ -35,18 +35,43 @@ function getTicketStatusMeta(status) {
 
 export default function TicketManage() {
 	const [tickets, setTickets] = useState([]);
+	const [summaryTickets, setSummaryTickets] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
 	const [query, setQuery] = useState("");
+	const [debouncedQuery, setDebouncedQuery] = useState("");
 	const [filter, setFilter] = useState("ALL");
+
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setDebouncedQuery(query.trim());
+		}, 300);
+
+		return () => clearTimeout(timer);
+	}, [query]);
 
 	useEffect(() => {
 		let mounted = true;
 
 		(async () => {
 			try {
-				const response = await axios.get("http://localhost:3000/api/tickets");
-				if (mounted) setTickets(Array.isArray(response.data) ? response.data : []);
+				const params = new URLSearchParams();
+				if (filter !== "ALL") params.set("status", filter);
+				if (debouncedQuery) params.set("q", debouncedQuery);
+
+				const filteredUrl = params.toString()
+					? `http://localhost:3000/api/tickets?${params.toString()}`
+					: "http://localhost:3000/api/tickets";
+
+				const [filteredResponse, allResponse] = await Promise.all([
+					axios.get(filteredUrl),
+					axios.get("http://localhost:3000/api/tickets"),
+				]);
+
+				if (!mounted) return;
+
+				setTickets(Array.isArray(filteredResponse.data) ? filteredResponse.data : []);
+				setSummaryTickets(Array.isArray(allResponse.data) ? allResponse.data : []);
 			} catch (requestError) {
 				console.error("Error loading tickets:", requestError);
 				if (mounted) setError("Unable to load tickets right now.");
@@ -58,36 +83,21 @@ export default function TicketManage() {
 		return () => {
 			mounted = false;
 		};
-	}, []);
+	}, [filter, debouncedQuery]);
 
 	const upcomingTickets = useMemo(() => {
 		return tickets.filter((ticket) => isUpcomingEvent(ticket.registration?.event?.date));
 	}, [tickets]);
 
-	const filteredTickets = useMemo(() => {
-		const normalizedQuery = query.trim().toLowerCase();
-		return upcomingTickets.filter((ticket) => {
-			const status = ticket.status || "ACTIVE";
-			const matchesFilter = filter === "ALL" || status === filter;
-			const matchesQuery =
-				normalizedQuery.length === 0 ||
-				(ticket.ticketNumber || "").toLowerCase().includes(normalizedQuery) ||
-				(ticket.registration?.user?.name || "").toLowerCase().includes(normalizedQuery) ||
-				(ticket.registration?.event?.title || "").toLowerCase().includes(normalizedQuery) ||
-				String(ticket.ticketId).includes(normalizedQuery);
-
-			return matchesFilter && matchesQuery;
-		});
-	}, [filter, query, upcomingTickets]);
-
 	const summary = useMemo(() => {
-		return upcomingTickets.reduce((counts, ticket) => {
+		const upcomingSummaryTickets = summaryTickets.filter((ticket) => isUpcomingEvent(ticket.registration?.event?.date));
+		return upcomingSummaryTickets.reduce((counts, ticket) => {
 			counts.total += 1;
 			if ((ticket.status || "ACTIVE") === "ACTIVE") counts.active += 1;
 			if (ticket.status === "CANCELLED") counts.cancelled += 1;
 			return counts;
 		}, { total: 0, active: 0, cancelled: 0 });
-	}, [upcomingTickets]);
+	}, [summaryTickets]);
 
 	if (loading) {
 		return <div className="rounded-2xl border border-white/10 bg-[#1c1c1a] p-5 text-white/70">Loading tickets...</div>;
@@ -134,7 +144,7 @@ export default function TicketManage() {
 
 			{error && <div className="rounded-2xl border border-rose-400/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">{error}</div>}
 
-			{filteredTickets.length === 0 ? (
+			{upcomingTickets.length === 0 ? (
 				<div className="rounded-2xl border border-white/10 bg-[#1b1b19] p-7 text-center text-white/70 shadow-[0_14px_36px_rgba(0,0,0,0.26)]">
 					<div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-white/5"><FiClock /></div>
 					<p className="mt-3 text-lg font-semibold text-white">No tickets found</p>
@@ -142,7 +152,7 @@ export default function TicketManage() {
 				</div>
 			) : (
 				<div className="grid gap-3 md:grid-cols-2 2xl:grid-cols-3">
-					{filteredTickets.map((ticket) => {
+					{upcomingTickets.map((ticket) => {
 						const statusMeta = getTicketStatusMeta(ticket.status);
 						return (
 							<div key={ticket.ticketId} className="overflow-hidden rounded-2xl border border-white/10 bg-[#1b1b19] shadow-[0_12px_30px_rgba(0,0,0,0.24)]">

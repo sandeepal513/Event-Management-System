@@ -3,11 +3,9 @@ package com.university.event_management.controller;
 import com.university.event_management.model.EventApproval;
 import com.university.event_management.service.EventApprovalService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -31,8 +29,12 @@ public class EventApprovalController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EventApproval>> getAllApproved(){
-        return ResponseEntity.ok(eventApprovalService.getAllApproval());
+    public ResponseEntity<List<EventApproval>> getAllApproved(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Integer eventId,
+            @RequestParam(required = false) String q
+    ){
+        return ResponseEntity.ok(eventApprovalService.getFiltered(status, eventId, q));
     }
 
     @PostMapping("/{id}/approve")
