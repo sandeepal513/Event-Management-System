@@ -34,9 +34,6 @@ public class EventService {
     @Autowired
     private EventApprovalRepository eventApprovalRepository;
 
-    @Autowired
-    private EventPublisher eventPublisher;
-
 
     //Validate that event date and time
     private void validateEventDateTime(LocalDate date, LocalTime time) {
@@ -204,6 +201,4 @@ public class EventService {
 
         return stats;
     }
-
-    public void sendApprovalEventMail() {}
 }
