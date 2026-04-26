@@ -86,7 +86,7 @@ export default function EventDetailsPage() {
 			});
 
 			setRegisteredEventIds((current) => new Set([...current, event.id]));
-			toast.success("Registered successfully");
+			toast.success("Registration submitted successfully. Waiting for admin approval");
 		} catch (error) {
 			console.error("Error registering event:", error);
 			toast.error("Registration failed");
