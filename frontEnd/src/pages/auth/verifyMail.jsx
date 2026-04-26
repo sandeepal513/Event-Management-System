@@ -12,7 +12,8 @@ const VerifyMail = () => {
 	const [otp, setOtp] = useState(['', '', '', '', '', '']);
 	const [otpSent, setOtpSent] = useState(false);
 	const [verified, setVerified] = useState(false);
-	const [isLoading, setLoading] = useState(false);
+	const [isOtpLoading, setOtpLoading] = useState(false);
+	const [isVerifyLoading, setVerifyLoading] = useState(false);
 
 
 	useEffect(() => {
@@ -97,7 +98,7 @@ const VerifyMail = () => {
 			return;
 		}
 
-		setLoading(true);
+		setOtpLoading(true);
 		try {
 			const response = await axios.post(`http://localhost:3000/api/v1/auth/send-verifyEmail/${emailToSend}`);
 	
@@ -112,7 +113,7 @@ const VerifyMail = () => {
 			const message = error?.response?.data?.message;
 			toast.error(message || "Server error. try again");
 		} finally {
-			setLoading(false);
+			setOtpLoading(false);
 		}
 	};
 
@@ -131,7 +132,7 @@ const VerifyMail = () => {
 			return;
 		}
 
-		setLoading(true);
+		setVerifyLoading(true);
 		try {
 			const response = await axios.post(`http://localhost:3000/api/v1/auth/verify-email`,
 				{
@@ -147,20 +148,19 @@ const VerifyMail = () => {
 
 			toast.success(response.data.message);
 			setVerified(true);
-			// navigate("/auth/login");
 		} catch (error) {
 			const message = error?.response?.data?.message;
 			toast.error(message || "Server error. try again");
 			console.log(message);
 		} finally {
-			setLoading(false);
+			setVerifyLoading(false);
 		}
 	};
 
 	return (
 		<section className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.14),_transparent_32%),radial-gradient(circle_at_top_right,_rgba(244,114,182,0.08),_transparent_28%),linear-gradient(180deg,_#171716_0%,_#101010_100%)]">
 			
-			{isLoading && (
+			{isOtpLoading && (
 				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
 					<div className="flex flex-col items-center gap-4 rounded-2xl border border-white/10 bg-[#1c1c1a] p-8 shadow-2xl">
 						<div className="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-sky-400" />
@@ -257,10 +257,10 @@ const VerifyMail = () => {
 								<div className="flex flex-col gap-3 sm:flex-row">
 									<button
 										type="submit"
-										disabled={isLoading}
+										disabled={isVerifyLoading}
 										className="flex-1 rounded-xl bg-sky-500 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-sky-400 disabled:opacity-60 disabled:cursor-not-allowed"
 									>
-										{isLoading ? "Verifying OTP..." : "Verify OTP"}
+										{isVerifyLoading ? "Verifying OTP..." : "Verify OTP"}
 									</button>
 
 									<button
@@ -276,10 +276,10 @@ const VerifyMail = () => {
 									<button
 										type="button"
 										onClick={handleSendOtp}
-										disabled={isLoading}
+										disabled={isOtpLoading}
 										className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-sky-400 hover:text-sky-300 transition disabled:opacity-60 disabled:cursor-not-allowed"
 									>
-										{isLoading ? "Sending..." : "Send OTP"}
+										{isOtpLoading ? "Sending..." : "Send OTP"}
 									</button>
 								) : (
 									<>

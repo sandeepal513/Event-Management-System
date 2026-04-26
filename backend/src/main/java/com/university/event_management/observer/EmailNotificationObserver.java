@@ -1,6 +1,7 @@
 package com.university.event_management.observer;
 
 import com.university.event_management.model.Event;
+import com.university.event_management.model.Role;
 import com.university.event_management.model.User;
 import com.university.event_management.repository.UserRepository;
 import com.university.event_management.service.EmailService;
@@ -22,7 +23,7 @@ public class EmailNotificationObserver implements Observer {
 
     @Override
     public void update(Event event) throws UnsupportedEncodingException {
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findByRole(Role.student);
 
         for (User user : users) {
             System.out.println("Sending email to: " + user.getEmail() + " | New Event: " + event.getTitle());

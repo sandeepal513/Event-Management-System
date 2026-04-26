@@ -76,13 +76,6 @@ public class AuthController {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User createdUser = userService.createUser(user);
 
-
-        try {
-            userService.sendWelcomeEmail(user.getEmail());
-        } catch (Exception e) {
-            System.out.println("Email sending failed: " + e.getMessage());
-        }
-
         return ResponseEntity.ok(
                 new ApiResponse<>(true, "User created successfully", createdUser)
         );
@@ -121,6 +114,12 @@ public class AuthController {
                 User user = userService.getUserByEmail(email);
                 user.setVerifyEmail(true);
                 userService.updateUser(user.getId(), user);
+
+                try {
+                    userService.sendWelcomeEmail(user.getEmail());
+                } catch (Exception e) {
+                    System.out.println("Email sending failed: " + e.getMessage());
+                }
 
                 return ResponseEntity.ok(new ApiResponse<>(true, "OTP verify success", true));
             } else {
