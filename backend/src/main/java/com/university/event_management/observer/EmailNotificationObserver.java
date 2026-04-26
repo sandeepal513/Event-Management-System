@@ -4,7 +4,6 @@ import com.university.event_management.model.Event;
 import com.university.event_management.model.Role;
 import com.university.event_management.model.User;
 import com.university.event_management.repository.UserRepository;
-import com.university.event_management.service.EmailService;
 import com.university.event_management.service.PublicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
