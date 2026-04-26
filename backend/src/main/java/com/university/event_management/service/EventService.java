@@ -1,6 +1,7 @@
 package com.university.event_management.service;
 
 import com.university.event_management.model.*;
+import com.university.event_management.observer.EventPublisher;
 import com.university.event_management.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,9 @@ public class EventService {
 
     @Autowired
     private EventApprovalRepository eventApprovalRepository;
+
+    @Autowired
+    private EventPublisher eventPublisher;
 
 
     //Validate that event date and time
@@ -95,7 +99,6 @@ public class EventService {
         eventApprovalRepository.save(approval);
 
         return savedEvent;
-
     }
 
 
@@ -169,6 +172,8 @@ public class EventService {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
 
+        eventApprovalRepository.deleteByEventId(event.getId());
+
         eventRepository.delete(event);
         return event;
     }
@@ -199,4 +204,6 @@ public class EventService {
 
         return stats;
     }
+
+    public void sendApprovalEventMail() {}
 }

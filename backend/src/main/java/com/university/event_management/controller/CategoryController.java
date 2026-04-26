@@ -17,8 +17,8 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @PostMapping("/add")
-    public Category addCategory(String name) {
-        return categoryService.addCategory(name);
+    public Category addCategory(@RequestBody Category category) {
+        return categoryService.addCategory(category.getName());
     }
 
     @GetMapping("/{id}")
