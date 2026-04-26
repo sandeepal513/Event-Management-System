@@ -2,6 +2,7 @@ package com.university.event_management.service;
 
 import com.university.event_management.model.Event;
 import com.university.event_management.model.EventApproval;
+import com.university.event_management.observer.EventPublisher;
 import com.university.event_management.repository.EventApprovalRepository;
 import com.university.event_management.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +22,9 @@ public class EventApprovalService {
 
     @Autowired
     private EventRepository eventRepo;
+
+    @Autowired
+    private EventPublisher eventPublisher;
 
 
     public EventApproval createEventApproval(Integer eventId) {
@@ -153,6 +158,15 @@ public class EventApprovalService {
         EventApproval approval = eventApprovalRepo.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
         approval.setStatus("APPROVED");
+
+        try{
+            Event event = eventRepo.findById(eventId)
+                    .orElseThrow(() -> new RuntimeException("Event not found"));
+            eventPublisher.notifyAllObservers(event);
+        }catch (Exception e){
+            throw new RuntimeException("Failed to notify observers: " + e.getMessage());
+        }
+
         return eventApprovalRepo.save(approval);
     }
 
