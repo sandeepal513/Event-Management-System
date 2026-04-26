@@ -94,7 +94,7 @@ export default function TicketPage() {
     return (
       <div className="rounded-2xl border border-white/10 bg-[#1c1c1a] p-6">
         <p className="text-white/70">Ticket not found or not yet generated.</p>
-        <Link to="student/registered-events" className="mt-4 inline-block rounded-xl border border-white/15 px-4 py-2 text-sm text-white/80 hover:text-white">
+        <Link to="/student/registered-events" className="mt-4 inline-block rounded-xl border border-white/15 px-4 py-2 text-sm text-white/80 hover:text-white">
           Back to Registrations
         </Link>
       </div>
