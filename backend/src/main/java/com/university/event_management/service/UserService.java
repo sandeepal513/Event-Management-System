@@ -1,0 +1,180 @@
+package com.university.event_management.service;
+
+import com.university.event_management.model.User;
+import com.university.event_management.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+
+@Service
+public class UserService {
+
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private PublicService publicService;
+
+    private String otp;
+    private long otpExpiryTime;
+
+    public User createUser(User user) {
+        return userRepository.save(user);
+    }
+
+    public List<User> getUsers() {
+        return userRepository.findAll();
+    }
+
+    public User getUser(Integer id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+    }
+
+    public User updateUser(Integer id, User updateUser) {
+        if (!userRepository.existsById(id)) {
+            throw new RuntimeException("User not found with id: " + id);
+        }
+        updateUser.setId(id);
+        return userRepository.save(updateUser);
+    }
+
+    public void deleteUser(Integer id) {
+        if (!userRepository.existsById(id)) {
+            throw new RuntimeException("User not found with id: " + id);
+        }
+        userRepository.deleteById(id);
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public void generateAndSendOtp(String to) throws UnsupportedEncodingException {
+        String otp = String.valueOf((int)(Math.random() * 900000) + 100000);
+        this.otpExpiryTime = System.currentTimeMillis() + (10 * 60 * 1000);
+
+        this.otp = otp;
+        String subject = "Your One-Time Verification Code (OTP) – EventOra";
+        String body = "Dear User,\n\n" +
+                "We received a request to verify your account.\n" +
+                "Please use the following One-Time Password (OTP) to complete the verification process:\n\n" +
+                "            " + otp + "\n\n" +
+                "This OTP is valid for the next 10 minutes.\n" +
+                "If you did not request this, please ignore this email or contact our support team immediately.\n\n" +
+                "Thank you,\n" +
+                "EventOra Team\n" +
+                "support@eventmanagement.com";
+
+        publicService.sendMail(to, subject, body);
+    }
+
+    public boolean verifyOtp(String clientOtp) {
+        if (otp == null) return false;
+        System.out.println(otp);
+
+        if (System.currentTimeMillis() > otpExpiryTime) {
+            this.otp = null;
+            return false;
+        }
+
+        if (clientOtp.equals(otp)) {
+            this.otp = null;
+            return true;
+        }
+        return false;
+    }
+
+    public void sendVerifyEmailOTP(String to) throws UnsupportedEncodingException {
+        String otp = String.valueOf((int)(Math.random() * 900000) + 100000);
+        this.otpExpiryTime = System.currentTimeMillis() + (1000 * 60 * 5);
+
+        this.otp = otp;
+        String subject = "EventOra Security Code: Verify Your Login";
+        String body = "Hi,\n\n" +
+                "We received a request to verify your login to EventOra.\n" +
+                "Use the one-time verification code below to continue:\n\n" +
+                "    " + otp + "\n\n" +
+                "This code expires in 5 minutes and can only be used once.\n" +
+                "For your security, do not share this code with anyone.\n\n" +
+                "If you did not request this code, please ignore this email or contact support immediately.\n\n" +
+                "Best regards,\n" +
+                "EventOra Security Team\n" +
+                "support@eventmanagement.com";
+
+
+        publicService.sendMail(to, subject, body);
+    }
+
+    public void sendWelcomeEmail(String to) throws UnsupportedEncodingException {
+        String username = to.split("@")[0];
+        String subject = "Welcome to EventOra \uD83C\uDF89 Let’s Get Started!";
+        String body = "Hi " + username + ",\n" +
+                "\n" +
+                "Welcome to EventOra! \uD83C\uDF89\n" +
+                "\n" +
+                "We’re excited to have you join our community where discovering, attending, and organizing amazing events is just a few clicks away.\n" +
+                "\n" +
+                "With EventOra, you can:\n" +
+                "\n" +
+                "\uD83C\uDF9F\uFE0F Explore trending and upcoming events\n" +
+                "\uD83D\uDCCD Find events near you\n" +
+                "\uD83D\uDC65 Connect with communities and organizers\n" +
+                "\uD83D\uDEE0\uFE0F Create and manage your own events\n" +
+                "\n" +
+                "Get started now and make the most of your experience:\n" +
+                "\uD83D\uDC49 Browse Events\n" +
+                "\uD83D\uDC49 Create Your First Event\n" +
+                "\n" +
+                "If you have any questions or need help, feel free to reach out to us anytime.\n" +
+                "\n" +
+                "Let’s make every moment unforgettable!\n" +
+                "\n" +
+                "Best regards,\n" +
+                "Team EventOra \uD83D\uDE80";
+
+        publicService.sendMail(to, subject, body);
+    }
+
+    public void sendOrganizerApproveRejectMail(String to, String status, String reason) throws UnsupportedEncodingException {
+
+        String username = to.split("@")[0];
+        String subject;
+        String body;
+
+        if ("approve".equalsIgnoreCase(status)) {
+
+            subject = "🎉 Your Organizer Account Has Been Approved!";
+
+            body = "Hi " + username + ",\n\n" +
+                    "Great news! 🎉\n\n" +
+                    "Your organizer account on EventOra has been successfully approved.\n\n" +
+                    "You can now start creating and managing your own events, connect with attendees, and grow your community.\n\n" +
+                    "What you can do next:\n" +
+                    "🎟️ Create and publish events\n" +
+                    "📊 Manage attendees\n" +
+                    "📢 Promote your events\n\n" +
+                    "We’re excited to see the amazing events you’ll create!\n\n" +
+                    "Best regards,\n" +
+                    "Team EventOra 🚀";
+
+        } else {
+
+            subject = "❌ Organizer Registration Update";
+
+            body = "Hi " + username + ",\n\n" +
+                    "Thank you for your interest in becoming an organizer on EventOra.\n\n" +
+                    "We regret to inform you that your organizer registration has been rejected at this time.\n\n" +
+                    "Reason:\n" +
+                    (reason != null && !reason.isEmpty() ? reason : "Not specified") + "\n\n" +
+                    "You may review the requirements and apply again after making the necessary changes.\n\n" +
+                    "If you have any questions, feel free to contact our support team.\n\n" +
+                    "Best regards,\n" +
+                    "Team EventOra";
+
+        }
+
+        publicService.sendMail(to, subject, body);
+    }
+}
