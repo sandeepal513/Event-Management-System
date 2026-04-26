@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { MdDashboard, MdMenu, MdClose } from "react-icons/md";
+import { MdDashboard, MdMenu, MdClose, MdHome } from "react-icons/md";
 import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import EventApprovals from "./EventApproval";
 import OrganizerApproval from "./OrganizerApproval";
@@ -14,6 +14,8 @@ import TicketCancel from "./TicketCancel";
 import VenueListing from "./VenueListing";
 import AddVenuePage from "./AddVenuePage";
 import UpdateVenuePage from "./UpdateVenuePage";
+import AddSocietyPage from "./AddSocietyPage";
+import SocietyListing from "./SocietyListing";
 import ProfilePage from "../../components/ProfilePage";
 import ChangePassword from "../../components/ChangePassword";
 import DeleteAccount from "../../components/DeleteAccount";
@@ -74,10 +76,11 @@ export default function AdminPage() {
 
 	const sidebarItems = [
 		{ label: "Profile", path: "/admin/profile" },
-		{ label: "Approvals", path: "/admin/approvals" },
+		{ label: "Event Approvals", path: "/admin/approvals" },
 		{ label: "Organizer Approvals", path: "/admin/organizer-approvals" },
-		{ label: "Registrations", path: "/admin/registrations" },
+		{ label: "Student Registrations", path: "/admin/registrations" },
 		{ label: "Venues", path: "/admin/venues" },
+		{ label: "Societies", path: "/admin/societies" },
 		{ label: "Summary", path: "/admin/tickets/summary" },
 		{ label: "Ticket Create", path: "/admin/tickets/create" },
 		{ label: "Users", path: "/admin/userlist" },
@@ -104,34 +107,48 @@ export default function AdminPage() {
 				{sidebarOpen ? <MdClose className="text-2xl" /> : <MdMenu className="text-2xl" />}
 			</button>
 
-			<div className={`fixed md:static z-30 w-75 h-full bg-[#1e1e1c] transition-transform duration-300 overflow-y-auto ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}>
-				<div className="w-full px-5 py-6 flex flex-col items-center justify-center border-b border-white/10">
-					{userProfile.image ? (
-						<img
-							src={userProfile.image}
-							alt={userProfile.name}
-							className="w-16 h-16 rounded-full object-cover border-2 border-white/10 mb-3"
-						/>
-					) : (
-						<div className="w-16 h-16 rounded-full border-2 border-white/10 mb-3 bg-sky-600 text-white flex items-center justify-center text-xl font-semibold">
-							{profileInitial}
-						</div>
-					)}
-					<h2 className="text-lg font-semibold text-white text-center truncate">{userProfile.name}</h2>
-					<p className="text-xs text-white/60 mt-1">{userProfile.role}</p>
-				</div>
-				<div className="w-full flex flex-col pl-5 pt-5 pb-6">
-					{sidebarItems.map((item) => (
-						<Link
-							key={item.label}
-							to={item.path}
-							state={item.path === "/logout" ? { backgroundLocation: location } : undefined}
-							onClick={() => setSidebarOpen(false)}
-							className={`flex items-center gap-2 border-r-4 px-3 py-3 text-lg transition ${isActiveItem(item.path) ? "border-sky-400 bg-sky-400/10 text-white" : "border-transparent text-white/70 hover:border-white/15 hover:bg-white/5 hover:text-white"}`}
-						>
-							<MdDashboard className="text-2xl" /> {item.label}
-						</Link>
-					))}
+<div className={`fixed md:static z-30 w-75 h-full bg-[#1e1e1c] transition-transform duration-300 overflow-y-auto ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 flex flex-col`}>
+                <div className="w-full px-5 py-6 flex flex-col items-center justify-center border-b border-white/10">
+                    {userProfile.image ? (
+                        <img
+                            src={userProfile.image}
+                            alt={userProfile.name}
+                            className="w-16 h-16 rounded-full object-cover border-2 border-white/10 mb-3"
+                        />
+                    ) : (
+                        <div className="w-16 h-16 rounded-full border-2 border-white/10 mb-3 bg-sky-600 text-white flex items-center justify-center text-xl font-semibold">
+                            {profileInitial}
+                        </div>
+                    )}
+                    <h2 className="text-lg font-semibold text-white text-center truncate">{userProfile.name}</h2>
+                    <p className="text-xs text-white/60 mt-1">{userProfile.role}</p>
+                </div>
+
+                <div className="flex-1 flex flex-col justify-between">
+                    <div className="w-full flex flex-col pl-5 pt-5">
+                        {sidebarItems.map((item) => (
+                            <Link
+                                key={item.label}
+                                to={item.path}
+                                state={item.path === "/logout" ? { backgroundLocation: location } : undefined}
+                                onClick={() => setSidebarOpen(false)}
+                                className={`flex items-center gap-2 border-r-4 px-3 py-3 text-lg transition ${isActiveItem(item.path) ? "border-sky-400 bg-sky-400/10 text-white" : "border-transparent text-white/70 hover:border-white/15 hover:bg-white/5 hover:text-white"}`}
+                            >
+                                <MdDashboard className="text-2xl" /> {item.label}
+                            </Link>
+                        ))}
+                    </div>
+
+                    <div className="px-5 pb-6">
+                        <Link
+                            to="/"
+                            onClick={() => setSidebarOpen(false)}
+                            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
+                        >
+                            <MdHome className="text-xl" />
+                            Back to Home
+                        </Link>
+                    </div>
 				</div>
 			</div>
 
@@ -151,11 +168,13 @@ export default function AdminPage() {
 					<Route path="venues" element={<VenueListing />} />
 					<Route path="venues/add" element={<AddVenuePage />} />
 					<Route path="venues/edit/:venueId" element={<UpdateVenuePage />} />
+					<Route path="societies" element={<SocietyListing />} />
+					<Route path="societies/add" element={<AddSocietyPage />} />
+					<Route path="societies/edit/:societyId" element={<AddSocietyPage />} />
 					<Route path="userlist" element={<UsersList />} />
 					<Route path="change-password" element={<ChangePassword />} />
 					<Route path="delete-account" element={<DeleteAccount />} />
 					<Route path="*" element={<Navigate to="profile" replace />} />
-
 				</Routes>
 			</div>
 		</div>
