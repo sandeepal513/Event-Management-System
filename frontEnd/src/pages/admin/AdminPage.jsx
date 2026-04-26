@@ -14,6 +14,8 @@ import TicketCancel from "./TicketCancel";
 import VenueListing from "./VenueListing";
 import AddVenuePage from "./AddVenuePage";
 import UpdateVenuePage from "./UpdateVenuePage";
+import AddSocietyPage from "./AddSocietyPage";
+import SocietyListing from "./SocietyListing";
 import ProfilePage from "../../components/ProfilePage";
 import ChangePassword from "../../components/ChangePassword";
 import DeleteAccount from "../../components/DeleteAccount";
@@ -74,10 +76,11 @@ export default function AdminPage() {
 
 	const sidebarItems = [
 		{ label: "Profile", path: "/admin/profile" },
-		{ label: "Approvals", path: "/admin/approvals" },
+		{ label: "Event Approvals", path: "/admin/approvals" },
 		{ label: "Organizer Approvals", path: "/admin/organizer-approvals" },
-		{ label: "Registrations", path: "/admin/registrations" },
+		{ label: "Student Registrations", path: "/admin/registrations" },
 		{ label: "Venues", path: "/admin/venues" },
+		{ label: "Societies", path: "/admin/societies" },
 		{ label: "Summary", path: "/admin/tickets/summary" },
 		{ label: "Ticket Create", path: "/admin/tickets/create" },
 		{ label: "Users", path: "/admin/userlist" },
@@ -165,11 +168,13 @@ export default function AdminPage() {
 					<Route path="venues" element={<VenueListing />} />
 					<Route path="venues/add" element={<AddVenuePage />} />
 					<Route path="venues/edit/:venueId" element={<UpdateVenuePage />} />
+					<Route path="societies" element={<SocietyListing />} />
+					<Route path="societies/add" element={<AddSocietyPage />} />
+					<Route path="societies/edit/:societyId" element={<AddSocietyPage />} />
 					<Route path="userlist" element={<UsersList />} />
 					<Route path="change-password" element={<ChangePassword />} />
 					<Route path="delete-account" element={<DeleteAccount />} />
 					<Route path="*" element={<Navigate to="profile" replace />} />
-
 				</Routes>
 			</div>
 		</div>
